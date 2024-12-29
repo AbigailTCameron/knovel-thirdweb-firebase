@@ -1,7 +1,7 @@
 'use client'
 import { firebaseAuthClient } from '@/app/actions/firebaseauth'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
-import { server } from '@/lib/server'
+import { client } from '@/lib/client'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { arbitrumSepolia } from 'thirdweb/chains'
@@ -26,7 +26,7 @@ function LandingHeader({}: Props) {
         <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine"></div>
 
           <ConnectButton 
-            client={server}
+            client={client}
             chain={arbitrumSepolia}
             connectModal={{ 
               size: "wide",
