@@ -3,19 +3,19 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
 import Profile from '../icons/Profile';
+import UserProfileImage from './UserProfileImage';
 
 
 type Props = {
-
+  profileUrl : string;
 }
 
-function ExploreHeader({}: Props) {
+function ExploreHeader({profileUrl}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [dropdown, setDropdown] = useState(false);
   const [loading, setLoading] = useState(false); 
   const [newNotifications, setNewNotifications] = useState<boolean | null>(null); 
@@ -186,18 +186,11 @@ function ExploreHeader({}: Props) {
 
           
             <div ref={dropdownRef} className="hover:cursor-pointer halflg:absolute halflg:right-0">
-                <div onClick={() => setDropdown((prev) => !prev)} className="rounded-full w-[50px] h-[50px]">
-                  {profileUrl ? (
-                      <img 
-                        className="rounded-full w-full h-full"
-                        src={profileUrl}
-                      />
+              <UserProfileImage 
+                profileUrl={profileUrl}
+                onClick={() => setDropdown((prev) => !prev)}
+              />
           
-                  ) : (
-                    <Profile className=' stroke-white'/>
-                  )}
-                </div>
-            
                 {/* {dropdown && (
                   <div className="absolute min-w-64 right-0 mt-6 bg-[#1d242e] rounded-lg shadow-xl z-50">
                     <AccountDropdown 

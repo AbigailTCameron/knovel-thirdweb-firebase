@@ -1,59 +1,54 @@
 'use client'
-import { server } from '@/lib/server'
-import React from 'react'
-import { arbitrumSepolia } from 'thirdweb/chains'
-import { ConnectButton } from 'thirdweb/react'
-import { generatePayload, isLoggedIn, login, logout } from '../actions/login'
-import { firebaseAuthClient } from '../actions/firebaseauth'
-import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+
 import ExploreHeader from '../components/headers/ExploreHeader'
 import TrendingCarousel from '../components/explore/trending/TrendingCarousel'
+import initializeFirebaseClient from '@/lib/initFirebase'
+import { getUserProfileImage } from '../../../functions/explore/fetch'
+import { onAuthStateChanged } from 'firebase/auth'
+import Trending from '../components/explore/trending/Trending'
+import Genre from '../components/explore/genre/Genre'
 
 type Props = {}
 
+const { auth } = initializeFirebaseClient();
+
 function page({}: Props) {
-  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+  const [profileUrl, setProfileUrl] = useState<string>(''); 
+
+  useEffect(() => { 
+     // Listen for authentication state changes
+     const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user?.uid);
+        if(user){
+          getUserProfileImage(user.uid, setProfileUrl);
+        }else {
+          setProfileUrl(''); 
+        }
+     })
+
+     return () => unsubscribe(); 
+   
+  }, []);
 
   return (
     <div className="flex w-screen min-h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader />
+          <ExploreHeader profileUrl={profileUrl}/>
         </div>
 
         <div className="flex w-full" style={{ height: '75vh' }}>
           <TrendingCarousel />
         </div>
 
-      <ConnectButton
-        client={server}
-        chain={arbitrumSepolia}
-        detailsButton={{
-          style: {
-            background: "transparent", // Transparent to allow the gradient effect
-            color: "white",
-            border: "none", // Remove any default border
-            fontWeight: "600",
-            cursor: "pointer",
-            zIndex: "10", // Ensure the text is above the gradient
-          }
-        }}
-        auth={{
-          getLoginPayload: async ({ address }) => generatePayload({ address }),
-          doLogin: async (params) => {
-            const token = await login(params); 
-            if(token) {
-              firebaseAuthClient(token, router);
-            }
-            
-          },
-          isLoggedIn: async () => {
-            return await isLoggedIn();
-          },
-          doLogout: async () => {
-            await logout();
-          },
-        }}
-      />
+        <div className="flex w-full h-full mt-20 halfxl:mt-10 px-20 xl:px-10 sm:px-2">
+          <Trending />
+        </div>
+
+        <div className="w-full h-full">
+          <Genre />
+        </div>
     </div>
   )
 }
