@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation';
-import { Book } from '../../../../..';
+import React from 'react'
+import { useRouter } from 'next/navigation';
 import StarRating from '../../StarRating';
 import TrendBookImage from './TrendBookImage';
+import { Book } from '../../../..';
 
 type Props = {
   books: Book[]; 
