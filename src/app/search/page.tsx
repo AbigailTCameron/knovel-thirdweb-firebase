@@ -2,12 +2,10 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
-import { Book } from '../../..';
+import React, { Suspense, useState } from 'react'
 import SearchIcon from '@/components/icons/SearchIcon';
 import Back from '@/components/icons/Back';
-import BookImageSearch from '@/components/search/BookImageSearch';
-import { fetchSearchResults } from '../../../functions/explore/fetch';
+import SearchResults from '@/components/search/SearchResults';
 
 type Props = {}
 
@@ -16,7 +14,6 @@ function Search({}: Props) {
   const [newQuery, setNewQuery] = useState('');
   const searchParams = useSearchParams();
   const q = searchParams.get('q') || '';
-  const [results, setResults] = useState<Book[]>([]);
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,16 +21,6 @@ function Search({}: Props) {
       router.push(`/search?q=${encodeURIComponent(newQuery.trim())}`);
     }
   };
-
-
-  useEffect(() => {
-    if (q) {
-      const searchBooks = async () => {
-        await fetchSearchResults(q as string, setResults); 
-      };
-      searchBooks();
-    }
-  }, [q]);
 
 
   return (
@@ -66,19 +53,9 @@ function Search({}: Props) {
             <p>Search Results for "{q}"</p>
         </div>
 
-        <div className="text-white px-4 xl:px-2">
-            {results.length > 0 ? (
-                <div className="grid grid-cols-5 2xl:grid-cols-4 halflg:grid-cols-3 sm:grid-cols-2 ss:grid-cols-1 ss:gap-8 gap-4 halflg:gap-2">
-                    {results.map((result) => (
-                      <div onClick={() => router.push(`/book/${result.id}`)} key={result.id} className="w-fit h-fit hover:cursor-pointer">
-                        <BookImageSearch imageFile={result?.book_image}/>
-                      </div>
-                    ))}
-                </div>
-            ) : (
-              <p>No results found</p>
-            )}
-        </div>
+        <Suspense fallback={<p>Loading search results...</p>}>
+          <SearchResults query={q}/>
+        </Suspense>
     </main>
   )
 }
