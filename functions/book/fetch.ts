@@ -28,6 +28,30 @@ export const fetchBookData = async (id : string, router: any, setBook: Function)
   }
 }
 
+
+export const fetchBookError = async (id: string, router:any) => {
+  try{
+    // Reference to the specific book document in the Firestore "books" collection
+    const bookRef = doc(db, 'books', id);
+
+
+    // Fetch the document
+    const bookSnap = await getDoc(bookRef);
+    if (!bookSnap.exists()) {     
+      return;
+    }
+
+    return router.push(`/book/${id}`);
+
+  }catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching books:", error.message);
+    } else {
+      console.error("Error fetching books:", String(error));
+    }
+  }
+}
+
 export const fetchBookmark = async (bookmarks: string[], bookId: string, setBookmark: Function) => {
   try {
       // Ensure userDetails contains a valid bookmark array
