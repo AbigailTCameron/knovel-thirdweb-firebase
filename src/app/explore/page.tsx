@@ -1,13 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-
-import ExploreHeader from '../components/headers/ExploreHeader'
-import TrendingCarousel from '../components/explore/trending/TrendingCarousel'
 import initializeFirebaseClient from '@/lib/initFirebase'
 import { getUserProfileImage } from '../../../functions/explore/fetch'
 import { onAuthStateChanged } from 'firebase/auth'
-import Trending from '../components/explore/trending/Trending'
-import Genre from '../components/explore/genre/Genre'
+import ExploreHeader from '@/components/headers/ExploreHeader'
+import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
+import Trending from '@/components/explore/trending/Trending'
+import Genre from '@/components/explore/genre/Genre'
+
 
 type Props = {}
 

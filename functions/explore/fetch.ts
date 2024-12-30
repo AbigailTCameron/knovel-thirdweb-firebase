@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
+import { collection, doc, endAt, getDoc, getDocs, limit, orderBy, query, startAfter, startAt, where } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -17,7 +17,6 @@ export const getUserProfileImage = async (userId: string, setProfileUrl: Functio
       return null;
     }
 }
-
 
 export const fetchBooks = async ( lastVisibleDoc: any, setBooks: Function) => {
   try {
@@ -100,7 +99,6 @@ export const fetchTopRated = async (lastVisibleDoc: any, setBooks: Function) => 
   }
 }
 
-
 export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
   try {
     const booksCollection = collection(db, "books");
@@ -116,6 +114,33 @@ export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
     }));
     setBooks(books);
 
+  }catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching books:", error.message);
+    } else {
+      console.error("Error fetching books:", String(error));
+    }
+  }
+}
+
+export const fetchSearchResults = async(queryText: string, setResults: Function) => {
+  try {
+    const booksCollection = collection(db, "books");
+
+    // Create a query for matching titles (case-sensitive)
+    const booksQuery = query(
+      booksCollection,
+      where("search_keywords", "array-contains", queryText.toLowerCase())
+    );
+  
+    const querySnapshot = await getDocs(booksQuery);
+
+    const results = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setResults(results);
   }catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);

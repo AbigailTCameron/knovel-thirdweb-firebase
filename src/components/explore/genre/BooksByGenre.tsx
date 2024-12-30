@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
-import { Book } from '../../../../..';
 import StarRating from '../../StarRating';
 import GenreImage from './GenreImage';
-import { fetchBooksByGenre } from '../../../../../functions/explore/fetch';
+import { Book } from '../../../..';
+import { fetchBooksByGenre } from '../../../../functions/explore/fetch';
 
 type Props = {
   genre ?: string;

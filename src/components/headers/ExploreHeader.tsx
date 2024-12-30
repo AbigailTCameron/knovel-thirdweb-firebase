@@ -2,8 +2,8 @@
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
-import Profile from '../icons/Profile';
 import UserProfileImage from './UserProfileImage';
+import AccountDropdown from '../explore/AccountDropdown';
 
 
 type Props = {
@@ -14,6 +14,7 @@ function ExploreHeader({profileUrl}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdown, setDropdown] = useState(false);
@@ -21,8 +22,6 @@ function ExploreHeader({profileUrl}: Props) {
   const [newNotifications, setNewNotifications] = useState<boolean | null>(null); 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
-
-
 
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -33,15 +32,15 @@ function ExploreHeader({profileUrl}: Props) {
     }
   };
 
-  // const handleClickOutside = (event: MouseEvent) => {
-  //   if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-  //     setDropdown(false);
-  //   }
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setDropdown(false);
+    }
 
-  //   if(notificationRef.current && !notificationRef.current.contains(event.target as Node)){
-  //     setShowNotifications(false);
-  //   }
-  // };
+    if(notificationRef.current && !notificationRef.current.contains(event.target as Node)){
+      setShowNotifications(false);
+    }
+  };
 
   const handleExploreClick = () => {
     if(pathname !== '/explore'){
@@ -72,23 +71,28 @@ function ExploreHeader({profileUrl}: Props) {
     }
   }
 
-  // useEffect(() => {
-  //   if(user?.id){
-  //     retrieveProfilePhoto(user.id, setProfileUrl); 
-  //     fetchNotifications(user.id, setNotifications, setNewNotifications); 
-  //     router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
-  //     router.prefetch('/settings'); 
-  //     router.prefetch('/explore'); 
-  //     router.prefetch('/community'); 
-  //   }
-  // }, [user?.id])
+  useEffect(() => {
+    router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
+    router.prefetch('/settings'); 
+    router.prefetch('/explore'); 
+    router.prefetch('/community'); 
 
-  // useEffect(() => {
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, []);
+    // if(user?.id){
+    //   retrieveProfilePhoto(user.id, setProfileUrl); 
+    //   fetchNotifications(user.id, setNotifications, setNewNotifications); 
+    //   router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
+    //   router.prefetch('/settings'); 
+    //   router.prefetch('/explore'); 
+    //   router.prefetch('/community'); 
+    // }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
  
 
@@ -191,16 +195,15 @@ function ExploreHeader({profileUrl}: Props) {
                 onClick={() => setDropdown((prev) => !prev)}
               />
           
-                {/* {dropdown && (
+                {dropdown && (
                   <div className="absolute min-w-64 right-0 mt-6 bg-[#1d242e] rounded-lg shadow-xl z-50">
                     <AccountDropdown 
-                      userId={user?.id}
                       handleDashboardClick={handleDashboardClick}
                       handleSettingsClick={handleSettingsClick}
                       handleClickCommunity={handleClickCommunity}
                     />
                   </div>
-                )} */}
+                )}
             </div>
         
         </div>

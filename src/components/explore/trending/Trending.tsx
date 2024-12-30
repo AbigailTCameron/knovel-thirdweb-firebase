@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import TrendingHeader from './TrendingHeader';
 import TrendingBooks from './TrendingBooks';
-import { Book } from '../../../../..';
-import { fetchBooks, fetchTopRated } from '../../../../../functions/explore/fetch';
+import { Book } from '../../../..';
+import { fetchBooks, fetchTopRated } from '../../../../functions/explore/fetch';
 
 type Props = {}
 

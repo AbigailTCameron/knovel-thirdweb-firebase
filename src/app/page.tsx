@@ -1,16 +1,17 @@
 'use client'
 import { ConnectButton } from "thirdweb/react";
-import LandingHeader from "./components/headers/LandingHeader";
-import ComingSoon from "./components/home/ComingSoon";
-import Connect from "./components/home/Connect";
-import HeroSection from "./components/home/HeroSection";
-import Technology from "./components/home/Technology";
-import WhoWeAre from "./components/home/WhoWeAre";
+
 import { client } from "@/lib/client";
 import { generatePayload, isLoggedIn, login, logout } from "./actions/login";
 import { firebaseAuthClient } from "./actions/firebaseauth";
 import { useRouter } from "next/navigation";
-import Footer from "./components/footers/Footer";
+import LandingHeader from "@/components/headers/LandingHeader";
+import HeroSection from "@/components/home/HeroSection";
+import WhoWeAre from "@/components/home/WhoWeAre";
+import Connect from "@/components/home/Connect";
+import Technology from "@/components/home/Technology";
+import ComingSoon from "@/components/home/ComingSoon";
+import Footer from "@/components/footers/Footer";
 
 export default function Home() {
   const router = useRouter(); 
