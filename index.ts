@@ -1,3 +1,4 @@
+
 // types/index.ts
 export interface Book {
   id: string;
@@ -9,7 +10,7 @@ export interface Book {
   finished: boolean;
   rating: number;
   verified: boolean;
-  created_at: string;
+  created_at: any;
   hash: string
 }
 
@@ -50,4 +51,13 @@ export interface Notification {
   is_read: boolean; 
   created_at: string; 
   id: string;
+}
+
+export interface User {
+  name: string;
+  profilePicture: string;
+  created_at: any;
+  bookmark: string[];
+  drafts: string[];
+  published: string[];
 }

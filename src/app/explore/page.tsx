@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase'
-import { getUserProfileImage } from '../../../functions/explore/fetch'
+import { getUserProfile } from '../../../functions/explore/fetch'
 import { onAuthStateChanged } from 'firebase/auth'
 import ExploreHeader from '@/components/headers/ExploreHeader'
 import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
@@ -22,7 +22,7 @@ function page({}: Props) {
      const unsubscribe = onAuthStateChanged(auth, (user) => {
         setCurrentUser(user?.uid);
         if(user){
-          getUserProfileImage(user.uid, setProfileUrl);
+          getUserProfile(user.uid, setProfileUrl);
         }else {
           setProfileUrl(''); 
         }

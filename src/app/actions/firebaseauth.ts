@@ -16,7 +16,7 @@ export const firebaseAuthClient = (token: string, router: any) => {
     const userRef = doc(db, "users", user.uid!);
     getDoc(userRef).then((doc) => {
        if(!doc.exists()){
-        setDoc(userRef, {createdAt: serverTimestamp(), profilePicture: "", name: "", username: ""}, {merge: true});
+        setDoc(userRef, {createdAt: serverTimestamp(), profilePicture: "", name: "", username: "", bookmark:[], published:[], drafts:[]}, {merge: true});
        }
     }) 
 

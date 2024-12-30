@@ -3,7 +3,7 @@ import { collection, doc, endAt, getDoc, getDocs, limit, orderBy, query, startAf
 
 const { db } = initializeFirebaseClient();
 
-export const getUserProfileImage = async (userId: string, setProfileUrl: Function) => {
+export const getUserProfile = async (userId: string, setProfileUrl: Function) => {
 
     // Fetch user document from Firestore
     const userRef = doc(db, "users", userId);
@@ -11,7 +11,8 @@ export const getUserProfileImage = async (userId: string, setProfileUrl: Functio
 
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      setProfileUrl(userData.profilePicture || null)
+      setProfileUrl(userData.profilePicture || null);
+      return userData;
     } else {
       console.log("User document not found.");
       return null;
