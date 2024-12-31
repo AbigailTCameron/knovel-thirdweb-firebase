@@ -53,11 +53,11 @@ export const saveSettingsProfile = async (userId: string, name: string, username
         }
       }
 
-    // Step 3: Update the user's Firestore profile with the new avatar URL
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, { name: name, username: username });
-
-    return;
+      // Step 3: Update the user's Firestore profile with the new avatar URL
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, { name: name, username: username });
+    
+      return;
 
   }catch (error) {
     if (error instanceof Error) {

@@ -72,16 +72,7 @@ function SettingsInfo({userId, profileUrl, setProfileUrl, oldFilePath, setOldFil
               />
               {usernameTaken && <p className="text-red-500 text-sm">Username is already taken by another user.</p>}
             </div>
-           
-            {/* <div className="flex flex-col space-y-1">
-              <p className='font-medium ss:text-sm'>Email</p>
-              <input
-                type="text"
-                placeholder={email}
-                disabled
-                className="focus:outline-none placeholder-slate-400 bg-[#2d2d32] border border-[#2d2d32] w-3/4 rounded-xl p-2"
-              />
-            </div> */}
+          
 
           </div>
 
