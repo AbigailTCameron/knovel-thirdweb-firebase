@@ -30,9 +30,9 @@ export const uploadProfilePicture = async (filePath: string, file: File, userId:
 
   }catch (error) {
     if (error instanceof Error) {
-      console.error("Error fetching books:", error.message);
+      console.error("Error uploading profile image:", error.message);
     } else {
-      console.error("Error fetching books:", String(error));
+      console.error("Error uploading profile image:", String(error));
     }
   }
 }
@@ -61,9 +61,9 @@ export const saveSettingsProfile = async (userId: string, name: string, username
 
   }catch (error) {
     if (error instanceof Error) {
-      console.error("Error fetching books:", error.message);
+      console.error("Error saving settings:", error.message);
     } else {
-      console.error("Error fetching books:", String(error));
+      console.error("Error saving settings:", String(error));
     }
   }
 }

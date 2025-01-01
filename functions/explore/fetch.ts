@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { collection, doc, endAt, getDoc, getDocs, limit, orderBy, query, startAfter, startAt, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 

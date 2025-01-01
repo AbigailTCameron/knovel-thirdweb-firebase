@@ -6,7 +6,6 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 const {auth, db} = initializeFirebaseClient();
 
-
 export const firebaseAuthClient = (token: string, router: any) => {
   signInWithCustomToken(auth, token)
   .then((userCredential) => {
