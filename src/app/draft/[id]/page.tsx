@@ -21,7 +21,7 @@ function Draft({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
 
   const [chapterCount, setChapterCount] = useState<number | null>(null);
-  const [imageFile, setImageFile] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [genres, setBookGenres] = useState<string[]>();
   const [synopsis, setSynopsis] = useState<boolean>(false);
@@ -48,7 +48,7 @@ function Draft({}: Props) {
 
   useEffect(() => {
     if(params.id && currentUser){
-      fetchChapterInfo(currentUser, params.id, setChapterCount, setChapters, setImageFile, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath);
+      fetchChapterInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath);
     }
   }, [params.id, genres, title, currentUser])
 
@@ -63,7 +63,7 @@ function Draft({}: Props) {
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader  profileUrl={profileUrl}/> 
+        <ExploreHeader profileUrl={profileUrl} /> 
       </div>
 
       <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
@@ -71,7 +71,7 @@ function Draft({}: Props) {
             <DraftSider
               draftId={params?.id}
               chapterCount={chapterCount}
-              imageFile={imageFile}
+              imageUrl={imageUrl}
               title={title}
               userId={currentUser || ''}
               genres={genres || []}

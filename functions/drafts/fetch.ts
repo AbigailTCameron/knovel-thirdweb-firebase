@@ -73,7 +73,7 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
 
 
 
-export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageFile: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function) => {
+export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
       const draftRef = doc(db, 'drafts', userId, 'userDrafts', draftId);
@@ -90,7 +90,7 @@ export const fetchChapterInfo = async(userId: string, draftId: string, setChapte
       setTitle(draftSnap.data().title);
       setBookGenres(draftSnap.data()?.genres);
       setOldSynopsis(draftSnap.data().synopsis);
-      setImageFile(draftSnap.data().book_image); 
+      setImageUrl(draftSnap.data().book_image); 
       setAuthorName(draftSnap.data().author);
       setChapterCount(draftSnap.data().draft_chapters ? draftSnap.data().draft_chapters.length : 0); 
       setImagePath(draftSnap.data().bookPath)
@@ -265,67 +265,60 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
   }
 }
 
-export const moveImageFile = async(sourcePath: string) => {
+export const deleteDraft = async(userId: string, draftId: string, imageFilePath: string) => {
   try{
-    // Step 1: Reference the source file
-    const storage = getStorage();
-    const sourceRef = ref(storage, sourcePath);
+    // Step 1: Reference the draft document and delete it
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
+    await deleteDoc(draftRef);
+    console.log("Draft deleted successfully:", draftId);
 
-    // Step 2: Download the file data from the source
-    const sourceURL = await getDownloadURL(sourceRef);
-    const response = await fetch(sourceURL);
-    const fileBlob = await response.blob();
+    // Step 2: Update the user's drafts array in their profile
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
 
-    // Step 3: Convert the Blob into a File
-    const fileName = sourcePath.split('/').pop() || "default-file.jpg"; // Extract the file name
-    const file = new File([fileBlob], fileName, { type: fileBlob.type });
+    if (!userSnap.exists()) {
+      console.error("User profile not found.");
+      return false;
+    }
 
-    // Step 4: Delete the original file
-    await deleteObject(sourceRef);
+    const userData = userSnap.data();
+    const currentDrafts = userData?.drafts || [];
+    const updatedDrafts = currentDrafts.filter((id: string) => id !== draftId);
 
-    return file;
-    
-  }catch(error){
+    await updateDoc(userRef, {
+      drafts: updatedDrafts,
+    });
+
+    console.log("User drafts array updated successfully.");
+
+    // // Step 3: Delete the book image from Firebase Storage if it exists
+    // if (imageFilePath) {
+    //   const storageRef = getStorage();
+    //   const imageRef = ref(storageRef, imageFilePath);
+    //   await deleteObject(imageRef);
+    //   console.log("Book image deleted successfully:", imageFilePath);
+    // }
+
+    return true;
+
+  }catch (error) {
     if (error instanceof Error) {
-      console.error("Error moving image file:", error.message);
-      throw error;
+      console.error("Error deleting drafr:", error.message);
+      return false;
     } else {
-      console.error("Error moving image file:", String(error));
-      throw error;
+      console.error("Error deleting draft:", String(error));
+      return false;
     }
   }
 }
 
-export const copyImage = async(userId: string, bookId: string, file: File) => {
+
+export const uploadEpub = async(userId: string, genres: string[], chapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
   try{
-    const storage = getStorage();
-    const filePath = `published/${userId}/${bookId}/${file?.name}`;
-
-    // Upload the file to Firebase Storage
-    const storageRef = ref(storage, filePath);
-    await uploadBytes(storageRef, file);
-
-    // Get the download URL
-    const downloadURL = await getDownloadURL(storageRef);
-    return { downloadURL, filePath };
-
-  }catch(error){
-    if (error instanceof Error) {
-      console.error("Error copying image file:", error.message);
-      return{};
-    } else {
-      console.error("Error copying image file:", String(error));
-      return{}
-    }
-  }
-}
-
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string) => {
-  try{
-    const bookFile = await moveImageFile(bookCoverPath); 
-    const epubFile = await createEpubFile(chapters, title, author, synopsis, bookFile); 
+    // const bookFile = await moveImageFile(bookCoverPath); 
+    const epubFile = await createEpubFile(chapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
-    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, bookFile, draftId, chapters, bookCoverPath);
+    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl);
 
   }catch (error) {
     if (error instanceof Error) {
@@ -338,7 +331,7 @@ export const uploadEpub = async(userId: string, genres: string[], chapters: any[
   }
 }
 
-export const createEpubFile = async(chapters: any[], title: string, author_name: string, book_synopsis: string, bookCover:File) => {
+export const createEpubFile = async(chapters: any[], title: string, author_name: string, book_synopsis: string, imageUrl:string) => {
   const chapterContents = chapters.map((chapter) => ({
     title: chapter.title,
     content: chapter.content,
@@ -350,7 +343,7 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
     author: author_name,
     publisher: "Knovel Protocol",
     content: chapterContents, 
-    cover: bookCover,
+    cover: imageUrl,
     description: book_synopsis,
     language: "en", 
     css: `
@@ -375,7 +368,7 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
 
 }
 
-export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], imageFile:File, draftId: string, chapters: any[], imageFilePath: string) {
+export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string) {
   try{
     // Configure the smart wallet
     const wallet = smartWallet({
@@ -432,7 +425,7 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
       throw new Error("BookRegistered event not found in transaction logs.");
     }
 
-    await pushToBooks(userId, author, title, synopsis, genres, ipfsHash, transactionHash, bookId, imageFile, draftId, chapters, imageFilePath);
+    await pushToBooks(userId, author, title, synopsis, genres, ipfsHash, transactionHash, bookId, draftId, chapters, imageFilePath, bookUrl);
     
   }catch(err){
     console.error("Error trying to call public registry smart contract", err);
@@ -477,7 +470,7 @@ export async function uploadBookImageToFirebase(file: File | null, userId: strin
   }
 }
 
-export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, imageFile: File, draftId: string, chapters: any[], imageFilePath: string){
+export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, draftId: string, chapters: any[], imageFilePath: string, bookUrl: string){
   try{
       const keywords = generateKeywords(title); 
 
@@ -486,15 +479,13 @@ export async function pushToBooks(userId: string, name: string, title: string, s
       const bookRef = doc(booksCollection); // Generate a unique draft ID
       const book_id = bookRef.id;
 
-      const {downloadURL, filePath} = await copyImage(userId, book_id, imageFile);
-
       // Step 1: Create books data
       const draftData = {
         authorId: userId,
         author: name,
         title: title,
-        book_image: downloadURL || '',
-        bookPath: filePath || '',
+        book_image: bookUrl || '',
+        bookPath: imageFilePath || '',
         bytesId: bookId,
         created_at: serverTimestamp(),
         synopsis: synopsis,
@@ -517,9 +508,6 @@ export async function pushToBooks(userId: string, name: string, title: string, s
         throw new Error('User profile not found.');
         return;
       }
-
-      const userData = userSnap.data();
-      const currentDrafts = userData.published || [];
   
       await updateDoc(userRef, {
         published: arrayUnion(book_id), // Add the new draft ID to the user's drafts array
@@ -543,15 +531,14 @@ export async function pushToBooks(userId: string, name: string, title: string, s
         created_at: serverTimestamp(),
         synopsis: synopsis,
         genres: genres,
-        book_image: downloadURL || '',
-        bookPath: filePath || '',
+        book_image: bookUrl || '',
+        bookPath: imageFilePath || '',
         hash: cid,
         bytesId: bookId
       });
 
-      await deleteEntireDraft(userId, draftId, imageFilePath);
+      await deleteDraft(userId, draftId, imageFilePath);
       
-
       return book_id;
 
   }catch(error){

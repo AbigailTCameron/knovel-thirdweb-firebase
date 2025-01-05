@@ -11,7 +11,7 @@ import EditTitlePopup from './EditTitlePopup';
 import PublishPopup from './PublishPopup';
 
 type Props = {
-  imageFile : string;
+  imageUrl : string;
   userId : string;
   draftId : string;
   title : string;
@@ -24,7 +24,7 @@ type Props = {
   imagePath: string;
 }
 
-function DraftSider({imageFile, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath}: Props) {
+function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath}: Props) {
   const router = useRouter();
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [addGenre, setAddGenre] = useState<boolean>(false);
@@ -78,7 +78,7 @@ function DraftSider({imageFile, userId, draftId, title, chapterCount, genres, se
       return;
     }
 
-    await uploadEpub(userId, genres, chapters, title, name, synopsis, imagePath, draftId).then(success => {
+    await uploadEpub(userId, genres, chapters, title, name, synopsis, imagePath, draftId, imageUrl).then(success => {
       if(success){
         router.push("/explore");
       }else{
@@ -97,7 +97,7 @@ function DraftSider({imageFile, userId, draftId, title, chapterCount, genres, se
     <div className="relative h-full w-full flex flex-col">
         <div className="flex flex-col">
             <ImageUploader2 
-              bookUrl={imageFile}
+              bookUrl={imageUrl}
               userId={userId}
               draftId={draftId}
               oldFilePath={imagePath}

@@ -43,13 +43,13 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
       ): (
         chapters.map((chapter, index) => (
            <div onClick={() => handleBookClick(index)}  key={index} className="p-4 hover:cursor-pointer hover:bg-[#171717] rounded-xl">
-              <div className="text-slate-500 font-light text-xs">
+              {/* <div className="text-slate-500 font-light text-xs">
                 {new Date(chapter.createdAt).toLocaleDateString('en-US', {
                    year: 'numeric',
                    month: 'long',
                    day: 'numeric'
                 })}
-              </div>
+              </div> */}
 
               <div className="text-slate-500">
                    <p>Chapter {index + 1}</p>   
