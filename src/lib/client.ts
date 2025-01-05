@@ -5,7 +5,7 @@ import { privateKeyToAccount } from "thirdweb/wallets";
 
 const clientId = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!; // this will be used on the client
 const secretKey = process.env.THIRDWEB_SECRET_KEY!; // this will be used on the server-side
-const privateKey = process.env.NEXT_PUBLIC_KEY!; 
+const privateKey = process.env.AUTH_PRIVATE_KEY!; 
 
 
 export const client = createThirdwebClient(

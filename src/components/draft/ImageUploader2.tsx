@@ -7,7 +7,7 @@ type Props = {
   bookUrl ?: string;
   draftId : string;
   userId : string;
-  oldFilePath?: string;
+  oldFilePath: string;
 }
 
 function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
