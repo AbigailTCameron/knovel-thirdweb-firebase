@@ -2,11 +2,10 @@ import initializeFirebaseClient from "@/lib/initFirebase";
 import { arrayUnion, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { pinata } from "../../utils/config";
-import { prepareContractCall, sendTransaction } from "thirdweb";
-import { contract, personalAccount } from "@/lib/server";
-import { client } from "@/lib/client";
+import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
+import { client, personalAccount } from "@/lib/client";
 import { smartWallet } from "thirdweb/wallets";
-import { arbitrumSepolia } from "thirdweb/chains";
+import { arbitrumSepolia, defineChain } from "thirdweb/chains";
 
 const { db } = initializeFirebaseClient();
 
@@ -185,6 +184,30 @@ export const removePublishGenre = async (userId: string, bookId: string, genre: 
   }
 }
 
+const smartContractConfigDelete = async() => {
+
+  // Configure the smart wallet
+  const wallet = smartWallet({
+    chain: arbitrumSepolia,
+    sponsorGas: true,
+  });
+
+  // Connect the smart wallet
+  const smartAccount = await wallet.connect({
+    client,
+    personalAccount,
+  });
+
+  // connect to your contract
+  const contract = getContract({
+    client,
+    chain: defineChain(421614),
+    address: "0x4b826395A042807D4980962d0f241c707c8a1583",
+  });
+
+  return {contract, smartAccount}
+}
+
 export const deleteEntireBook = async(userId: string, bookId: string, imageFilePath: string, hash: string, bytesId: `0x${string}`) => {
   try{
     await pinata.unpin([hash]); 
@@ -225,18 +248,8 @@ export const deleteEntireBook = async(userId: string, bookId: string, imageFileP
       console.log("Book image deleted successfully:", imageFilePath);
     }
 
-    // Configure the smart wallet
-    const wallet = smartWallet({
-      chain: arbitrumSepolia,
-      sponsorGas: true,
-    });
-
-    // Connect the smart wallet
-    const smartAccount = await wallet.connect({
-      client,
-      personalAccount,
-    });
-
+    const {contract, smartAccount} = await smartContractConfigDelete();  
+    
      const transaction = await prepareContractCall({
       contract,
       method: "function deleteBook(bytes32 _bookId)",

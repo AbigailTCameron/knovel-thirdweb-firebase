@@ -433,14 +433,10 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
       params: [title, author, ipfsHash, toUnits("0", 18)],
     });
 
-    console.log("adfter preparing call")
-
     const { transactionHash } = await sendTransaction({
       transaction,
       account: smartAccount,
     });
-
-    console.log("adfter sending transaction")
 
 
     const rpcRequest = getRpcClient({ 
