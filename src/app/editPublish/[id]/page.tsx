@@ -6,8 +6,9 @@ import NewSynopsis from '@/components/draft/NewSynopsis';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
-import { fetchPublishInfo } from '../../../../functions/editPublish/fetch';
+import { editBookSynopsis, fetchPublishInfo } from '../../../../functions/editPublish/fetch';
 import EditPublishSider from '@/components/editPublish/EditPublishSider';
+import PublishedList from '@/components/editPublish/PublishedList';
 
 type Props = {
   
@@ -57,10 +58,12 @@ function EditPublish({}: Props) {
     }
   }, [params.id, genres, title, currentUser])
 
-  // const handleConfirm = async () => {
-  //   editBookSynopsis(params?.id, newSynopsis);
-  //   setSynopsis(false);
-  // }
+  const handleConfirm = async () => {
+    if(currentUser){
+      await editBookSynopsis(currentUser, params?.id, newSynopsis);
+    }
+    setSynopsis(false);
+  }
 
 
   return (
@@ -84,6 +87,7 @@ function EditPublish({}: Props) {
               chapters={chapters}
               ipfsHash={ipfsHash}
               bytesId={bytesId as `0x${string}`}
+              imageFilePath={imagePath}
             />
            
           </div>
@@ -97,24 +101,23 @@ function EditPublish({}: Props) {
                 )}
               </div>
               
-              {/* {chapters.length !== 0 && (
+              {chapters.length !== 0 && (
                 <PublishedList 
                   chapters={chapters}
                   bookId={params?.id} 
-              
+                  userId={currentUser || ''}
                 />
-             
-              )} */}
+              )}
              
           </div>
 
-          {/* {synopsis && (
+          {synopsis && (
           <NewSynopsis 
             onCancel={() => setSynopsis(false)}
             setNewSynopsis={setNewSynopsis}
             onConfirm={handleConfirm}
           />
-        )} */}
+        )}
 
 
       </div>

@@ -1,5 +1,5 @@
 "use server"
-import { server } from "@/lib/server";
+import { client } from "@/lib/client";
 import { createAuth, VerifyLoginPayloadParams } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
 import { cookies } from "next/headers";
@@ -14,8 +14,8 @@ if (!privateKey) {
  
 const thirdwebAuth = createAuth({
   domain: process.env.NEXT_PUBLIC_THIRDWEB_AUTH_DOMAIN || "",
-  adminAccount: privateKeyToAccount({ client: server, privateKey }),
-  client: server,
+  adminAccount: privateKeyToAccount({ client: client, privateKey }),
+  client: client,
 });
 
 const {auth} = initializeFirebaseServer(); 

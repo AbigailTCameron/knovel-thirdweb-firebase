@@ -1,13 +1,14 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
 import { arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { generateEpubFile } from "../../tools/generateEpub";
 import { pinata } from "../../utils/config";
-import { smartWallet } from "thirdweb/wallets";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { client } from "@/lib/client";
-import { eth_getTransactionReceipt, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
-import { contract, personalAccount } from "@/lib/server";
+import { eth_getTransactionReceipt, getContract, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
+import { smartWallet } from "thirdweb/wallets";
+import { personalAccount } from "@/lib/client";
+import { defineChain } from "thirdweb/chains";
+
 
 const { db } = initializeFirebaseClient();
 
@@ -352,36 +353,78 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
       h1 { color: #333; }
     `, 
   };
+    // Make a POST request to the API to generate the EPUB
+  try {
+    const response = await fetch('/api/generateEpub', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ options }),
+    });
 
-  const base64Epub = await generateEpubFile(options);
-  if (typeof base64Epub !== 'string' || !base64Epub.match(/^[A-Za-z0-9+/=]*$/)) {
-    throw new Error("Invalid base64 string.");
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to generate EPUB file.');
+    }
+
+    const data = await response.json();
+
+    // Make sure the base64Epub string is returned
+    if (data.base64Epub) {
+      // Handle the base64 string - e.g., create a Blob from it
+      const base64Epub = data.base64Epub;
+
+      if (typeof base64Epub !== 'string' || !base64Epub.match(/^[A-Za-z0-9+/=]*$/)) {
+        throw new Error("Invalid base64 string.");
+      }
+
+      // Convert base64 to a Blob and then a File object
+      const epubBlob = new Blob([Uint8Array.from(atob(base64Epub), (c) => c.charCodeAt(0))], {
+        type: "application/epub+zip",
+      });
+
+      const epubFile = new File([epubBlob], `${title}.epub`, {
+        type: 'application/epub+zip',
+      });
+
+      return epubFile;
+    } else {
+      throw new Error('No base64Epub returned from the server.');
+    }
+  } catch (error) {
+    console.error('Error creating EPUB:', error);
+    throw new Error('Error creating EPUB file.');
   }
 
-  const epubBlob = new Blob([Uint8Array.from(atob(base64Epub), (c) => c.charCodeAt(0))], {
-    type: "application/epub+zip",
-  });
-  const epubFile = new File([epubBlob], `${title}.epub`, {
-    type: 'application/epub+zip',
+}
+
+const smartContractConfig = async() => {
+  // Configure the smart wallet
+  const wallet = smartWallet({
+    chain: arbitrumSepolia,
+    sponsorGas: true,
   });
 
-  return epubFile;
+  // Connect the smart wallet
+  const smartAccount = await wallet.connect({
+    client,
+    personalAccount,
+  });
 
+  // connect to your contract
+  const contract = getContract({
+    client,
+    chain: defineChain(421614),
+    address: "0x4b826395A042807D4980962d0f241c707c8a1583",
+  });
+
+  return {contract, smartAccount}
 }
 
 export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string) {
   try{
-    // Configure the smart wallet
-    const wallet = smartWallet({
-      chain: arbitrumSepolia,
-      sponsorGas: true,
-    });
-
-    // Connect the smart wallet
-    const smartAccount = await wallet.connect({
-      client,
-      personalAccount,
-    });
+    const {contract, smartAccount} = await smartContractConfig(); 
 
     const transaction = await prepareContractCall({
       contract,
@@ -390,10 +433,15 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
       params: [title, author, ipfsHash, toUnits("0", 18)],
     });
 
+    console.log("adfter preparing call")
+
     const { transactionHash } = await sendTransaction({
       transaction,
       account: smartAccount,
     });
+
+    console.log("adfter sending transaction")
+
 
     const rpcRequest = getRpcClient({ 
       client, 

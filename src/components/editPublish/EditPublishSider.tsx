@@ -5,7 +5,8 @@ import BookIcon from '../icons/BookIcon';
 import NewPage from '../icons/NewPage';
 import TrashIcon from '../icons/TrashIcon';
 import NewGenrePublish from './NewGenrePublish';
-import { removePublishGenre, updatePublishGenre } from '../../../functions/editPublish/fetch';
+import { deleteEntireBook, removePublishGenre, updatePublishGenre } from '../../../functions/editPublish/fetch';
+import ConfirmDeletePublish from './ConfirmDeletePublish';
 
 type Props = {
   imageFile?: string;
@@ -20,9 +21,10 @@ type Props = {
   chapters : any[]
   ipfsHash : string;
   bytesId : `0x${string}`;
+  imageFilePath : string
 }
 
-function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userId, setLoading, name, synopsis, chapters, ipfsHash, bytesId}: Props) {
+function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userId, setLoading, name, synopsis, chapters, ipfsHash, bytesId, imageFilePath}: Props) {
   const router = useRouter();
 
   const [editTitle, setEditTitle] = useState<boolean>(false);
@@ -64,15 +66,15 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
   }
 
   const handleConfirm = async() => {
-    // if(bookId){
-    //   deleteEntireBook(bookId, userId, imageFile, ipfsHash, bytesId).then(success => {
-    //     if(success){
-    //       router.push("/explore")
-    //     }else{
-    //       console.log('could not delete book')
-    //     }
-    //   })
-    // }
+    if(bookId){
+      await deleteEntireBook(userId, bookId, imageFilePath, ipfsHash, bytesId).then(success => {
+        if(success){
+          router.push("/explore")
+        }else{
+          console.log('could not delete book')
+        }
+      })
+    }
   }
 
   const handlePublish = async () => {
@@ -155,20 +157,21 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
           />
         )}
 
-        {/* {publishPopup && (
-          <UpdatePublish 
-            title={title}
-            onConfirm={handlePublish}
-            onCancel={() => setPublishPopup(false)}
-          />
-        
-        )}
-
         {confirmDelete && (
           <ConfirmDeletePublish 
             onConfirm={handleConfirm}
             onCancel={() => setConfirmDelete(false)}
             bookTitle={title}
+          />
+        
+        )}
+
+
+        {/* {publishPopup && (
+          <UpdatePublish 
+            title={title}
+            onConfirm={handlePublish}
+            onCancel={() => setPublishPopup(false)}
           />
         
         )}
