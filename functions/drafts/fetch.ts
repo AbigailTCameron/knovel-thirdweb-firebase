@@ -5,8 +5,9 @@ import { generateEpubFile } from "../../tools/generateEpub";
 import { pinata } from "../../utils/config";
 import { smartWallet } from "thirdweb/wallets";
 import { arbitrumSepolia } from "thirdweb/chains";
-import { client, personalAccount, contract } from "@/lib/client";
+import { client } from "@/lib/client";
 import { eth_getTransactionReceipt, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
+import { contract, personalAccount } from "@/lib/server";
 
 const { db } = initializeFirebaseClient();
 
