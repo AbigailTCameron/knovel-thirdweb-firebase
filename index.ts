@@ -39,7 +39,7 @@ export interface DraftChapters {
 export interface Comment {
   commenter: string;
   comment: string; 
-  commentId: string;
+  id: string;
   createdAt: string;
 }
 

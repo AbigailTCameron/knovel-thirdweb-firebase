@@ -10,6 +10,7 @@ import { getUserProfile } from '../../../../functions/explore/fetch';
 import { fetchBookInfo } from '../../../../functions/read/fetch';
 import Reader from '@/components/read/Reader';
 import SpinLoader from '@/components/loading/SpinLoader';
+import CommentSection from '@/components/read/CommentSection';
 
 
 type Props = {}
@@ -25,14 +26,15 @@ function Read({}: Props) {
   const [book, setBook] = useState();
   const [metadata, setMetadata] = useState<BookMetadata>(); 
   const [showChat, setShowChat] = useState(false);
+  const [authorId, setAuthorId] = useState<string>('');
 
 
   useEffect(() => { 
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         getUserProfile(user.uid, setProfileUrl);
+         await getUserProfile(user.uid, setProfileUrl);
        }else {
          setProfileUrl(''); 
        }
@@ -45,7 +47,7 @@ function Read({}: Props) {
   useEffect(() => {
     if(params.id){
       const fetchBook = async() => {
-        await fetchBookInfo(params.id, router, setChapters, setBook, setMetadata); 
+        await fetchBookInfo(params.id, router, setChapters, setBook, setMetadata, setAuthorId); 
       }
       fetchBook();
     }
@@ -78,29 +80,22 @@ function Read({}: Props) {
             />
           </div>
 
-{/*     
+    
           {showChat && (
             <div className={`${showChat ? 'grow w-[50%] sm:w-full' : 'hidden'} h-full z-10`}>
               <CommentSection 
                 title={metadata?.title || ''}
                 profileUrl={profileUrl}
-                userId={user?.userId || ''}
+                userId={currentUser|| ''}
                 bookId={params.id}
                 authorId={authorId}
                 setShowChat={setShowChat}
               />
           </div>
-          )} */}
-
-
-         
-
+          )}
 
       </div>
 
-    
-
-     
 
     </div>
   )

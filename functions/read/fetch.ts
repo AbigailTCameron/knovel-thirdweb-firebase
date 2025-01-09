@@ -6,7 +6,7 @@ import ePub, { NavItem, type Rendition } from 'epubjs';
 
 const { db } = initializeFirebaseClient();
 
-export const fetchBookInfo = async (id: string, router: any, setChapters: Function, setBook: Function, setMetadata: Function) => {
+export const fetchBookInfo = async (id: string, router: any, setChapters: Function, setBook: Function, setMetadata: Function, setAuthorId: Function) => {
   try{
     // Reference to the specific book document in the Firestore "books" collection
     const bookRef = doc(db, 'books', id);
@@ -28,6 +28,7 @@ export const fetchBookInfo = async (id: string, router: any, setChapters: Functi
       const response = fileData.data instanceof Blob  ? fileData.data : new Blob([JSON.stringify(fileData.data)], { type: "application/zip" });
       if (!response) throw new Error('Failed to load the EPUB');
 
+      setAuthorId(bookSnap.data().authorId); 
       await fetchEpub(response, setChapters, setBook, setMetadata); 
     }
   }catch (error) {
