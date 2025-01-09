@@ -224,7 +224,6 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
     // Step 1: Reference the draft document and delete it
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
     await deleteDoc(draftRef);
-    console.log("Draft deleted successfully:", draftId);
 
     // Step 2: Update the user's drafts array in their profile
     const userRef = doc(db, "users", userId);
@@ -243,14 +242,11 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
       drafts: updatedDrafts,
     });
 
-    console.log("User drafts array updated successfully.");
-
     // Step 3: Delete the book image from Firebase Storage if it exists
     if (imageFilePath) {
       const storageRef = getStorage();
       const imageRef = ref(storageRef, imageFilePath);
       await deleteObject(imageRef);
-      console.log("Book image deleted successfully:", imageFilePath);
     }
     return true;
 

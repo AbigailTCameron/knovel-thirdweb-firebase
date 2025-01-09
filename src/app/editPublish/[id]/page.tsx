@@ -10,6 +10,7 @@ import { editBookSynopsis, fetchPublishInfo } from '../../../../functions/editPu
 import EditPublishSider from '@/components/editPublish/EditPublishSider';
 import PublishedList from '@/components/editPublish/PublishedList';
 import UploadingBook from '@/components/loading/UpdatingBook';
+import Butterfly from '@/components/loading/Butterfly';
 
 type Props = {
   
@@ -77,6 +78,13 @@ function EditPublish({}: Props) {
       </div>
     )
   }
+
+  if(loading){
+    return (
+      <Butterfly />
+    )
+  }
+
 
 
   return (

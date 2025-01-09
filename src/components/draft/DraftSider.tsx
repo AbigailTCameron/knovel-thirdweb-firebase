@@ -45,7 +45,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
   const handleConfirm = async() => {
     if(draftId){
       setLoading(true);
-      deleteEntireDraft(userId, draftId, imagePath).then(success => {
+      await deleteEntireDraft(userId, draftId, imagePath).then(success => {
         if(success){
           router.push("/explore")
         }else{
