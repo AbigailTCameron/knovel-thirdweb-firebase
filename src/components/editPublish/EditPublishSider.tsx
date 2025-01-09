@@ -67,14 +67,12 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
   const handleConfirm = async() => {
     if(bookId){
       setLoading(true);
+      router.push("/explore");
+  
       const success = await deleteEntireBook(userId, bookId, imageFilePath, ipfsHash, bytesId);
-      if(success){
-        router.push("/explore")
-      }else{
+      if(!success){
         console.log('could not delete book');
-        setLoading(false);
       }
-     
     }
   }
 
