@@ -5,18 +5,17 @@ import { useParams } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../../functions/explore/fetch';
-import TipTapEdit from '@/components/edit/TipTapEdit';
-import UploadingDraft from '@/components/loading/UploadingDraft';
+import TipTapChapterEdit from '@/components/editChapter/TipTapChapterEdit';
+
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function Edit({}: Props) {
+function EditChapter({}: Props) {
+  const params = useParams<{ bookId: string, index: string }>();
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
-  const params = useParams<{ draftId: string, index: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
-  const [loading, setLoading] = useState(false); 
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -32,30 +31,19 @@ function Edit({}: Props) {
   
   }, []);
 
-  if(loading){
-    return(
-      <div className="w-screen h-screen">
-         <UploadingDraft />
-      </div>
-     
-    )
-  }
-
-
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
         <ExploreHeader profileUrl={profileUrl}/>
       </div>
 
-      <TipTapEdit 
-        draftId={params.draftId}
+      <TipTapChapterEdit 
+        bookId={params?.bookId}
         index={parseInt(params.index)}
         userId={currentUser || ''}
-        setLoading={setLoading}
       />
     </main>
   )
 }
 
-export default Edit
+export default EditChapter

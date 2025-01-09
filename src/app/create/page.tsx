@@ -5,6 +5,7 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import TipTapCreate from '@/components/create/TipTapCreate';
+import UploadingDraft from '@/components/loading/UploadingDraft';
 
 
 type Props = {}
@@ -13,6 +14,7 @@ function Create({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [name, setName] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -31,16 +33,26 @@ function Create({}: Props) {
     return () => unsubscribe(); 
   }, []);
 
+  if(loading){
+    return(
+      <div className="w-screen h-screen">
+         <UploadingDraft />
+      </div>
+     
+    )
+  }
+
 
   return (
     <main className="flex flex-col w-screen h-screen items-center">
         <div  className="sticky top-0 w-full z-50">
-            <ExploreHeader profileUrl={profileUrl} />
+          <ExploreHeader profileUrl={profileUrl} />
         </div>
 
         <TipTapCreate 
           userId={currentUser}
           name={name}
+          setLoading={setLoading}
         />
     </main>
   )

@@ -4,17 +4,17 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const { db } = initializeFirebaseClient();
 
-export const handleSubmitDraft = async (userId: string, name: string, title: string, titleContent: string, content: string, file: File | null, filename: string) => {
+export const handleSubmitDraft = async (userId: string, name: string, title: string, titleContent: string, content: string) => {
   try{
-      const {downloadURL, filePath} = await uploadDraftImageToFirebase(file, userId, filename);
+      // const {downloadURL, filePath} = await uploadDraftImageToFirebase(file, userId, filename);
       
       // Step 1: Create draft data
       const draftData = {
         authorId: userId,
         author: name,
         title: title,
-        book_image: downloadURL || '',
-        bookPath: filePath || '',
+        book_image: '',
+        bookPath: '',
         synopsis: '',
         genres: [],
         draft_chapters: [
@@ -45,7 +45,6 @@ export const handleSubmitDraft = async (userId: string, name: string, title: str
       }
 
       const userData = userSnap.data();
-      const currentDrafts = userData.drafts || [];
   
       await updateDoc(userRef, {
         drafts: arrayUnion(draftId), // Add the new draft ID to the user's drafts array

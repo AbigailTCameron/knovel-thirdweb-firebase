@@ -42,7 +42,7 @@ export const fetchDraftInfo = async (userId: string, setDrafts: Function) => {
 export const reuploadBookImageToSupabase = async (filename: string, file: File, userId: string, oldFilePath: string, draftId: string) => {
   try {
       const storageRef = getStorage();
-      const filePath = `drafts/${userId}/${filename}`;
+      const filePath = `books/${userId}/${filename}`;
 
       // Step 1: Delete the existing file if it exists
       if(oldFilePath){
@@ -207,8 +207,7 @@ export const editDraftTitle = async (userId: string, draftId: string, title:stri
       title: title,
     });
 
-
-    console.log("Title successfully updated.");
+    return;
 
   }catch (error) {
     if (error instanceof Error) {
@@ -253,7 +252,6 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
       await deleteObject(imageRef);
       console.log("Book image deleted successfully:", imageFilePath);
     }
-
     return true;
 
   }catch (error) {
@@ -272,7 +270,6 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
     // Step 1: Reference the draft document and delete it
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
     await deleteDoc(draftRef);
-    console.log("Draft deleted successfully:", draftId);
 
     // Step 2: Update the user's drafts array in their profile
     const userRef = doc(db, "users", userId);
@@ -291,16 +288,6 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
       drafts: updatedDrafts,
     });
 
-    console.log("User drafts array updated successfully.");
-
-    // // Step 3: Delete the book image from Firebase Storage if it exists
-    // if (imageFilePath) {
-    //   const storageRef = getStorage();
-    //   const imageRef = ref(storageRef, imageFilePath);
-    //   await deleteObject(imageRef);
-    //   console.log("Book image deleted successfully:", imageFilePath);
-    // }
-
     return true;
 
   }catch (error) {
@@ -317,10 +304,11 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
 
 export const uploadEpub = async(userId: string, genres: string[], chapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
   try{
-    // const bookFile = await moveImageFile(bookCoverPath); 
     const epubFile = await createEpubFile(chapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
     await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl);
+
+    return true;
 
   }catch (error) {
     if (error instanceof Error) {
@@ -477,20 +465,22 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
   }
 }
 
+
 const generateKeywords = (title: string): string[] => {
-  const keywords = [];
+  const keywords: string[] = [];
   const words = title.toLowerCase().split(" ");
 
   // Generate substrings from words
   for (let i = 0; i < words.length; i++) {
     let keyword = ""; 
-    for(let j = i; j < words.length; j++){
-      keyword = keyword ? `${keyword}${words[j]}` : words[j]; 
+    for (let j = i; j < words.length; j++) {
+      keyword = keyword ? `${keyword} ${words[j]}` : words[j]; // Add a space between words
       keywords.push(keyword); 
     }
   }
+
   return keywords;
-}
+};
 
 export async function uploadBookImageToFirebase(file: File | null, userId: string, filename: string) {
   try {
@@ -584,7 +574,7 @@ export async function pushToBooks(userId: string, name: string, title: string, s
 
       await deleteDraft(userId, draftId, imageFilePath);
       
-      return book_id;
+      return true;
 
   }catch(error){
     console.error("Error pushing drafts to publish books tables", error);

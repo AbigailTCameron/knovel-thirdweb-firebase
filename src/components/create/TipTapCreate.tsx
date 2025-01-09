@@ -25,17 +25,16 @@ import { handleSubmitDraft } from '../../../functions/create/fetch';
 type Props = {
   userId ?: string;
   name : string;
+  setLoading : Function;
 }
 
-function TipTapCreate({userId, name}: Props) {
+function TipTapCreate({userId, name, setLoading}: Props) {
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState<string>('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [content, setContent] = useState<string>('');
   const [titleContent, setTitleContent] = useState<string>(''); 
-  const [filename, setFilename] = useState<string>('');
 
  
   useEffect(() => {
@@ -73,7 +72,8 @@ function TipTapCreate({userId, name}: Props) {
     if(title.trim()){
       if(userId){
         setHasUnsavedChanges(false); 
-        const draftId = await handleSubmitDraft(userId, name, title, titleContent, content, imageFile, filename);
+        setLoading(true);
+        const draftId = await handleSubmitDraft(userId, name, title, titleContent, content);
         router.push(`/draft/${draftId}`); 
 
       }
@@ -129,11 +129,11 @@ function TipTapCreate({userId, name}: Props) {
   return (
     <main className="flex md:flex-col w-screen h-full items-center space-x-2 p-4 font-mono"> 
         <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
-
+{/* 
             <ImageUploader 
               setImageFile={setImageFile}
               setFilename={setFilename}
-            />
+            /> */}
 
             <div className="flex flex-col md:flex-row md:w-full ss:hidden">
 

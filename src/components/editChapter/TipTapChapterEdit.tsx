@@ -1,10 +1,11 @@
 import CharacterCount from '@tiptap/extension-character-count';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { BubbleMenu, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
+import { Inter } from 'next/font/google';
 import React, { useEffect, useState } from 'react'
 import Placeholder from '@tiptap/extension-placeholder';
 import { useRouter } from 'next/navigation';
@@ -17,26 +18,33 @@ import Aligncenter from '../icons/Aligncenter';
 import Alignright from '../icons/Alignright';
 import BulletListButton from '../icons/BulletListButton';
 import OrderedListButton from '../icons/OrderListButton';
-import { handleSubmitAnotherDraftChapter } from '../../../functions/newChapter/fetch';
+import { fetchPublishedChapterToEdit, handlePublishEditChapter } from '../../../functions/editChapter/fetch';
 
+const inter = Inter({ subsets: ["latin"] });
 
 type Props = {
+
   userId : string;
-  id : string;
-  setLoading : Function;
+  bookId : string;
+  index : number;
 }
 
-function TipTapNewDraft({ id, userId, setLoading}: Props) {
-  const router = useRouter();
+function TipTapChapterEdit({index, userId, bookId}: Props) {
+  const router = useRouter(); 
 
   const [content, setContent] = useState<string>('');
-  const [titleContent, setTitleContent] = useState<string>('')
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [titleContent, setTitleContent] = useState<string>(''); 
+  const [unsavedChanges, setUnsavedChanges] = useState(false); // Track unsaved changes
+
+  useEffect(() => {
+    if (bookId && index !== null) {
+      fetchPublishedChapterToEdit(userId, bookId, index, setContent, setTitleContent);
+    }
+  }, [bookId, index]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
+      if (unsavedChanges) {
         e.preventDefault();
         e.returnValue = '';
       }
@@ -45,32 +53,29 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [hasUnsavedChanges]);
-
+  }, [unsavedChanges]);
 
   const onChange = (value: string) => {
     setContent(value);
     localStorage.setItem('unsavedContent', value);
-    setHasUnsavedChanges(true);
+    setUnsavedChanges(true);
   };
+
 
   const titleOnChange = (value: string) => {
     setTitleContent(value);
     localStorage.setItem('unsavedTitleContent', value);
-    setHasUnsavedChanges(true);
+    setUnsavedChanges(true);
   };
   
-
   const handleSubmit = async() => { 
+    setUnsavedChanges(false);  
+    //perform the operation i need
     localStorage.removeItem('unsavedContent');
     localStorage.removeItem('unsavedTitleContent');
-
-    setHasUnsavedChanges(false); 
-    setLoading(true);
-    await handleSubmitAnotherDraftChapter(userId, id, titleContent, content, setError);
-    router.push(`/draft/${id}`); 
+    await handlePublishEditChapter(titleContent, content, index, bookId, userId); 
+    router.push(`/editPublish/${bookId}`);
   }
-
 
   const editor = useEditor({
     extensions: [
@@ -100,6 +105,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    immediatelyRender: false
 
   })
 
@@ -114,20 +120,25 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
     onUpdate: ({ editor }) => {
       titleOnChange(editor.getText());
     },
+    immediatelyRender: false
+
   })
 
 
-  return (
-    <main className="flex w-screen md:flex-col h-full items-center space-x-2 p-4"> 
-      <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
 
-        {/* <ImageUploader2 
-          imageFile={imageFile}
-          bookUrl={bookUrl}
-          userId={userId}
-          draftId={id}
-        />
-         */}
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content || '');
+    }
+    if (titleEditor && titleContent !== titleEditor.getText()) {
+      titleEditor.commands.setContent(titleContent || '');
+    }
+  }, [content, titleContent, editor, titleEditor]);
+
+  return (
+    <main className={`flex md:flex-col w-screen h-full items-center space-x-2 p-4 ${inter.className}`}> 
+      <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
+        
         <div className="flex flex-col md:flex-row md:w-full ss:hidden">
             <div className="flex w-full space-x-1 px-2 mt-2 md:px-1 md:mt-0">
               <p 
@@ -148,7 +159,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
 
             </div>
 
-            <div className="flex w-full space-x-1 px-2 mt-2 md:px-1 md:mt-0 md:text-base sm:text-sm">
+            <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <BoldButton  
                 className={`${editor?.isActive('bold') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleBold().run()}
@@ -170,7 +181,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
               />
             </div>
 
-            <div className="flex w-full space-x-1 px-2 mt-2 md:px-1 md:mt-0 md:text-base sm:text-sm">
+            <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <Alignleft 
                 className={`${editor?.isActive({ textAlign: 'left' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().setTextAlign('left').run()}
@@ -188,8 +199,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
 
             </div>
 
-
-            <div className="flex w-full space-x-1 px-2 mt-2 md:px-1 md:mt-0 md:text-base sm:text-sm">
+            <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <BulletListButton 
                 className={`${editor?.isActive('bulletList') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
@@ -200,6 +210,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
                 onClick={() => editor?.chain().focus().toggleOrderedList().run()}
               />
             </div>
+
         </div>
 
         <div className="absolute bottom-0 w-full md:flex md:relative md:items-center md:justify-center">
@@ -210,7 +221,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
           </div>
     
 
-          <div onClick={handleSubmit} className="hover:cursor-pointer bg-indigo-600 p-4 mb-4 md:p-2 md:mb-0 md:w-1/3 md:text-lg rounded-2xl mx-4 font-semibold text-xl text-center">
+          <div onClick={handleSubmit} className="hover:cursor-pointer bg-indigo-600 p-4 md:p-2 md:mb-0 md:w-1/3 md:text-lg mb-4 rounded-2xl mx-4 font-semibold text-xl text-center">
               <p>Save</p>
           </div>
       
@@ -223,12 +234,44 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
           <EditorContent editor={titleEditor} className="self-center w-full"/>
         </div>
         <div className="flex basis-11/12 overflow-hidden w-full h-full rounded-2xl bg-[#2a2929]">
+            {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                <div className="flex p-1 bg-white border border-gray-500 text-sm space-x-1 rounded-lg text-black">
+                  <button
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+
+                    className={editor.isActive('bold') ? 'is-active bg-purple-700 text-white rounded-lg p-1' : 'rounded-lg p-1'}
+                  >
+                    Bold
+                  </button>
+                  <button
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    className={editor.isActive('italic') ? 'is-active bg-purple-700 text-white rounded-lg p-1' : 'rounded-lg p-1'}
+                  >
+                    Italic
+                  </button>
+                  <button
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    className={editor.isActive('strike') ? 'is-active bg-purple-700 text-white rounded-lg p-1' : 'rounded-lg p-1'}
+                  >
+                    Strike
+                  </button>
+
+                  <button
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    className={editor.isActive('underline') ? 'is-active bg-purple-700 text-white rounded-lg p-1' : 'rounded-lg p-1'}
+                  >
+                    Underline
+                  </button>
+                </div>
+              </BubbleMenu>
+            }
           <EditorContent editor={editor} className="w-full"/>
         </div>
           
       </div>
-    </main>
+
+  </main>
   )
 }
 
-export default TipTapNewDraft
+export default TipTapChapterEdit

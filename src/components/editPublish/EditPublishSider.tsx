@@ -5,26 +5,29 @@ import BookIcon from '../icons/BookIcon';
 import NewPage from '../icons/NewPage';
 import TrashIcon from '../icons/TrashIcon';
 import NewGenrePublish from './NewGenrePublish';
-import { deleteEntireBook, removePublishGenre, updatePublishGenre } from '../../../functions/editPublish/fetch';
+import { deleteEntireBook, editPublishTitle, removePublishGenre, updatePublishGenre, updateUploadEpub } from '../../../functions/editPublish/fetch';
 import ConfirmDeletePublish from './ConfirmDeletePublish';
+import EditPublishedTitle from './EditPublishTitle';
+import UpdatePublish from './UpdatePublish';
 
 type Props = {
-  imageFile?: string;
+  imageFile: string;
   title : string;
   chapterCount ?: number | null;
   genres : string[];
   bookId : string;
   userId : string;
   setLoading : Function; 
-  name : string;
+  authorName : string;
   synopsis : string;
   chapters : any[]
   ipfsHash : string;
   bytesId : `0x${string}`;
-  imageFilePath : string
+  imageFilePath : string;
+  setPublishing: Function;
 }
 
-function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userId, setLoading, name, synopsis, chapters, ipfsHash, bytesId, imageFilePath}: Props) {
+function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userId, setLoading, authorName, synopsis, chapters, ipfsHash, bytesId, imageFilePath, setPublishing}: Props) {
   const router = useRouter();
 
   const [editTitle, setEditTitle] = useState<boolean>(false);
@@ -33,10 +36,6 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [genre, setGenre] = useState<string>('');
   const [newTitle, setNewTitle] = useState<string>('');
-  const [newImage, setNewImage] = useState<File | null>(); 
-  const [newFilename, setNewFilename] = useState<string>('');
-
-
 
   const handleNewChapter = () => {
     setLoading(true); 
@@ -60,13 +59,14 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
 
   const handleConfirmTitle = async() => {
     if(newTitle.trim() != title){
-      //editPublishTitle(newTitle, bookId);
+      await editPublishTitle(userId, newTitle, bookId);
     }
     setEditTitle(false);
   }
 
   const handleConfirm = async() => {
     if(bookId){
+      setLoading(true);
       await deleteEntireBook(userId, bookId, imageFilePath, ipfsHash, bytesId).then(success => {
         if(success){
           router.push("/explore")
@@ -78,13 +78,14 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
   }
 
   const handlePublish = async () => {
-    // await updateUploadEpub(setLoading, title, name, synopsis, bookCoverFile, chapters, userId, genres, imageFile, ipfsHash, bytesId, bookId).then(success => {
-    //   if(success){
-    //     router.push("/explore");
-    //   }else{
-    //     alert("Error trying to your draft!")
-    //   }
-    // })
+    setPublishing(true);
+    await updateUploadEpub(title, authorName, synopsis, chapters, userId, genres, imageFile, ipfsHash, bytesId, bookId).then(success => {
+      if(success){
+        router.push("/explore");
+      }else{
+        alert("Error trying to your draft!")
+      }
+    })
   };
 
 
@@ -92,9 +93,10 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
     <div className="relative h-full w-full flex flex-col">
         <div className="flex flex-col">
             <PublishUpload 
-              setNewFilename={setNewFilename}
-              setNewImage={setNewImage}
               imageFile={imageFile}
+              userId={userId}
+              oldFilePath={imageFilePath}
+              bookId={bookId}
             />
            
 
@@ -166,28 +168,23 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
         
         )}
 
-
-        {/* {publishPopup && (
-          <UpdatePublish 
-            title={title}
-            onConfirm={handlePublish}
-            onCancel={() => setPublishPopup(false)}
-          />
-        
-        )}
-
-        
-
         {editTitle && (
           <EditPublishedTitle 
             onCancel={() => setEditTitle(false)}
             setTitle={setNewTitle}
             onConfirm={handleConfirmTitle}
           />
+        )}
 
-        )} */}
 
- 
+        {publishPopup && (
+          <UpdatePublish 
+            title={title}
+            onConfirm={handlePublish}
+            onCancel={() => setPublishPopup(false)}
+          />
+        )}
+
     </div>
   )
 }

@@ -1,14 +1,16 @@
 import React, { useRef, useState } from 'react'
 import Cropper from 'react-easy-crop';
 import { Area, getCroppedImg } from '../../../tools/cropImage';
+import { reuploadBookImage } from '../../../functions/editPublish/fetch';
 
 type Props = {
   imageFile ?: string;
-  setNewFilename: Function;
-  setNewImage: Function;
+  oldFilePath: string;
+  userId?: string;
+  bookId: string;
 }
 
-function PublishUpload({imageFile, setNewFilename, setNewImage}: Props) {
+function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string>('');
   const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
@@ -16,6 +18,7 @@ function PublishUpload({imageFile, setNewFilename, setNewImage}: Props) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [filename, setFilename] = useState(''); 
 
 
   function readFile(file: File) {
@@ -28,7 +31,9 @@ function PublishUpload({imageFile, setNewFilename, setNewImage}: Props) {
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setNewFilename(file?.name); 
+    if(file?.name){
+      setFilename(file?.name);
+    }
 
 
     if (file && file.type.startsWith('image/')) {
@@ -62,7 +67,10 @@ function PublishUpload({imageFile, setNewFilename, setNewImage}: Props) {
       setChooseCropped(false); 
 
       urlToFile(croppedImage).then((file) => { 
-        setNewImage(file);
+        if(userId){
+          reuploadBookImage(filename, file, userId, oldFilePath, bookId); 
+        }
+        
       })
 
     }

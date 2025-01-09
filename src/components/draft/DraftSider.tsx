@@ -22,9 +22,10 @@ type Props = {
   synopsis : string;
   chapters : any[]
   imagePath: string;
+  setPublishing: Function
 }
 
-function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath}: Props) {
+function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath, setPublishing}: Props) {
   const router = useRouter();
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [addGenre, setAddGenre] = useState<boolean>(false);
@@ -43,6 +44,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
 
   const handleConfirm = async() => {
     if(draftId){
+      setLoading(true);
       deleteEntireDraft(userId, draftId, imagePath).then(success => {
         if(success){
           router.push("/explore")
@@ -62,7 +64,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
 
   const handleConfirmTitle = async() => {
     if(newTitle.trim() != title){
-      editDraftTitle(userId, draftId, newTitle);
+      await editDraftTitle(userId, draftId, newTitle);
     }
     setEditTitle(false);
   }
@@ -75,9 +77,11 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
   const handlePublish = async () => {
     if (!imagePath) {
       alert('Book cover file is missing. Please upload a book cover.');
+      setPublishPopup(false);
       return;
     }
 
+    setPublishing(true);
     await uploadEpub(userId, genres, chapters, title, name, synopsis, imagePath, draftId, imageUrl).then(success => {
       if(success){
         router.push("/explore");

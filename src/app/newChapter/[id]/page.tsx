@@ -6,6 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import TipTapNewDraft from '@/components/newchapter/TipTapNewChapter';
+import AddingNewChapter from '@/components/loading/AddingNewChapter';
 
 
 type Props = {}
@@ -14,6 +15,7 @@ function NewChapter({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const params = useParams<{ id: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => { 
@@ -30,6 +32,15 @@ function NewChapter({}: Props) {
   
   }, []);
 
+  if(loading){
+    return(
+      <div className="w-screen h-screen">
+          <AddingNewChapter />
+      </div>
+  
+    )
+  }
+
 
 
   return (
@@ -41,6 +52,7 @@ function NewChapter({}: Props) {
       <TipTapNewDraft 
         userId={currentUser || ''}
         id={params.id}
+        setLoading={setLoading}
       />
     </main>
   )

@@ -27,9 +27,10 @@ type Props = {
   userId : string;
   draftId : string;
   index : number;
+  setLoading: Function
 }
 
-function TipTapEdit({index, userId, draftId}: Props) {
+function TipTapEdit({index, userId, draftId, setLoading}: Props) {
   const router = useRouter(); 
 
   const [content, setContent] = useState<string>('');
@@ -70,6 +71,7 @@ function TipTapEdit({index, userId, draftId}: Props) {
   
   const handleSubmit = async() => { 
     setUnsavedChanges(false);  
+    setLoading(true);
     //perform the operation i need
     localStorage.removeItem('unsavedContent');
     localStorage.removeItem('unsavedTitleContent');

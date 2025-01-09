@@ -9,6 +9,8 @@ import { editDraftSynopsis, fetchChapterInfo } from '../../../../functions/draft
 import DraftSider from '@/components/draft/DraftSider';
 import DraftList from '@/components/draft/DraftList';
 import NewSynopsis from '@/components/draft/NewSynopsis';
+import Butterfly from '@/components/loading/Butterfly';
+import Publishing from '@/components/loading/Publishing';
 
 
 type Props = {}
@@ -31,6 +33,7 @@ function Draft({}: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [authorName, setAuthorName] = useState<string>('');
   const [imagePath, setImagePath] = useState<string>('');
+  const [publishing, setPublishing] = useState<boolean>(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -59,6 +62,21 @@ function Draft({}: Props) {
     setSynopsis(false);
   }
 
+  if(loading){
+    return(
+      <Butterfly />
+    )
+  }
+
+  if(publishing){
+    return(
+      <div className="w-screen h-screen">
+         <Publishing />
+      </div>
+     
+    )
+  }
+
 
   return (
     <main className="flex flex-col w-screen h-screen items-center">
@@ -80,6 +98,7 @@ function Draft({}: Props) {
               synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
               chapters={chapters}
               imagePath={imagePath}
+              setPublishing={setPublishing}
             />
           </div>
 

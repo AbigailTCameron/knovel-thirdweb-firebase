@@ -6,6 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import DashboardSider from '@/components/dashboard/DashboardSider';
 import DashboardInfo from '@/components/dashboard/DashboardInfo';
+import Butterfly from '@/components/loading/Butterfly';
 
 const { auth } = initializeFirebaseClient();
 function Dashboard() {
@@ -37,6 +38,12 @@ function Dashboard() {
     return () => unsubscribe(); 
   
   }, []);
+
+  if(loading){
+    return(
+      <Butterfly />
+    )
+  }
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">

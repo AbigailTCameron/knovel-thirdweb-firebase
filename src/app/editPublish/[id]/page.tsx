@@ -9,6 +9,7 @@ import { getUserProfile } from '../../../../functions/explore/fetch';
 import { editBookSynopsis, fetchPublishInfo } from '../../../../functions/editPublish/fetch';
 import EditPublishSider from '@/components/editPublish/EditPublishSider';
 import PublishedList from '@/components/editPublish/PublishedList';
+import UploadingBook from '@/components/loading/UpdatingBook';
 
 type Props = {
   
@@ -36,14 +37,18 @@ function EditPublish({}: Props) {
   const [ipfsHash, setIpfsHash] = useState<string>('')
   const [authorName, setAuthorName] = useState<string>('');
   const [bytesId, setBytesId] = useState<string>('');
-  const [authorId, setAuthorId] = useState<string>('');
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-          await getUserProfile(user.uid, setProfileUrl);    
+          const data = await getUserProfile(user.uid, setProfileUrl); 
+          if(data){
+            setAuthorName(data?.name);
+          }
+             
        }else {
          setProfileUrl(''); 
        }
@@ -54,7 +59,7 @@ function EditPublish({}: Props) {
 
   useEffect(() => {
     if(params.id && currentUser){
-      fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath); 
+      fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, router, setImagePath, setIpfsHash, setBytesId); 
     }
   }, [params.id, genres, title, currentUser])
 
@@ -63,6 +68,14 @@ function EditPublish({}: Props) {
       await editBookSynopsis(currentUser, params?.id, newSynopsis);
     }
     setSynopsis(false);
+  }
+
+  if(publishing){
+    return (
+      <div className="w-screen h-screen">
+          <UploadingBook />
+      </div>
+    )
   }
 
 
@@ -82,12 +95,13 @@ function EditPublish({}: Props) {
               bookId={params.id}
               userId={currentUser || ''}
               setLoading={setLoading}
-              name={authorName}
+              authorName={authorName}
               synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
               chapters={chapters}
               ipfsHash={ipfsHash}
               bytesId={bytesId as `0x${string}`}
               imageFilePath={imagePath}
+              setPublishing={setPublishing}
             />
            
           </div>

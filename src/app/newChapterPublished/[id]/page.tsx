@@ -1,22 +1,20 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import ExploreHeader from '@/components/headers/ExploreHeader';
-import { useParams } from 'next/navigation';
+import ExploreHeader from '@/components/headers/ExploreHeader'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserProfile } from '../../../../../functions/explore/fetch';
-import TipTapEdit from '@/components/edit/TipTapEdit';
-import UploadingDraft from '@/components/loading/UploadingDraft';
-
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
+import { getUserProfile } from '../../../../functions/explore/fetch';
+import TipTapPub from '@/components/newchapter/TipTapPub';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function Edit({}: Props) {
+function NewChapterPublished({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
-  const params = useParams<{ draftId: string, index: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const params = useParams<{ id: string }>();
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -32,30 +30,18 @@ function Edit({}: Props) {
   
   }, []);
 
-  if(loading){
-    return(
-      <div className="w-screen h-screen">
-         <UploadingDraft />
-      </div>
-     
-    )
-  }
-
-
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
         <ExploreHeader profileUrl={profileUrl}/>
       </div>
 
-      <TipTapEdit 
-        draftId={params.draftId}
-        index={parseInt(params.index)}
-        userId={currentUser || ''}
-        setLoading={setLoading}
+      <TipTapPub
+        userId={currentUser|| ''}
+        id={params.id}
       />
-    </main>
+  </main>
   )
 }
 
-export default Edit
+export default NewChapterPublished
