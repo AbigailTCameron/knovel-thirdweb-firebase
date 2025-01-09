@@ -1,7 +1,7 @@
 'use client'
 
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { signInWithCustomToken } from "firebase/auth";
+import { signInWithCustomToken, signOut } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 const {auth, db} = initializeFirebaseClient();
@@ -27,3 +27,10 @@ export const firebaseAuthClient = (token: string, router: any) => {
     console.log(errorMessage); 
   });
 }
+
+export const firebaseLogout = async(router: any) => {
+  await signOut(auth).then(() => {
+    router.push('/'); 
+  })
+}
+

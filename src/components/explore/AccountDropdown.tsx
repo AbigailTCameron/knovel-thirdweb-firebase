@@ -4,7 +4,7 @@ import { client } from '@/lib/client';
 import { useRouter } from 'next/navigation'
 import { arbitrumSepolia } from 'thirdweb/chains'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
-import { firebaseAuthClient } from '@/app/actions/firebaseauth';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import HomeIcon from '../icons/HomeIcon';
 import WorldIcon from '../icons/WorldIcon';
 import SettingsIcon from '../icons/SettingsIcon';
@@ -50,6 +50,7 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
             },
             doLogout: async () => {
               await logout();
+              await firebaseLogout(router); 
             },
           }}
       
@@ -69,7 +70,7 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
           <SettingsIcon />
           <p>Settings</p>
         </div>
-    
+
     </div>
   )
 }
