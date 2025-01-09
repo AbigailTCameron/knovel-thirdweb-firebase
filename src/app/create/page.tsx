@@ -46,7 +46,10 @@ function Create({}: Props) {
   return (
     <main className="flex flex-col w-screen h-screen items-center">
         <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl} />
+          <ExploreHeader 
+            profileUrl={profileUrl} 
+            setLoading={setLoading}
+          />
         </div>
 
         <TipTapCreate 

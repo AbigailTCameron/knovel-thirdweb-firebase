@@ -7,6 +7,7 @@ import { getUserProfile } from '../../../../functions/explore/fetch';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import TipTapNewDraft from '@/components/newchapter/TipTapNewChapter';
 import AddingNewChapter from '@/components/loading/AddingNewChapter';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -16,6 +17,7 @@ function NewChapter({}: Props) {
   const params = useParams<{ id: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
 
   useEffect(() => { 
@@ -32,7 +34,7 @@ function NewChapter({}: Props) {
   
   }, []);
 
-  if(loading){
+  if(publishing){
     return(
       <div className="w-screen h-screen">
           <AddingNewChapter />
@@ -41,18 +43,27 @@ function NewChapter({}: Props) {
     )
   }
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
 
 
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader profileUrl={profileUrl}/>
+        <ExploreHeader 
+          profileUrl={profileUrl}
+          setLoading={setLoading}  
+        />
       </div>
 
       <TipTapNewDraft 
         userId={currentUser || ''}
         id={params.id}
-        setLoading={setLoading}
+        setLoading={setPublishing}
       />
     </main>
   )

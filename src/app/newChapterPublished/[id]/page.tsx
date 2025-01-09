@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import TipTapPub from '@/components/newchapter/TipTapPub';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -30,10 +31,19 @@ function NewChapterPublished({}: Props) {
   
   }, []);
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader profileUrl={profileUrl}/>
+        <ExploreHeader 
+          profileUrl={profileUrl}
+          setLoading={setLoading}
+        />
       </div>
 
       <TipTapPub

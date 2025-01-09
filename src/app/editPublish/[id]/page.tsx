@@ -11,6 +11,7 @@ import EditPublishSider from '@/components/editPublish/EditPublishSider';
 import PublishedList from '@/components/editPublish/PublishedList';
 import UploadingBook from '@/components/loading/UpdatingBook';
 import Butterfly from '@/components/loading/Butterfly';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 type Props = {
   
@@ -39,6 +40,7 @@ function EditPublish({}: Props) {
   const [authorName, setAuthorName] = useState<string>('');
   const [bytesId, setBytesId] = useState<string>('');
   const [publishing, setPublishing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -79,9 +81,15 @@ function EditPublish({}: Props) {
     )
   }
 
-  if(loading){
+  if(deleting){
     return (
       <Butterfly />
+    )
+  }
+
+  if(loading){
+    return(
+      <SpinLoader />
     )
   }
 
@@ -90,7 +98,10 @@ function EditPublish({}: Props) {
   return (
     <main className="flex w-screen h-screen flex-col items-center">
       <div className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl}/>
+          <ExploreHeader 
+            profileUrl={profileUrl}
+            setLoading={setLoading}
+          />
       </div>
 
       <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
@@ -102,7 +113,7 @@ function EditPublish({}: Props) {
               genres={genres || []}
               bookId={params.id}
               userId={currentUser || ''}
-              setLoading={setLoading}
+              setLoading={setDeleting}
               authorName={authorName}
               synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
               chapters={chapters}

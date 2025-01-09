@@ -6,6 +6,7 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../../functions/explore/fetch';
 import TipTapChapterEdit from '@/components/editChapter/TipTapChapterEdit';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 
@@ -16,6 +17,7 @@ function EditChapter({}: Props) {
   const params = useParams<{ bookId: string, index: string }>();
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -31,10 +33,19 @@ function EditChapter({}: Props) {
   
   }, []);
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader profileUrl={profileUrl}/>
+        <ExploreHeader 
+          profileUrl={profileUrl}
+          setLoading={setLoading}
+        />
       </div>
 
       <TipTapChapterEdit 

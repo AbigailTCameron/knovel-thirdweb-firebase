@@ -11,6 +11,7 @@ import DraftList from '@/components/draft/DraftList';
 import NewSynopsis from '@/components/draft/NewSynopsis';
 import Butterfly from '@/components/loading/Butterfly';
 import Publishing from '@/components/loading/Publishing';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -64,7 +65,7 @@ function Draft({}: Props) {
 
   if(loading){
     return(
-      <Butterfly />
+      <SpinLoader />
     )
   }
 
@@ -81,7 +82,10 @@ function Draft({}: Props) {
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader profileUrl={profileUrl} /> 
+        <ExploreHeader 
+          profileUrl={profileUrl} 
+          setLoading={setLoading}  
+        /> 
       </div>
 
       <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>

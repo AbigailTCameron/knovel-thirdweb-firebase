@@ -6,6 +6,7 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import { publishErrorPage } from '../../../../functions/publisherror/fetch';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -14,6 +15,7 @@ const { auth } = initializeFirebaseClient();
 function PublishError({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
 
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -40,10 +42,19 @@ function PublishError({}: Props) {
 
   }, [params.id])
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
   return (
     <main className="flex flex-col w-screen h-screen items-center">
         <div  className="sticky top-0 w-full z-50">
-            <ExploreHeader profileUrl={profileUrl}/>
+            <ExploreHeader 
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
         </div>
 
         <div className="flex flex-col w-screen h-full text-white items-center justify-center space-y-10">

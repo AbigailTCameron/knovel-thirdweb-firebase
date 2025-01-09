@@ -160,6 +160,8 @@ const config: Config = {
         shine2: 'shine2 3s linear infinite',
         typing: 'typing 20s  steps(25, end) forwards', // Customize duration and steps as needed
         blink: 'blink 1s step-end infinite',
+        spinSlow: 'spin 2s linear infinite', // Custom animation with 8s duration
+        
       }
     },
   },

@@ -6,6 +6,7 @@ import initializeFirebaseClient from '@/lib/initFirebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import { getUserProfile } from '../../../../functions/explore/fetch'
 import Bookmark from '@/components/readinglist/Bookmark'
+import SpinLoader from '@/components/loading/SpinLoader'
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -37,11 +38,20 @@ function Readinglist({}: Props) {
   
  }, []);
 
+ if(loading){
+  return(
+    <SpinLoader />
+  )
+}
+
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl}/>
+          <ExploreHeader 
+            profileUrl={profileUrl}
+            setLoading={setLoading}
+          />
         </div>
 
         <div className="flex w-full h-full md:flex-col items-center space-x-2 p-4 overflow-hidden">

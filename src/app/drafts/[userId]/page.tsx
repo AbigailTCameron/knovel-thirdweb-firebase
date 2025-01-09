@@ -6,6 +6,7 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import { onAuthStateChanged } from 'firebase/auth';
 import UserListDrafts from '@/components/drafts/UserListDrafts';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -34,12 +35,21 @@ function UserDrafts({}: Props) {
     })
     return () => unsubscribe(); 
   }, []);
+
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
   
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
-            <ExploreHeader profileUrl={profileUrl} />
+            <ExploreHeader 
+              profileUrl={profileUrl} 
+              setLoading={setLoading}  
+            />
         </div>
     
         <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>

@@ -7,6 +7,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../../functions/explore/fetch';
 import TipTapEdit from '@/components/edit/TipTapEdit';
 import UploadingDraft from '@/components/loading/UploadingDraft';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -17,6 +18,7 @@ function Edit({}: Props) {
   const params = useParams<{ draftId: string, index: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false); 
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -32,7 +34,7 @@ function Edit({}: Props) {
   
   }, []);
 
-  if(loading){
+  if(uploading){
     return(
       <div className="w-screen h-screen">
          <UploadingDraft />
@@ -42,17 +44,26 @@ function Edit({}: Props) {
   }
 
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader profileUrl={profileUrl}/>
+        <ExploreHeader 
+          profileUrl={profileUrl}
+          setLoading={setLoading}  
+        />
       </div>
 
       <TipTapEdit 
         draftId={params.draftId}
         index={parseInt(params.index)}
         userId={currentUser || ''}
-        setLoading={setLoading}
+        setLoading={setUploading}
       />
     </main>
   )

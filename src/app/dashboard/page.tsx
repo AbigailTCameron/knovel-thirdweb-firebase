@@ -6,7 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import DashboardSider from '@/components/dashboard/DashboardSider';
 import DashboardInfo from '@/components/dashboard/DashboardInfo';
-import Butterfly from '@/components/loading/Butterfly';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 const { auth } = initializeFirebaseClient();
 function Dashboard() {
@@ -41,14 +41,17 @@ function Dashboard() {
 
   if(loading){
     return(
-      <Butterfly />
+      <SpinLoader />
     )
   }
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">
         <div className="sticky top-0 w-full z-50">
-            <ExploreHeader profileUrl={profileUrl}/>
+            <ExploreHeader
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
         </div>
     
         <div className="flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden">

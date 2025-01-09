@@ -7,6 +7,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import BookInfo from '@/components/book/BookInfo';
 import { User } from '../../../..';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 const { auth } = initializeFirebaseClient();
 function Book() {
@@ -16,6 +17,7 @@ function Book() {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   //const [userDetails, setUserDetails] = useState(); 
   const [bookmarks, setBookmarks] = useState<string[]>([]); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -33,11 +35,20 @@ function Book() {
     return () => unsubscribe(); 
   
   }, []);
+
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
   
   return (
     <main className="flex w-screen h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl} />
+          <ExploreHeader 
+            profileUrl={profileUrl} 
+            setLoading={setLoading}
+          />
         </div>
 
         <BookInfo 

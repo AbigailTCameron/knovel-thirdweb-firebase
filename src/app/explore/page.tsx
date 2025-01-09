@@ -7,6 +7,7 @@ import ExploreHeader from '@/components/headers/ExploreHeader'
 import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
 import Trending from '@/components/explore/trending/Trending'
 import Genre from '@/components/explore/genre/Genre'
+import SpinLoader from '@/components/loading/SpinLoader'
 
 
 type Props = {}
@@ -16,6 +17,7 @@ const { auth } = initializeFirebaseClient();
 function page({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { 
      // Listen for authentication state changes
@@ -32,10 +34,19 @@ function page({}: Props) {
    
   }, []);
 
+  if(loading){
+    return (
+      <SpinLoader />
+    )
+  }
+
   return (
     <div className="flex w-screen min-h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl}/>
+          <ExploreHeader 
+            profileUrl={profileUrl}
+            setLoading={setLoading}
+          />
         </div>
 
         <div className="flex w-full" style={{ height: '75vh' }}>

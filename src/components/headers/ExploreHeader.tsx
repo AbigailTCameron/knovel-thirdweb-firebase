@@ -8,9 +8,10 @@ import AccountDropdown from '../explore/AccountDropdown';
 
 type Props = {
   profileUrl : string;
+  setLoading: Function
 }
 
-function ExploreHeader({profileUrl}: Props) {
+function ExploreHeader({profileUrl, setLoading}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -18,7 +19,6 @@ function ExploreHeader({profileUrl}: Props) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdown, setDropdown] = useState(false);
-  const [loading, setLoading] = useState(false); 
   const [newNotifications, setNewNotifications] = useState<boolean | null>(null); 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);

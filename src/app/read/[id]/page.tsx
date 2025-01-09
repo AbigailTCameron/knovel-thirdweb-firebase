@@ -9,6 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import { fetchBookInfo } from '../../../../functions/read/fetch';
 import Reader from '@/components/read/Reader';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -17,6 +18,7 @@ function Read({}: Props) {
   const params = useParams<{ id: string }>();
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const [chapters, setChapters] = useState<BookChapters[]>([])
@@ -49,10 +51,19 @@ function Read({}: Props) {
     }
   }, [params.id]);
 
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
+
   return (
     <div className="flex w-screen h-screen flex-col items-center">
       <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader profileUrl={profileUrl}/>
+          <ExploreHeader 
+            profileUrl={profileUrl}
+            setLoading={setLoading}
+          />
       </div>
 
       <div className="flex w-full h-full overflow-x-hidden">

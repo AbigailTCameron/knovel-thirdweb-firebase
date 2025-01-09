@@ -8,6 +8,7 @@ import SearchIcon from '@/components/icons/SearchIcon';
 import Back from '@/components/icons/Back';
 import BookImageSearch from '@/components/search/BookImageSearch';
 import { fetchSearchResults } from '../../../functions/explore/fetch';
+import SpinLoader from '../loading/SpinLoader';
 
 type Props = {}
 
@@ -17,6 +18,7 @@ function Search({}: Props) {
   const searchParams = useSearchParams();
   const q = searchParams.get('q') || '';
   const [results, setResults] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(false);
 
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,12 +31,20 @@ function Search({}: Props) {
 
   useEffect(() => {
     if (q) {
+      setLoading(true);
       const searchBooks = async () => {
         await fetchSearchResults(q as string, setResults); 
+        setLoading(false);
       };
       searchBooks();
     }
   }, [q]);
+
+  if(loading){
+    return(
+      <SpinLoader />
+    )
+  }
 
 
   return (
