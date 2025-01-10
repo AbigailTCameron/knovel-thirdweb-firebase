@@ -4,14 +4,20 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
 import UserProfileImage from './UserProfileImage';
 import AccountDropdown from '../explore/AccountDropdown';
+import FilledNotifications from '../icons/FilledNotification';
+import Notifications from '../icons/Notifications';
+import { fetchNotifications, markNotificationAsRead } from '../../../functions/explore/fetch';
+import { timeAgo } from '../../../tools/timeago';
+import { Notification } from '../../..';
 
 
 type Props = {
+  userId?: string;
   profileUrl : string;
   setLoading: Function
 }
 
-function ExploreHeader({profileUrl, setLoading}: Props) {
+function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,20 +77,30 @@ function ExploreHeader({profileUrl, setLoading}: Props) {
     }
   }
 
+  const handleNotificationClick = (notificationId: string) => {
+    markNotificationAsRead(notificationId);
+    loadNotifications(); // Refresh notifications
+  };
+
+  const loadNotifications = async () => {
+    if(userId){
+        const notifications = await fetchNotifications(userId);
+        setNotifications(notifications);
+        setNewNotifications(notifications.some((n) => !n.isRead));
+    }
+  
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [userId]);
+
+
   useEffect(() => {
     router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
     router.prefetch('/settings'); 
     router.prefetch('/explore'); 
     router.prefetch('/community'); 
-
-    // if(user?.id){
-    //   retrieveProfilePhoto(user.id, setProfileUrl); 
-    //   fetchNotifications(user.id, setNotifications, setNewNotifications); 
-    //   router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
-    //   router.prefetch('/settings'); 
-    //   router.prefetch('/explore'); 
-    //   router.prefetch('/community'); 
-    // }
   }, [])
 
   useEffect(() => {
@@ -96,13 +112,6 @@ function ExploreHeader({profileUrl, setLoading}: Props) {
 
  
 
-  // const markAsRead = async (notificationId: string) => {
-  //   await markRead(notificationId, setNotifications);
-  // };
-
-  // const handleDeleteNotification = async (notificationId: string) => {
-  //   await deleteNotification(notificationId, setNotifications);
-  // };
 
   return (
     <div className="relative flex z-40 w-full backdrop-blur-md text-white items-center font-mono text-sm py-2 px-6 md:p-4 sm:px-2 xs:px-1">
@@ -144,49 +153,30 @@ function ExploreHeader({profileUrl, setLoading}: Props) {
               community
             </div>
 
-            {/* <div ref={notificationRef} className="hover:cursor-pointer halflg:absolute halflg:right-1/2 sm:right-3/4">
+            <div ref={notificationRef} className="hover:cursor-pointer halflg:absolute halflg:right-1/2 sm:right-3/4">
                 {newNotifications ? (
                   <FilledNotifications onClick={() => setShowNotifications((prev) => !prev)} className="fill-red-500 size-6 xs:size-4" />
                 ) : (
                   <Notifications onClick={() => setShowNotifications((prev) => !prev)} className="stroke-white size-6 xs:size-4" />
                 )}
-               
 
                 {showNotifications && (
-                  <div className="absolute w-full min-w-64 overflow-x-hidden right-0 mt-8 bg-[#1d242e] max-h-[75vh] rounded-lg shadow-xl z-50 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div key={notification.id} className="flex items-center space-x-3 p-4 border-b-[0.5px] last:border-b-0">
-                        {!notification.is_read && (
-                          <div className='w-[5px] h-[5px] rounded-full bg-red-400'></div>  
-                        )}
-                        
-
-                        <div className='flex flex-col space-y-1 w-full'>
-                            <p className="line-clamp-3">{notification.message}</p>
-
-                            <div className='flex space-x-2 text-xs'>
-                                {!notification.is_read && (
-                                    <button
-                                      onClick={() => markAsRead(notification.id)}
-                                      className="text-blue-500"
-                                    >
-                                      Mark as read
-                                    </button>
-                                )}
-                                <p onClick={() => handleDeleteNotification(notification.id)}>delete</p>
-
-                            </div>
+                    <div className="absolute w-full min-w-64 overflow-x-hidden right-0 mt-8 bg-[#1d242e] max-h-[75vh] rounded-lg shadow-xl z-50 overflow-y-auto">
+                      {notifications.map((notification) => (
+                        <div 
+                          key={notification.id}                 
+                          onClick={() => handleNotificationClick(notification.id)}
+                          className="flex flex-col space-y-2 p-4 border-b-[0.5px] last:border-b-0"
+                        >
+                              <p>{notification.message}</p>
+                              <div className="text-xs">{timeAgo(notification.createdAt)}</div>
                         </div>
-                      
-                      </div>
-                    ))}
-                    {!notifications.length && <p className="p-4">No new notifications</p>}
-                  </div>
+                      ))}
+                    
+                    </div>
                 )}
-
-            </div> */}
-
-      
+               
+            </div>
 
           
             <div ref={dropdownRef} className="hover:cursor-pointer halflg:absolute halflg:right-0">

@@ -24,6 +24,33 @@ export const fetchbookComments = async (authorId: string, bookId: string, setCom
   }
 }
 
+export const createNotification = async (
+  recipientId: string,
+  bookId: string,
+  commentId: string,
+  commenterId: string,
+  commentText: string
+): Promise<{ success: boolean }> => {
+  try {
+    const notificationRef = doc(db, "notifications", `${bookId}_${commentId}`);
+    const notificationMessage = `Your book received a new comment: "${commentText.substring(0, 50)}..."`;
+
+    await setDoc(notificationRef, {
+      recipientId,
+      bookId,
+      commentId,
+      commenterId,
+      message: notificationMessage,
+      createdAt: new Date().toISOString(),
+      isRead: false,
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error("Error creating notification:", err);
+    return { success: false };
+  }
+};
 
 export const addComment = async(authorId:string, bookId: string, userId: string, comment: string, title: string) => {
   try {
@@ -41,40 +68,14 @@ export const addComment = async(authorId:string, bookId: string, userId: string,
     const userBookCommentCollectionRef = collection(db, "comments", authorId, 'books', bookId, 'comments');
     const docRef = await addDoc(userBookCommentCollectionRef, newComment);
 
+    // Create a notification for the book author
+    const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment);
+
+    if (!notificationResult.success) {
+      console.warn("Failed to create notification.");
+    }
+
     return { success: true, commentId: docRef.id };
-
-
-    // // Add a new row to the comment_likes table
-    // const { error: likesError } = await supabase
-    // .from('comment_likes')
-    // .insert({
-    //   commentId: commentId,
-    //   commenter: userId,
-    //   likes: [], // Start with an empty array
-    // });
-
-    // if (likesError) {
-    //   console.error('Error creating entry in comment_likes:', likesError);
-    //   return { success: false };
-    // }
-
-    // // Add a notification for the book's owner
-    // const notificationMessage = `Your book, "${title}", received a new comment: "${comment}"`;
-    // const { error: notificationError } = await supabase
-    //   .from('notifications')
-    //   .insert({
-    //     author_id: ownerId,
-    //     book_id: bookId,
-    //     comment_uuid: commentId,
-    //     message: notificationMessage,
-    //   });
-
-    //   if (notificationError) {
-    //     console.error('Error adding notification:', notificationError);
-    //     return { success: false };
-    //   }
-
-    // return { success: true, commentId };
 
   }catch(err){
     console.error("Error trying to add comments", err); 

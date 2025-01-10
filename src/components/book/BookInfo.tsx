@@ -29,7 +29,7 @@ function BookInfo({userId, id, bookmarks}: Props) {
     setBookmark(newBookmarkState); 
 
     if(id && userId){
-      await updateBookmarkData(userId, newBookmarkState, bookmarks, id); 
+      await updateBookmarkData(userId, id); 
     } 
   }
 

@@ -43,16 +43,6 @@ export interface Comment {
   createdAt: string;
 }
 
-export interface Notification {
-  author_id: string;
-  book_id: string;
-  comment_uuid: string;
-  message: string;
-  is_read: boolean; 
-  created_at: string; 
-  id: string;
-}
-
 export interface User {
   name: string;
   profilePicture: string;
@@ -60,4 +50,11 @@ export interface User {
   bookmark: string[];
   drafts: string[];
   published: string[];
+}
+
+export interface Notification {
+  id: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
 }

@@ -83,6 +83,7 @@ function Draft({}: Props) {
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
         <ExploreHeader 
+          userId={currentUser}
           profileUrl={profileUrl} 
           setLoading={setLoading}  
         /> 

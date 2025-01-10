@@ -1,5 +1,6 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import { Notification } from "../..";
 
 const { db } = initializeFirebaseClient();
 
@@ -150,3 +151,41 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
     }
   }
 }
+
+export const fetchNotifications = async (userId: string) => {
+  try {
+    const notificationsRef = collection(db, "notifications");
+    const q = query(
+      notificationsRef,
+      where("recipientId", "==", userId),
+      orderBy("createdAt", "desc")
+    );    
+    
+    const querySnapshot = await getDocs(q);
+
+    const notifications = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Notification[]
+    return notifications;
+  } catch (err) {
+    console.error("Error fetching notifications:", err);
+    return [];
+  }
+};
+
+export const markNotificationAsRead = async (notificationId: string) => {
+  try {
+    const notificationRef = doc(db, "notifications", notificationId);
+
+    const docSnapshot = await getDoc(notificationRef);
+    
+    if (!docSnapshot.exists()) {
+      console.error('Notification does not exist');
+      return;
+    }
+
+    await updateDoc(notificationRef, {
+      isRead: true,
+    });
+  } catch (err) {
+    console.error("Error marking notification as read:", err);
+  }
+};

@@ -44,6 +44,7 @@ function page({}: Props) {
     <div className="flex w-screen min-h-screen flex-col items-center">
         <div  className="sticky top-0 w-full z-50">
           <ExploreHeader 
+            userId={currentUser}
             profileUrl={profileUrl}
             setLoading={setLoading}
           />

@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -66,24 +66,24 @@ export const fetchBookmark = async (bookmarks: string[], bookId: string, setBook
   
 }
 
-export const updateBookmarkData = async(userId: string, currentBookmarkState: boolean, bookmark: string[], bookId: string) => {
+export const updateBookmarkData = async(userId: string, bookId: string) => {
   try {
       // Reference to the user's profile document in Firestore
       const userRef = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userRef);
 
-      // Toggle the bookmark state
-      let updatedBookmarks: string[] = [];
-
-      if (!currentBookmarkState) {
-        // If currently bookmarked, remove the bookId
-        updatedBookmarks = bookmark?.filter((id: string) => id !== bookId);
-      } else {
-        // If not bookmarked, add the bookId
-        updatedBookmarks = [...bookmark, bookId];
-
+      if (userSnapshot.exists()) {
+        const data = userSnapshot.data();
+        if(data.bookmark.includes(bookId)){
+            await updateDoc(userRef, {
+              bookmark: arrayRemove(bookId),
+            });
+        }else {
+            await updateDoc(userRef, {
+              bookmark: arrayUnion(bookId),
+            });
+        }
       }
-      // Update the bookmark field in Firestore
-      await updateDoc(userRef, { bookmark: updatedBookmarks });
   }catch (error) {
     console.error("Error updating bookmarks:", error);
   }
