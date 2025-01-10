@@ -166,10 +166,17 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
                         <div 
                           key={notification.id}                 
                           onClick={() => handleNotificationClick(notification.id)}
-                          className="flex flex-col space-y-2 p-4 border-b-[0.5px] last:border-b-0"
+                          className="flex items-center w-full justify-center space-x-2 p-4 border-b-[0.5px] last:border-b-0"
                         >
+                          {!notification.isRead && (
+                            <div className="flex w-[5px] h-[5px] rounded-full bg-red-600">
+                            </div>
+                          )}
+                            <div className="flex flex-col space-y-1">
                               <p>{notification.message}</p>
                               <div className="text-xs">{timeAgo(notification.createdAt)}</div>
+                            </div>
+                           
                         </div>
                       ))}
                     

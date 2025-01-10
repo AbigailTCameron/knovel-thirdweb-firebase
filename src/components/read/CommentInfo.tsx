@@ -75,7 +75,7 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
           <p className="text-sm break-words break-all whitespace-normal text-wrap max-w-full">{comment}</p>
 
           <div className="flex text-xs mt-1 space-x-4">
-            <p className='hover:cursor-pointer hover:underline'>Reply</p>
+            {/* <p className='hover:cursor-pointer hover:underline'>Reply</p> */}
             {commenterId === userId && (
               <p 
                 onClick={handleDelete}
