@@ -2,7 +2,7 @@ import React from 'react'
 import { ConnectButton } from 'thirdweb/react';
 import { client } from '@/lib/client';
 import { useRouter } from 'next/navigation'
-import { arbitrumSepolia } from 'thirdweb/chains'
+import { defineChain } from 'thirdweb/chains'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import HomeIcon from '../icons/HomeIcon';
@@ -19,13 +19,16 @@ type Props = {
 function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClickCommunity}: Props) {
 
   const router = useRouter(); 
+  const camp = defineChain({
+    id: 325000,
+  });
 
   return (
     <div className="flex flex-col space-y-4 py-4 w-full text-sm font-medium text-[#e3e4e5]">
     
         <ConnectButton 
           client={client}
-          chain={arbitrumSepolia}
+          chain={camp}
           detailsButton={{
             style: {
               background: "transparent", // Transparent to allow the gradient effect

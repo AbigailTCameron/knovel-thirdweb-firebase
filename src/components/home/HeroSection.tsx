@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { ConnectButton } from 'thirdweb/react';
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
-import { arbitrumSepolia } from 'thirdweb/chains';
+import { defineChain } from 'thirdweb/chains';
 import { useRouter } from 'next/navigation';
 import { firebaseAuthClient } from '@/app/actions/firebaseauth';
 import { client } from '@/lib/client';
@@ -13,6 +13,9 @@ function HeroSection({}) {
   const [offsetY, setOffsetY] = useState(0);
 
   const router = useRouter();
+  const camp = defineChain({
+    id: 325000,
+  });
 
   const handleMouseMove = (e: MouseEvent) => {
     setOffsetX((e.clientX / window.innerWidth) * 250 - 50);
@@ -48,7 +51,7 @@ function HeroSection({}) {
 
             <ConnectButton 
               client={client}
-              chain={arbitrumSepolia}
+              chain={camp}
               connectModal={{ 
                 size: "wide",
                 title: "Knovel Protocol ",

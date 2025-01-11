@@ -2,7 +2,6 @@ import initializeFirebaseClient from "@/lib/initFirebase";
 import { arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { pinata } from "../../utils/config";
-import { arbitrumSepolia } from "thirdweb/chains";
 import { client } from "@/lib/client";
 import { eth_getTransactionReceipt, getContract, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
 import { smartWallet } from "thirdweb/wallets";
@@ -386,7 +385,7 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
 const smartContractConfig = async() => {
   // Configure the smart wallet
   const wallet = smartWallet({
-    chain: arbitrumSepolia,
+    chain: defineChain(325000),
     sponsorGas: true,
   });
 
@@ -399,8 +398,8 @@ const smartContractConfig = async() => {
   // connect to your contract
   const contract = getContract({
     client,
-    chain: defineChain(421614),
-    address: "0x4b826395A042807D4980962d0f241c707c8a1583",
+    chain: defineChain(325000),
+    address: "0x7c462aC944eC0516D475636D9d9AbaF612cEE344",
   });
 
   return {contract, smartAccount}
@@ -413,8 +412,8 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
     const transaction = await prepareContractCall({
       contract,
       method:
-        "function publishBook(string _title, string _author, string _ipfsHash, uint256 _price)",
-      params: [title, author, ipfsHash, toUnits("0", 18)],
+      "function publishBook(string _title, string _author, string _ipfsHash, address author_addr, uint256 _price)",
+      params: [title, author, ipfsHash, userId, toUnits("0", 18)],
     });
 
     const { transactionHash } = await sendTransaction({
@@ -425,7 +424,7 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
 
     const rpcRequest = getRpcClient({ 
       client, 
-      chain: arbitrumSepolia
+      chain: defineChain(325000)
     });
 
     const transactionReceipt = await eth_getTransactionReceipt(

@@ -4,7 +4,7 @@ import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
 import { client } from '@/lib/client'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { arbitrumSepolia } from 'thirdweb/chains'
+import { defineChain } from 'thirdweb/chains'
 import { ConnectButton } from 'thirdweb/react'
 
 
@@ -12,6 +12,9 @@ type Props = {}
 
 function LandingHeader({}: Props) {
   const router = useRouter(); 
+  const camp = defineChain({
+    id: 325000,
+  });
 
   return (
     <div className="flex z-10 justify-between w-full backdrop-blur-md text-white items-center font-mono text-sm px-6 md:p-8 py-4 sm:py-4 sm:px-2 xs:py-8">
@@ -27,7 +30,7 @@ function LandingHeader({}: Props) {
 
           <ConnectButton 
             client={client}
-            chain={arbitrumSepolia}
+            chain={camp}
             connectModal={{ 
               size: "wide",
               title: "Knovel Protocol ",
