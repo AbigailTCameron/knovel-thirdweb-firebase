@@ -9,7 +9,7 @@ function ComingSoon() {
             <p className="text-[#a5a5a5] font-mono sm:text-xs">INTERCHAIN ACCOUNTS</p>
             <div className="flex w-fit h-fit items-center justify-center text-white lg:hidden">
               <img 
-                className="w-[700px] h-full"
+                className="w-[700px] h-fit"
                 src="/interchain.png"
                 alt=""
               />
@@ -22,16 +22,16 @@ function ComingSoon() {
         
         </div>
 
-        <div className="flex w-full bg-[#141414] py-10 px-4 sm:py-4">
-            <div className="flex w-1/2 flex-col justify-between">
+        <div className="flex w-full bg-[#141414] py-10 px-8 sm:py-4">
+            <div className="flex w-2/3 lg:w-full flex-col justify-between">
               <p className="text-[#a5a5a5] font-mono sm:text-xs">DECENTRALIZED EXCHANGE</p>
               <p className="text-5xl lg:text-4xl sm:text-base font-black bg-gradient-to-r from-white to-white/40 text-transparent bg-clip-text">Connect with Knovel storytellers. </p>
               <p className="text-[#a5a5a5] text-sm sm:text-xs">COMING SOON</p>
             </div>
 
-            <div className="flex w-1/2 self-center lg:hidden">
+            <div className="flex w-1/3 self-center lg:hidden">
               <img 
-                  className="w-fit h-full"
+                  className="w-full h-fit"
                   src="/book.png"
                   alt=""
               />
@@ -39,16 +39,16 @@ function ComingSoon() {
         
         </div>
 
-        <div className="flex w-full bg-[#141414] py-10 px-4 sm:py-4 text-white">
-            <div className="flex flex-col w-1/2 justify-between">
+        <div className="flex w-full bg-[#141414] py-10 px-8 sm:py-4 text-white">
+            <div className="flex flex-col w-2/3 lg:w-full justify-between">
               <p className="text-[#a5a5a5] sm:text-xs font-mono">WEEKLY COMPETITIONS</p>
               <p className="text-5xl lg:text-4xl sm:text-base font-black bg-gradient-to-r from-white to-white/40 text-transparent bg-clip-text">Weekly community-led writing competitions. </p>
               <p className="text-[#a5a5a5] text-sm sm:text-xs">COMING SOON</p>
             </div>
             
-            <div className="flex w-1/2 self-center lg:hidden">
+            <div className="flex w-1/3 self-center lg:hidden">
               <img 
-                className="w-[300px] h-full"
+                className="w-full h-fit"
                 src="/badge.png"
                 alt=""
               />
