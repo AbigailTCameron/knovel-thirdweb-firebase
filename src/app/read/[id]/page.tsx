@@ -11,6 +11,7 @@ import { fetchBookInfo } from '../../../../functions/read/fetch';
 import Reader from '@/components/read/Reader';
 import SpinLoader from '@/components/loading/SpinLoader';
 import CommentSection from '@/components/read/CommentSection';
+import UsernamePopup2 from '@/components/read/UsernamePopup';
 
 
 type Props = {}
@@ -27,6 +28,9 @@ function Read({}: Props) {
   const [metadata, setMetadata] = useState<BookMetadata>(); 
   const [showChat, setShowChat] = useState(false);
   const [authorId, setAuthorId] = useState<string>('');
+  const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('')
 
 
   useEffect(() => { 
@@ -34,7 +38,11 @@ function Read({}: Props) {
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         await getUserProfile(user.uid, setProfileUrl);
+        const data = await getUserProfile(user.uid, setProfileUrl);
+        if(data){
+          setUsername(data.username);
+          setName(data.name);
+        }
        }else {
          setProfileUrl(''); 
        }
@@ -81,6 +89,13 @@ function Read({}: Props) {
             />
           </div>
 
+          {usernamePopup && (
+            <UsernamePopup2 
+              onCancel={() => setUsernamePopup(false)}
+              onConfirm={() => router.push('/settings')}
+            />
+          )}
+
     
           {showChat && (
             <div className={`${showChat ? 'grow w-[50%] sm:w-full' : 'hidden'} h-full z-10`}>
@@ -91,6 +106,9 @@ function Read({}: Props) {
                 bookId={params.id}
                 authorId={authorId}
                 setShowChat={setShowChat}
+                username={username}
+                name={name}
+                setUsernamePopup={setUsernamePopup}
               />
           </div>
           )}

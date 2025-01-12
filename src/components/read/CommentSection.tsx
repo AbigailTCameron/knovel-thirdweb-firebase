@@ -13,11 +13,15 @@ type Props = {
   authorId: string;
   setShowChat : Function;
   title : string;
+  username?: string;
+  name?: string;
+  setUsernamePopup: Function;
 }
 
-function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title}: Props) {
+function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title, username, name, setUsernamePopup}: Props) {
   const [commentText, setCommentText] = useState(''); 
   const [comments, setComments] = useState<Comment[]>([]);
+  
   useEffect(() => {
     grabComments()
   }, [userId, bookId])
@@ -29,6 +33,10 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
   }
 
   const handlePostComment = async () => {
+    if(!username || !name){
+      setUsernamePopup(true);
+      return;
+    }
     if (!commentText.trim()) return; // Avoid empty comments
 
     const result = await addComment(authorId, bookId, userId, commentText, title);

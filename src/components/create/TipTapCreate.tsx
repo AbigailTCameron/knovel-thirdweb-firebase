@@ -21,20 +21,23 @@ import OrderedListButton from '../icons/OrderListButton';
 import ConfirmDraft from './ConfirmDraft';
 import ImageUploader from './ImageUploader';
 import { handleSubmitDraft } from '../../../functions/create/fetch';
+import UsernamePopup from './UsernamePopup';
 
 type Props = {
   userId ?: string;
   name : string;
   setLoading : Function;
+  username?: string;
 }
 
-function TipTapCreate({userId, name, setLoading}: Props) {
+function TipTapCreate({userId, name, setLoading, username}: Props) {
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [content, setContent] = useState<string>('');
   const [titleContent, setTitleContent] = useState<string>(''); 
+  const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
 
  
   useEffect(() => {
@@ -78,6 +81,14 @@ function TipTapCreate({userId, name, setLoading}: Props) {
 
       }
 
+    }
+  }
+
+  const handleBeforeConfirm = async() => {
+    if(!username || !name){
+      setUsernamePopup(true);
+    }else {
+      setShowConfirm(true); 
     }
   }
 
@@ -218,7 +229,7 @@ function TipTapCreate({userId, name, setLoading}: Props) {
                 </div>
           
 
-                <div onClick={() => setShowConfirm(true)} className="hover:cursor-pointer bg-indigo-600 p-4 md:p-2 mb-4 md:mb-0 md:w-1/3 rounded-2xl mx-4 font-semibold text-xl md:text-lg text-center">
+                <div onClick={handleBeforeConfirm} className="hover:cursor-pointer bg-indigo-600 p-4 md:p-2 mb-4 md:mb-0 md:w-1/3 rounded-2xl mx-4 font-semibold text-xl md:text-lg text-center">
                     <p>Save</p>
                 </div>
           
@@ -267,6 +278,13 @@ function TipTapCreate({userId, name, setLoading}: Props) {
                 <EditorContent editor={editor} className="w-full p-2"/>
             </div>
         </div>
+
+        {usernamePopup && (
+          <UsernamePopup 
+            onConfirm={() => router.push('/settings')}
+            onCancel={() => setUsernamePopup(false)}
+          />
+        )}
 
         {showConfirm && (
           <ConfirmDraft

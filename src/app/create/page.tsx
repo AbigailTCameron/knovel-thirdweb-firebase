@@ -15,6 +15,7 @@ function Create({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [name, setName] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string>('');
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -24,6 +25,7 @@ function Create({}: Props) {
          const data = await getUserProfile(user.uid, setProfileUrl);
          if(data){
           setName(data.name); 
+          setUsername(data.username);
          }
          
        }else {
@@ -55,6 +57,7 @@ function Create({}: Props) {
 
         <TipTapCreate 
           userId={currentUser}
+          username={username}
           name={name}
           setLoading={setLoading}
         />
