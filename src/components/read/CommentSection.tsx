@@ -33,7 +33,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
   }
 
   const handlePostComment = async () => {
-    if(!username || !name){
+    if(!username && !name){
       setUsernamePopup(true);
       return;
     }
