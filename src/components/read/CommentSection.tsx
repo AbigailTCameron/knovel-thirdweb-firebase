@@ -76,6 +76,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
             <div key={index} className="w-full">
             
                 <CommentInfo 
+                  authorId={authorId}
                   commenterId={comment.commenter}
                   comment={comment.comment}
                   date={comment.createdAt}

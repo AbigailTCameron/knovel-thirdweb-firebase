@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, limit, or, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 import { Notification } from "../..";
 
 const { db } = initializeFirebaseClient();
@@ -131,8 +131,11 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
 
     // Create a query for matching titles (case-sensitive)
     const booksQuery = query(
-      booksCollection,
-      where("search_keywords", "array-contains", queryText.toLowerCase())
+      booksCollection, or(
+        where("search_keywords", "array-contains", queryText.toLowerCase()),
+        where('genres', "array-contains", queryText.toLowerCase()),
+      )
+   
     );
   
     const querySnapshot = await getDocs(booksQuery);
@@ -189,3 +192,18 @@ export const markNotificationAsRead = async (notificationId: string) => {
     console.error("Error marking notification as read:", err);
   }
 };
+
+export const deleteNotif = async (commentId: string) => {
+  try {
+        // Step 1: Delete the comment document
+        const notificationRef = doc(db, "notifications", commentId);
+        await deleteDoc(notificationRef);
+    
+        return { success: true };
+
+  } catch (err) {
+    console.error("Error deleting notification:", err);
+    return { success: false };
+
+  }
+}

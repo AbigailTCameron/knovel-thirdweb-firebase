@@ -172,7 +172,9 @@ export const deleteComment = async (authorId: string, bookId: string, commentId:
   try {
     // Step 1: Delete the comment document
     const commentRef = doc(db, "comments", authorId, "books", bookId, "comments", commentId);
+    const notificationRef = doc(db, "notifications", commentId); 
     await deleteDoc(commentRef);
+    await deleteDoc(notificationRef);
 
     return { success: true };
   } catch (err) {
