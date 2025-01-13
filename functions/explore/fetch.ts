@@ -1,5 +1,17 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  or,
+  orderBy,
+  query,
+  startAfter,
+  updateDoc,
+  where
+} from "firebase/firestore";
 import { Notification } from "../..";
 
 const { db } = initializeFirebaseClient();
@@ -131,8 +143,10 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
 
     // Create a query for matching titles (case-sensitive)
     const booksQuery = query(
-      booksCollection,
-      where("search_keywords", "array-contains", queryText.toLowerCase())
+        booksCollection, or(
+            where("search_keywords", "array-contains", queryText.toLowerCase()),
+            where("genres", "array-contains", queryText.toLowerCase()),
+        )
     );
   
     const querySnapshot = await getDocs(booksQuery);

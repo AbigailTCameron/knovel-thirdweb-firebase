@@ -7,6 +7,7 @@ import { eth_getTransactionReceipt, getContract, getContractEvents, getRpcClient
 import { smartWallet } from "thirdweb/wallets";
 import { personalAccount } from "@/lib/client";
 import { defineChain } from "thirdweb/chains";
+import {generateKeywords} from "../helper-utils";
 
 
 const { db } = initializeFirebaseClient();
@@ -460,23 +461,6 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
   }
 }
 
-
-const generateKeywords = (title: string): string[] => {
-  const keywords: string[] = [];
-  const words = title.toLowerCase().split(" ");
-
-  // Generate substrings from words
-  for (let i = 0; i < words.length; i++) {
-    let keyword = ""; 
-    for (let j = i; j < words.length; j++) {
-      keyword = keyword ? `${keyword} ${words[j]}` : words[j]; // Add a space between words
-      keywords.push(keyword); 
-    }
-  }
-
-  return keywords;
-};
-
 export async function uploadBookImageToFirebase(file: File | null, userId: string, filename: string) {
   try {
     if(file){
@@ -502,8 +486,6 @@ export async function uploadBookImageToFirebase(file: File | null, userId: strin
 
 export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, draftId: string, chapters: any[], imageFilePath: string, bookUrl: string){
   try{
-      const keywords = generateKeywords(title); 
-
       // Step 1: Generate a Firestore auto ID
       const booksCollection = collection(db, "books");
       const bookRef = doc(booksCollection); // Generate a unique draft ID
@@ -513,17 +495,17 @@ export async function pushToBooks(userId: string, name: string, title: string, s
       const draftData = {
         authorId: userId,
         author: name,
-        title: title,
+        title,
         book_image: bookUrl || '',
         bookPath: imageFilePath || '',
         bytesId: bookId,
         created_at: serverTimestamp(),
-        synopsis: synopsis,
-        genres: genres,
+        synopsis,
+        genres,
         rating: 0,
         txhash: txhash,
         hash: cid,
-        search_keywords: keywords,
+        search_keywords: generateKeywords(title, name),
         verified: false
       };
 
