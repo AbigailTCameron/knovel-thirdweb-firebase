@@ -6,6 +6,7 @@ import { getContract, prepareContractCall, sendTransaction, toUnits } from "thir
 import { client, personalAccount } from "@/lib/client";
 import { smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
+import {generateKeywords} from "../helper-utils";
 
 const { db } = initializeFirebaseClient();
 
@@ -476,22 +477,6 @@ export async function rePublishtoSmartContract(userId: string, title: string, au
   }
 }
 
-const generateKeywords = (title: string): string[] => {
-  const keywords: string[] = [];
-  const words = title.toLowerCase().split(" ");
-
-  // Generate substrings from words
-  for (let i = 0; i < words.length; i++) {
-    let keyword = ""; 
-    for (let j = i; j < words.length; j++) {
-      keyword = keyword ? `${keyword} ${words[j]}` : words[j]; // Add a space between words
-      keywords.push(keyword); 
-    }
-  }
-
-  return keywords;
-};
-
 export async function rePushToBooks(
   userId: string,
   author_name: string,
@@ -504,8 +489,6 @@ export async function rePushToBooks(
   bookId: string
 ) {
   try {
-    const keywords = generateKeywords(title); 
-
     // Reference to the book document in the `books` collection
     const bookRef = doc(db, "books", bookId);
     const publishRef = doc(db, "published", userId, "userDrafts", bookId);
@@ -513,12 +496,12 @@ export async function rePushToBooks(
     // Update the book's information
     await updateDoc(bookRef, {
       author: author_name,
-      title: title,
-      synopsis: synopsis,
-      genres: genres,
+      title,
+      synopsis,
+      genres,
       hash: cid,
-      txhash: txhash,
-      search_keywords: keywords,
+      txhash,
+      search_keywords: generateKeywords(title, author_name),
     });
 
 
