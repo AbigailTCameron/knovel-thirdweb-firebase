@@ -69,7 +69,7 @@ async function fetchEpub(response:any, setChapters: Function, setBook: Function,
     setBook(epubBook); // Store the book
 
   } catch (error) {
-    console.error('Error fetching or processing EPUB:', error);
+    console.error('Error fetching / processing EPUB:', error);
   }
 }
 
