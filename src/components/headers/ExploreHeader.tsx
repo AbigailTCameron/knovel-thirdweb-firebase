@@ -195,7 +195,10 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
                 {showNotifications && (
                     <div className="absolute w-full min-w-64 overflow-x-hidden right-0 mt-8 bg-[#1d242e] max-h-[75vh] rounded-lg shadow-xl z-50 overflow-y-auto">
-                      {notifications.map((notification) => (
+
+                    {notifications.length > 0 ? (
+                      <div>
+                          {notifications.map((notification) => (
                         <div 
                           key={notification.id}                 
                           onClick={() => handleNotificationClick(notification.id)}
@@ -213,6 +216,11 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
                            
                         </div>
                       ))}
+                      </div>
+                    ) : (
+                          <p className='p-2'>no new notifications</p>
+                    )}
+                    
                     
                     </div>
                 )}

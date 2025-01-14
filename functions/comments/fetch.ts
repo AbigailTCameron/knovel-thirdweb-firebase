@@ -29,11 +29,12 @@ export const createNotification = async (
   bookId: string,
   commentId: string,
   commenterId: string,
-  commentText: string
+  commentText: string,
+  bookTitle: string
 ): Promise<{ success: boolean }> => {
   try {
     const notificationRef = doc(db, "notifications", `${bookId}_${commentId}`);
-    const notificationMessage = `Your book received a new comment: "${commentText.substring(0, 50)}..."`;
+    const notificationMessage = `Your book, ${bookTitle}, received a new comment: "${commentText.substring(0, 50)}..."`;
 
     await setDoc(notificationRef, {
       recipientId,
@@ -69,7 +70,7 @@ export const addComment = async(authorId:string, bookId: string, userId: string,
     const docRef = await addDoc(userBookCommentCollectionRef, newComment);
 
     // Create a notification for the book author
-    const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment);
+    const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment, title);
 
     if (!notificationResult.success) {
       console.warn("Failed to create notification.");
@@ -172,8 +173,10 @@ export const deleteComment = async (authorId: string, bookId: string, commentId:
   try {
     // Step 1: Delete the comment document
     const commentRef = doc(db, "comments", authorId, "books", bookId, "comments", commentId);
-    const notificationRef = doc(db, "notifications", commentId); 
     await deleteDoc(commentRef);
+
+    // Step 2: Delete the notification document directly
+    const notificationRef = doc(db, "notifications", `${bookId}_${commentId}`);
     await deleteDoc(notificationRef);
 
     return { success: true };

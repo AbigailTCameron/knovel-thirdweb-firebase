@@ -9,6 +9,7 @@ import Back from '@/components/icons/Back';
 import BookImageSearch from '@/components/search/BookImageSearch';
 import { fetchSearchResults } from '../../../functions/explore/fetch';
 import SpinLoader from '../loading/SpinLoader';
+import SearchResults from './SearchResults';
 
 type Props = {}
 
@@ -19,6 +20,7 @@ function Search({}: Props) {
   const q = searchParams.get('q') || '';
   const [results, setResults] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,6 +29,18 @@ function Search({}: Props) {
       router.push(`/search?q=${encodeURIComponent(newQuery.trim())}`);
     }
   };
+
+  const quickSearch = async() => {
+    await fetchSearchResults(newQuery, setSearchResults);
+  }
+
+  useEffect(() => {
+    if (newQuery) {
+      quickSearch(); 
+    } else {
+      setSearchResults([]); 
+    }
+  }, [newQuery]);
 
 
   useEffect(() => {
@@ -53,23 +67,32 @@ function Search({}: Props) {
             <Link href="/explore" className="absolute left-10 text-white">
               <Back className="size-8 stroke-white" />
             </Link>
+            
+            <div className="relative w-1/2 items-center">
+                <form onSubmit={handleSearch} className="flex w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
+                  <div className="w-full flex bg-black rounded-3xl items-center p-0.5 px-2">
+                      <SearchIcon className="size-5 md:size-4 sm:hidden"/>
+                      <input 
+                        type="text"
+                        value={newQuery}
+                        onChange={(e) => setNewQuery(e.target.value)}
+                        className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
+                        placeholder="Search books, authors and community"
+                      />
 
-            <form onSubmit={handleSearch} className="flex w-1/2 bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
-              <div className="w-full flex bg-black rounded-3xl items-center p-0.5 px-2">
-                  <SearchIcon className="size-5 md:size-4 sm:hidden"/>
-                  <input 
-                    type="text"
-                    value={newQuery}
-                    onChange={(e) => setNewQuery(e.target.value)}
-                    className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
-                    placeholder="Search books, authors and community"
-                  />
+                      <button type="submit" className="p-2 bg-white text-black font-bold px-2 rounded-3xl">
+                        Search
+                      </button>
+                  </div>
+                </form>
 
-                  <button type="submit" className="p-2 bg-white text-black font-bold px-2 rounded-3xl">
-                    Search
-                  </button>
-              </div>
-            </form>
+                {searchResults.length > 0 && (
+                  <div className="absolute top-full w-full rounded-xl shadow-md bg-[#1d242e] mt-2">
+                    <SearchResults results={searchResults}/>
+                  </div>
+                )}
+            </div>
+
 
         </div>
 
@@ -90,6 +113,7 @@ function Search({}: Props) {
               <p>No results found</p>
             )}
         </div>
+
     </main>
   )
 }
