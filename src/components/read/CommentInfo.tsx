@@ -13,10 +13,11 @@ type Props = {
   userId: string;
   commentId: string;
   bookId: string; 
+  authorId: string
   onDeleteComment: (commentId: string) => void; 
 }
 
-function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment}: Props) {
+function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment, authorId}: Props) {
   const [profileUrl, setProfileUrl] = useState('');
   const [fullname, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -45,7 +46,7 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
   };
 
   const handleDelete = async () => {
-    const { success } = await deleteComment(commenterId, bookId, commentId);
+    const { success } = await deleteComment(authorId, bookId, commentId);
     if (success) {
       onDeleteComment(commentId); // Update the parent state
     } else {

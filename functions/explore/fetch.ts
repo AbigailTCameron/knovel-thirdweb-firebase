@@ -1,5 +1,6 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
 import {
+  deleteDoc
   collection,
   doc,
   getDoc,
@@ -203,3 +204,18 @@ export const markNotificationAsRead = async (notificationId: string) => {
     console.error("Error marking notification as read:", err);
   }
 };
+
+export const deleteNotif = async (commentId: string) => {
+  try {
+        // Step 1: Delete the comment document
+        const notificationRef = doc(db, "notifications", commentId);
+        await deleteDoc(notificationRef);
+    
+        return { success: true };
+
+  } catch (err) {
+    console.error("Error deleting notification:", err);
+    return { success: false };
+
+  }
+}

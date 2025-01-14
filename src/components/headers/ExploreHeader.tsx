@@ -6,9 +6,10 @@ import UserProfileImage from './UserProfileImage';
 import AccountDropdown from '../explore/AccountDropdown';
 import FilledNotifications from '../icons/FilledNotification';
 import Notifications from '../icons/Notifications';
-import { fetchNotifications, markNotificationAsRead } from '../../../functions/explore/fetch';
+import { deleteNotif, fetchNotifications, fetchSearchResults, markNotificationAsRead } from '../../../functions/explore/fetch';
 import { timeAgo } from '../../../tools/timeago';
 import { Notification } from '../../..';
+import SearchResults from '../search/SearchResults';
 
 
 type Props = {
@@ -28,6 +29,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   const [newNotifications, setNewNotifications] = useState<boolean | null>(null); 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -91,6 +93,28 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   
   };
 
+  const deleteNotification = async(id: string) => {
+    const { success } = await deleteNotif(id);
+    if (success) {
+      setNotifications((prevNotifications: any[]) =>
+        prevNotifications.filter((notification) => notification.id !== id)
+      );    } else {
+      alert('Failed to delete notification. Please try again.');
+    }
+  }
+
+  const quickSearch = async() => {
+    await fetchSearchResults(searchQuery, setSearchResults);
+  }
+
+  useEffect(() => {
+    if (searchQuery) {
+      quickSearch(); 
+    } else {
+      setSearchResults([]); // Clear search results when the search query is empty
+    }
+  }, [searchQuery]);
+
   useEffect(() => {
     loadNotifications();
   }, [userId]);
@@ -127,23 +151,32 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
         </div>
 
 
-        <form onSubmit={handleSearch} className="flex items-center basis-2/4 bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
-            <div className="w-full flex bg-black rounded-3xl items-center p-1">
-                <SearchIcon className="size-5 md:size-4 sm:hidden"/>
-                <input 
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
-                  placeholder="Search books by title, genres, author..."
-                />
+        <div className="relative items-center basis-2/4">
+          <form onSubmit={handleSearch} className="flex items-center w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
+              <div className="w-full flex bg-black rounded-3xl items-center p-1">
+                  <SearchIcon className="size-5 md:size-4 sm:hidden"/>
+                  <input 
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
+                    placeholder="Search books by title, genres, author..."
+                  />
 
-                <button type="submit" className="py-3 bg-white text-black font-bold px-4 rounded-3xl">
-                  Search
-                </button>
+                  <button type="submit" className="py-3 bg-white text-black font-bold px-4 rounded-3xl">
+                    Search
+                  </button>
+              </div>
+          </form>
+
+          {searchResults.length > 0 && (
+            <div className="absolute top-full w-full rounded-xl shadow-md bg-[#1d242e] mt-2">
+              <SearchResults results={searchResults}/>
             </div>
-        </form>
+          )}
 
+        </div>
+      
         <div className="flex relative basis-1/4 items-center justify-between mx-4 halflg:mx-2">
             <div onClick={handleDashboardClick} className='flex xl:right-48 halfxl:hidden hover:cursor-pointer halflg:hidden'>
               dashboard
@@ -175,6 +208,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
                             <div className="flex flex-col space-y-1">
                               <p>{notification.message}</p>
                               <div className="text-xs">{timeAgo(notification.createdAt)}</div>
+                              <p onClick={() => deleteNotification(notification.id)} className="text-[12px] mt-1 hover:underline">delete</p>
                             </div>
                            
                         </div>
