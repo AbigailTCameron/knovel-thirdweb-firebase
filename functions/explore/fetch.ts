@@ -1,6 +1,6 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
 import {
-  deleteDoc
+  deleteDoc,
   collection,
   doc,
   getDoc,
