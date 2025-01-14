@@ -22,6 +22,10 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
   const containerRef = useRef(null);
   const renditionRef = useRef<Rendition | undefined>(undefined); 
   const screenWidth = window.innerWidth;
+  const [highlightColor, setHighlightColor] = useState('yellow');
+  const [fontSize, setFontSize] = useState(16); // Default font size in px
+
+
 
 
   useEffect(() => {
@@ -93,6 +97,26 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
 const handleCancel = useCallback(() => {
   setShowChapters(false);
 }, [setShowChapters]);
+
+const handleIncreaseFontSize = () => {
+  setFontSize((prev) => {
+    const newSize = Math.min(prev + 2, 32); // Limit max font size to 32px
+    if (renditionRef.current) {
+      applyCustomTheme(renditionRef.current, newSize);
+    }
+    return newSize;
+  });
+};
+
+const handleDecreaseFontSize = () => {
+  setFontSize((prev) => {
+    const newSize = Math.max(prev - 2, 12); // Limit min font size to 12px
+    if (renditionRef.current) {
+      applyCustomTheme(renditionRef.current, newSize);
+    }
+    return newSize;
+  });
+};
  
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -113,9 +137,13 @@ const handleCancel = useCallback(() => {
 
           <div className="flex z-10 basis-1/12 py-2 bottom-0 w-full h-full">
             <Footer 
+              highlightColor={highlightColor}
+              setHighlightColor={setHighlightColor}
               setShowChat={setShowChat}
               handlePrev={handlePrev}
               handleNext={handleNext}
+              handleIncreaseFontSize={handleIncreaseFontSize}
+              handleDecreaseFontSize={handleDecreaseFontSize}
             />
           
           </div>
