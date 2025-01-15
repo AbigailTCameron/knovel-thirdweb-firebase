@@ -1,12 +1,12 @@
 'use client'
 
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import CommunityInfo from '@/components/community/CommunityInfo';
 import SpinLoader from '@/components/loading/SpinLoader';
+import CommunityHeader from '@/components/headers/CommunityHeader';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -14,6 +14,7 @@ function Community({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -38,8 +39,8 @@ function Community({}: Props) {
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
+        <div className="sticky top-0 w-full z-50">
+          <CommunityHeader 
             userId={currentUser}
             profileUrl={profileUrl}
             setLoading={setLoading}
@@ -47,7 +48,9 @@ function Community({}: Props) {
         </div>
 
         <div className="flex w-full h-full">
-          <CommunityInfo />
+          <CommunityInfo 
+            count={count}
+          />
         </div>
        
     </div>

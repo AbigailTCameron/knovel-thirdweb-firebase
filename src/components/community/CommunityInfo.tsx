@@ -1,22 +1,20 @@
 'use client'
 
 import React from 'react';
-import Spline from '@splinetool/react-spline'; 
 
-type Props = {}
+type Props = {
+  count : number;
+}
 
-function CommunityInfo({}: Props) {
+function CommunityInfo({count}: Props) {
   return (
-    <div className="relative flex w-full h-full">
-        <div className="absolute inset-0 w-full h-full">
-            <Spline
-              scene="https://prod.spline.design/PBQQBw8bfXDhBo7w/scene.splinecode" 
-            />
+    <div className="flex w-screen h-full justify-center">
+        <div className="flex flex-col text-white items-center mt-4">
+            <p className="font-bold">Following</p>
+            <p className="text-sm">{count}</p>
         </div>
+       
 
-        <div className="absolute z-10 flex w-full h-full text-center items-center justify-center">
-            <p className="font-black text-9xl xs:text-7xl bg-gradient-to-r from-[#7F60F9] via-[#c026d3] to-[#ec4899] inline-block text-transparent bg-clip-text">COMING SOON!</p>
-        </div>
     </div>
   )
 }
