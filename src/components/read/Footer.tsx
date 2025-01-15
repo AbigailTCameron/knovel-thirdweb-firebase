@@ -46,9 +46,9 @@ function Footer({handlePrev, handleNext, setShowChat, setHighlightColor, highlig
       
 
 
-        <div onClick={() => setShowSettings((prev) => !prev)} className="p-2 absolute left-2 rounded-xl hover:cursor-pointer">
+        {/* <div onClick={() => setShowSettings((prev) => !prev)} className="p-2 absolute left-2 rounded-xl hover:cursor-pointer">
           <WrenchIcon className="size-6 stroke-white"/>
-        </div>
+        </div> */}
         <div onClick={handlePrev} className="p-2 bg-[#333438] rounded-xl hover:cursor-pointer">
           <ArrowLeft
             className="stroke-[#FFFFFF] size-6"
