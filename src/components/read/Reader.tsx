@@ -24,10 +24,19 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
   const screenWidth = window.innerWidth;
   const [highlightColor, setHighlightColor] = useState('yellow');
   const [fontSize, setFontSize] = useState(calculateFontSize(screenWidth));
-  const [bookmark, setBookmark] = useState<string | null>(
-    localStorage.getItem(`bookmark-${id}`) || null
-  );
+  const [bookmark, setBookmark] = useState<string | null>(null);
 
+  useEffect(() => {
+    const savedFontSize = localStorage.getItem(`fontSize-${id}`);
+    const savedBookmark =   localStorage.getItem(`bookmark-${id}`)
+    if(savedFontSize){
+      setFontSize(parseInt(savedFontSize, 10)); 
+    }
+
+    if(savedBookmark){
+      setBookmark(savedBookmark); 
+    }
+  }, [fontSize, bookmark])
 
 
   useEffect(() => {
@@ -115,6 +124,7 @@ const handleIncreaseFontSize = () => {
     if (renditionRef.current) {
       applyCustomTheme(renditionRef.current, newSize);
     }
+    localStorage.setItem(`fontSize-${id}`, newSize.toString()); // Save to localStorage
     return newSize;
   });
 };
@@ -125,6 +135,7 @@ const handleDecreaseFontSize = () => {
     if (renditionRef.current) {
       applyCustomTheme(renditionRef.current, newSize);
     }
+    localStorage.setItem(`fontSize-${id}`, newSize.toString()); // Save to localStorage
     return newSize;
   });
 };
