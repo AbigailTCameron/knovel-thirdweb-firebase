@@ -73,22 +73,22 @@ async function fetchEpub(response:any, setChapters: Function, setBook: Function,
   }
 }
 
-const calculateFontSize = (screenWidth: number) => {  
+export const calculateFontSize = (screenWidth: number) => {  
   // Adjust font size based on screen width (e.g., responsive scaling)
-  if (screenWidth < 480) return "14px"; // Mobile
-  if (screenWidth < 768) return "16px"; // Tablet
-  if (screenWidth < 1024) return "18px"; // Small laptops
-  return "20px"; // Desktop and larger
+  if (screenWidth < 480) return 14; // Mobile
+  if (screenWidth < 768) return 16; // Tablet
+  if (screenWidth < 1024) return 18; // Small laptops
+  return 20; // Desktop and larger
 };
 
 
-export const applyCustomTheme = (rendition: Rendition, screenWidth: number) => {
-  const fontSize = calculateFontSize(screenWidth);
+export const applyCustomTheme = (rendition: Rendition, fontSize: number) => {
+  
   rendition.themes.register("customTheme", {
     body: {
       background: "#1e1e1e",
       color: "#ffffff !important",
-      "font-size": fontSize,
+      "font-size": `${fontSize}px`,
       "font-family": "Baskerville, monospace",
       "line-height": "1.6",
       padding: "10px",
@@ -99,7 +99,7 @@ export const applyCustomTheme = (rendition: Rendition, screenWidth: number) => {
     div: {
       background: "#1e1e1e",
       color: "#ffffff !important",
-      "font-size": fontSize,
+      "font-size": `${fontSize}px`,
       "font-family": "Baskerville, monospace",
       "line-height": "1.6",
       padding: "10px",

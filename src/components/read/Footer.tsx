@@ -21,7 +21,7 @@ function Footer({handlePrev, handleNext, setShowChat, setHighlightColor, highlig
   return (
     <div className="relative flex w-full items-center justify-center space-x-4 h-fit">
         {showSettings && (
-            <div className="absolute bottom-10 left-10 rounded-xl bg-[#1d242e] text-white p-6 space-y-4">
+            <div className="absolute bottom-10 left-10 rounded-xl bg-[#1d242e] shadow-lg text-white p-6 space-y-4">
               <div className="flex items-center bg-slate-500 rounded-xl">
 
                 <div 
@@ -36,11 +36,11 @@ function Footer({handlePrev, handleNext, setShowChat, setHighlightColor, highlig
 
               </div>
 
-              <div className="flex space-x-6 items-center justify-center">
+              {/* <div className="flex space-x-6 items-center justify-center">
                 <div onClick={() => setHighlightColor('red')} className={`${highlightColor === 'red' ? 'ring-2 ring-offset-2' : ''} w-[20px] h-[20px] rounded-full bg-red-500 hover:cursor-pointer`}> </div>
                 <div onClick={() => setHighlightColor('yellow')} className={`${highlightColor === 'yellow' ? 'ring-2 ring-offset-2' : ''} w-[20px] h-[20px] rounded-full bg-yellow-200 hover:cursor-pointer`}> </div>
                 <div onClick={() => setHighlightColor('blue')} className={`${highlightColor === 'blue' ? 'ring-2 ring-offset-2' : ''} w-[20px] h-[20px] rounded-full bg-blue-600 hover:cursor-pointer`}> </div>
-              </div>
+              </div> */}
             </div> 
         )}
       

@@ -4,7 +4,7 @@ import PopOut from './PopOut';
 import ReadHeader from './ReadHeader';
 import { BookChapters, BookMetadata } from '../../..';
 import Footer from './Footer';
-import { applyCustomTheme } from '../../../functions/read/fetch';
+import { applyCustomTheme, calculateFontSize } from '../../../functions/read/fetch';
 
 
 type Props = {
@@ -23,8 +23,10 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
   const renditionRef = useRef<Rendition | undefined>(undefined); 
   const screenWidth = window.innerWidth;
   const [highlightColor, setHighlightColor] = useState('yellow');
-  const [fontSize, setFontSize] = useState(16); // Default font size in px
-
+  const [fontSize, setFontSize] = useState(calculateFontSize(screenWidth));
+  const [bookmark, setBookmark] = useState<string | null>(
+    localStorage.getItem(`bookmark-${id}`) || null
+  );
 
 
 
@@ -42,7 +44,7 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
           })
 
            // Apply the dynamic theme
-          applyCustomTheme(rendition, screenWidth);
+          applyCustomTheme(rendition, fontSize);
 
           // Listen for location changes
           rendition.on("locationChanged", (loc: React.SetStateAction<string | number>) => {
@@ -53,33 +55,42 @@ function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
 
           renditionRef.current = rendition;
           
-            // Restore location if available
-          if (savedLocation) {
-              const parsedLocation = JSON.parse(savedLocation);
-              rendition.display(parsedLocation.start) // Use `start` for precise positioning
-              .then(() => {
-                  initialLocationSet = true; // Mark location restoration as done
-              })
-              .catch((error: any) => {
-                console.error("Error restoring location:", error);
-                initialLocationSet = true; // Still mark it as done to avoid blocking
-              });
-          } else {
-              rendition.display(location).then(() => {
-                initialLocationSet = true; // Mark as initialized
-              });
-          }
+          // Restore location or bookmark if available
+          const restoreLocation = savedLocation || bookmark;
+            if (restoreLocation) {
+                const parsedLocation = JSON.parse(restoreLocation);
+                rendition.display(parsedLocation.start) // Use `start` for precise positioning
+                .then(() => {
+                    initialLocationSet = true; // Mark location restoration as done
+                })
+                .catch((error: any) => {
+                  console.error("Error restoring location:", error);
+                  initialLocationSet = true; // Still mark it as done to avoid blocking
+                });
+            } else {
+                rendition.display(location).then(() => {
+                  initialLocationSet = true; // Mark as initialized
+                });
+            }
 
-        })
-       
-    }
+          })
+        
+      }
+
       return () => {
           if(renditionRef.current){
             renditionRef.current.destroy()
           }
       };
 
-  }, [id, screenWidth, showChat, book])
+  }, [id, screenWidth, showChat, book, bookmark])
+
+  const handleBookmark = () => {
+    if (location) {
+      setBookmark(JSON.stringify(location));
+      localStorage.setItem(`bookmark-${id}`, JSON.stringify(location));
+    }
+  };
 
   const handleNext = () => {
     if (renditionRef.current) {
@@ -117,6 +128,9 @@ const handleDecreaseFontSize = () => {
     return newSize;
   });
 };
+
+const isBookmarked = bookmark === JSON.stringify(location);
+
  
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -126,6 +140,8 @@ const handleDecreaseFontSize = () => {
            title={metadata?.title}
            setShowChapters={setShowChapters}
            showChapters={showChapters}
+           onBookmark={handleBookmark} // Pass the bookmark handler
+           isBookmarked={isBookmarked}
          />
        </div>
 
