@@ -88,3 +88,30 @@ export const updateBookmarkData = async(userId: string, bookId: string) => {
     console.error("Error updating bookmarks:", error);
   }
 }
+
+export const updateRating = async (userId: string, bookId: string, rating: number | null) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const currentRatings = userDoc.data()?.rated || [];
+
+      if (rating === null) {
+        // Remove the existing rating for this book
+        const updatedRatings = currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId);
+        await updateDoc(userDocRef, { rated: updatedRatings });
+      } else {
+        // Replace or add the new rating
+        const updatedRatings = [
+          ...currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId),
+          { bookId, rating },
+        ];
+        await updateDoc(userDocRef, { rated: updatedRatings });
+      }
+    }
+
+  } catch (error) {
+    console.error("Error updating rating:", error);
+  }
+};

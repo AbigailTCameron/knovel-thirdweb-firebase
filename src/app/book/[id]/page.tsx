@@ -18,6 +18,7 @@ function Book() {
   //const [userDetails, setUserDetails] = useState(); 
   const [bookmarks, setBookmarks] = useState<string[]>([]); 
   const [loading, setLoading] = useState(false);
+  const [userRating, setUserRating] = useState<number>(0); 
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -27,6 +28,9 @@ function Book() {
          const data = await getUserProfile(user.uid, setProfileUrl);
          if(data?.bookmark){
           setBookmarks(data.bookmark);
+          const rated = data?.rated || [];
+          const userRating = rated.find((rating: { bookId: string; rating: number }) => rating.bookId === params.id)?.rating;
+          setUserRating(userRating ?? null);
          }      
        }else {
          setProfileUrl(''); 
@@ -56,6 +60,8 @@ function Book() {
           userId={currentUser}
           id={params?.id}
           bookmarks={bookmarks}
+          userRating={userRating}
+          setUserRating={setUserRating}
         />    
 
     </main>
