@@ -34,11 +34,11 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
     setHoverRating(0);
 
     if (newRating === userRating) {
+      await updateRating(userId, id, null, userRating);
       setUserRating(0);
-      await updateRating(userId, id, null);
     }else{
+      await updateRating(userId, id, newRating, userRating);
       setUserRating(newRating);
-      await updateRating(userId, id, newRating);
     }
   };
 

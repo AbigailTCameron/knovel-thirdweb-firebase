@@ -89,10 +89,19 @@ export const updateBookmarkData = async(userId: string, bookId: string) => {
   }
 }
 
-export const updateRating = async (userId: string, bookId: string, rating: number | null) => {
+export const updateRating = async (userId: string, bookId: string, rating: number | null, oldRating: number) => {
   try {
     const userDocRef = doc(db, "users", userId);
+    const bookDocRef = doc(db, "books", bookId);
+
     const userDoc = await getDoc(userDocRef);
+    const bookDoc = await getDoc(bookDocRef);
+
+    const bookData = bookDoc.exists() ? bookDoc.data() : {};
+    const currentAverageRating: number = bookData.rating ?? 0;
+    const currentRatingNums: number = bookData.rating_nums ?? 0;
+    let newRatingNums = currentRatingNums;
+    let newAverageRating = currentAverageRating;
 
     if (userDoc.exists()) {
       const currentRatings = userDoc.data()?.rated || [];
@@ -101,8 +110,23 @@ export const updateRating = async (userId: string, bookId: string, rating: numbe
         // Remove the existing rating for this book
         const updatedRatings = currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId);
         await updateDoc(userDocRef, { rated: updatedRatings });
+
+        if(oldRating !== 0){
+            newRatingNums = Math.max(newRatingNums - 1, 0); 
+            newAverageRating = newRatingNums > 0
+            ? ((currentAverageRating * currentRatingNums) - oldRating) / newRatingNums
+            : 0;
+        }
       } else {
-        // Replace or add the new rating
+        if (oldRating !== 0) {
+          // Update existing rating
+          newAverageRating = ((currentAverageRating * currentRatingNums) - oldRating + rating) / currentRatingNums;
+        } else {
+          // Add new rating          
+          newRatingNums += 1;
+          newAverageRating = ((currentAverageRating * currentRatingNums) + rating) / newRatingNums;
+        }
+
         const updatedRatings = [
           ...currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId),
           { bookId, rating },
@@ -110,6 +134,11 @@ export const updateRating = async (userId: string, bookId: string, rating: numbe
         await updateDoc(userDocRef, { rated: updatedRatings });
       }
     }
+
+    await updateDoc(bookDocRef, {
+      rating: parseFloat(newAverageRating.toFixed(2)), // Ensure precision is limited to 2 decimal places
+      rating_nums: newRatingNums,
+    });
 
   } catch (error) {
     console.error("Error updating rating:", error);
