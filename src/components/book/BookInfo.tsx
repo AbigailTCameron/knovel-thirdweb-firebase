@@ -8,21 +8,40 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, updateBookmarkData } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
+import {FaStar} from "react-icons/fa";
 
 
 type Props = {
   id ?: string
   userId ?: string;
   bookmarks : string[];
+  userRating : number;
+  setUserRating: Function;
 }
 
-function BookInfo({userId, id, bookmarks}: Props) {
+function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
   const router = useRouter();
 
   const [book, setBook] = useState<Book>();
   const [bookmark, setBookmark] = useState<boolean>(false); 
   const [error, setError] = useState<string>(''); 
+  const [hoverRating, setHoverRating] = useState<number>(0); // Temporary hover rating
+
+
+  const handleSaveRating = async(newRating: number) => {
+    if (!userId || !id) return;
+    setHoverRating(0);
+
+    if (newRating === userRating) {
+      await updateRating(userId, id, null, userRating);
+      setUserRating(0);
+    }else{
+      await updateRating(userId, id, newRating, userRating);
+      setUserRating(newRating);
+    }
+  };
+
 
   const handleBookmarkClick = async () => {
     const newBookmarkState = !bookmark;
@@ -77,6 +96,20 @@ function BookInfo({userId, id, bookmarks}: Props) {
                   )}
               </div>
               
+            </div>
+
+            <div className="flex text-5xl space-x-2 mt-2">
+                {[1, 2, 3, 4, 5].map((value) => (
+                      <FaStar key={value} 
+                        className={`text-5xl ${
+                          (hoverRating || userRating) >= value ? 'text-yellow-500' : 'text-gray-400'
+                        } hover:text-yellow-500`}
+                          onMouseEnter={() => setHoverRating(value)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          onClick={() => handleSaveRating(value)}
+                      />  
+                ))}
+
             </div>
         </div>
 
