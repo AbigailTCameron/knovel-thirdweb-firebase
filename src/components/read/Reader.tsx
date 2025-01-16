@@ -153,6 +153,7 @@ const isBookmarked = bookmark === JSON.stringify(location);
            showChapters={showChapters}
            onBookmark={handleBookmark} // Pass the bookmark handler
            isBookmarked={isBookmarked}
+           bookId={id}
          />
        </div>
 
