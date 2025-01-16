@@ -18,14 +18,14 @@ function ReadHeader({ setShowChapters, showChapters, title, onBookmark, isBookma
 
   return (
     <div className="relative bg-[#1e1e1e] rounded-t-xl flex w-full h-full text-white px-4 py-2">
-      <div onClick={() => router.push(`/book/${bookId}`)} className="flex text-white hover:cursor-pointer">
+      <div onClick={() => router.push(`/book/${bookId}`)} className="flex self-center items-center text-white hover:cursor-pointer">
           <ArrowLeft 
             className="stroke-white size-6 hover:stroke-slate-400"
           />
       </div>
    
 
-      <div className="flex w-full self-center items-center space-x-3 justify-center">
+      <div className="flex w-full self-center text-center items-center space-x-3 justify-center">
         <h2>{title}</h2>
         <Menu
           onClick={() => setShowChapters(!showChapters)}
@@ -37,7 +37,7 @@ function ReadHeader({ setShowChapters, showChapters, title, onBookmark, isBookma
 
           <BookmarkPage          
             onClick={onBookmark} // Call the onBookmark handler
-            className={`${isBookmarked ? 'stroke-[#FA0000]' : 'stroke-white'}`}
+            className={`sm:hidden ${isBookmarked ? 'stroke-[#FA0000]' : 'stroke-white'}`}
             fill={`${isBookmarked ? '#FA0000' : 'none'}`}
           />
 
