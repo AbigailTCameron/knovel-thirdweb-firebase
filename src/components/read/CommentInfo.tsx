@@ -3,6 +3,7 @@ import SolidHeart from '../icons/SolidHeart';
 import EmptyHeart from '../icons/EmptyHeart';
 import { timeAgo } from '../../../tools/timeago';
 import { deleteComment, fetchCommenterImageAndName, fetchLikesCount, toggleLikeComment } from '../../../functions/comments/fetch';
+import Profile from '../icons/Profile';
 
 
 
@@ -63,9 +64,8 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
               src={profileUrl}
              />
           ) : (
-            <img 
-              className="w-[30px] h-[30px] rounded-full"
-              src={"/bg.png"}
+            <Profile 
+              className="w-[30px] h-[30px] rounded-full stroke-white"
             />
           )}
            

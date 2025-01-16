@@ -4,6 +4,7 @@ import FlowButton from '../buttons/FlowButton';
 import XMark from '../icons/XMark';
 import CommentInfo from './CommentInfo';
 import { addComment, fetchbookComments } from '../../../functions/comments/fetch';
+import Profile from '../icons/Profile';
 
 
 type Props = {
@@ -94,10 +95,17 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
   
 
         <div className="absolute backdrop-blur-lg flex w-full h-fit items-center justify-center bottom-0 border-t border-[#282828] px-4 py-4 space-x-2">
-            <img 
-              className="rounded-full w-[40px] h-[40px]"
-              src={profileUrl}
-            />
+            {profileUrl ? (
+                <img 
+                  className="rounded-full w-[40px] h-[40px]"
+                  src={profileUrl}
+                />
+            ) : (
+                <Profile 
+                 className="rounded-full w-[40px] h-[40px] stroke-white"
+                />
+            )}
+        
         
             <textarea
               className="flex items-center field-sizing:content focus:outline-none bg-[#303030] w-full h-full rounded-3xl px-3 py-2 font-normal resize-none"
