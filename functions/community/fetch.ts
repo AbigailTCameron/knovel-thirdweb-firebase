@@ -7,10 +7,14 @@ export const fetchUsernameResults = async(queryText: string, setResults: Functio
   try {
     const usersCollection = collection(db, "users");
 
+     // Normalize queryText: Trim and convert to lowercase
+     const normalizedQuery = queryText.trim().toLowerCase();
+
     // Create a query for matching titles (case-sensitive)
     const usersQuery = query(
       usersCollection, 
-        where("username", "==", queryText.toLowerCase()),
+      where("username", ">=", normalizedQuery),
+      where("username", "<", normalizedQuery + '\uf8ff') 
     );
   
     const querySnapshot = await getDocs(usersQuery);
@@ -19,8 +23,6 @@ export const fetchUsernameResults = async(queryText: string, setResults: Functio
       id: doc.id,
       ...doc.data(),
     }));
-
-    console.log("the results are: " + await results)
 
     setResults(results);
   }catch (error) {

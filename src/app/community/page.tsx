@@ -56,6 +56,8 @@ function Community({}: Props) {
             count={count}
             searchResults={searchResults}
             usernameResults={usernameResults}
+            setUsernameResults={setUsernameResults}
+            setSearchResults={setSearchResults}
           />
         </div>
        
