@@ -39,9 +39,12 @@ export const uploadProfilePicture = async (filePath: string, file: File, userId:
 
 export const saveSettingsProfile = async (userId: string, name: string, username: string, setUsernameTaken: Function) => {
   try{
+      // Normalize the username: remove trailing spaces and convert to lowercase
+      const normalizedUsername = username.trim().toLowerCase();
+      
       // Step 1: Check if the username is already taken
       const usersCollection = collection(db, "users");
-      const usernameQuery = query(usersCollection, where("username", "==", username));
+      const usernameQuery = query(usersCollection, where("username", "==", normalizedUsername));
       const querySnapshot = await getDocs(usernameQuery);
 
        // Check if the username exists and does not belong to the current user
@@ -55,7 +58,7 @@ export const saveSettingsProfile = async (userId: string, name: string, username
 
       // Step 3: Update the user's Firestore profile with the new avatar URL
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { name: name, username: username });
+      await updateDoc(userRef, { name: name, username: normalizedUsername });
     
       return;
 
