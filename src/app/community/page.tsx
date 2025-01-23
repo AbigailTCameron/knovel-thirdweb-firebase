@@ -15,6 +15,8 @@ function Community({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number>(0);
+  const [searchResults, setSearchResults] = useState(false);
+  const [usernameResults, setUsernameResults] = useState([]);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -44,12 +46,16 @@ function Community({}: Props) {
             userId={currentUser}
             profileUrl={profileUrl}
             setLoading={setLoading}
+            setSearchResults={setSearchResults}
+            setUsernameResults={setUsernameResults}
           />
         </div>
 
         <div className="flex w-full h-full">
           <CommunityInfo 
             count={count}
+            searchResults={searchResults}
+            usernameResults={usernameResults}
           />
         </div>
        

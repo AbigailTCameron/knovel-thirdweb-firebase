@@ -9,15 +9,18 @@ import { deleteNotif, fetchNotifications, markNotificationAsRead } from '../../.
 import { timeAgo } from '../../../tools/timeago';
 import { Notification } from '../../..';
 import SearchIcon from '../icons/SearchIcon';
+import { fetchUsernameResults } from '../../../functions/community/fetch';
 
 
 type Props = {
   userId?: string;
   profileUrl : string;
-  setLoading: Function
+  setLoading: Function;
+  setSearchResults: Function;
+  setUsernameResults: Function;
 }
 
-function CommunityHeader({profileUrl, setLoading, userId}: Props) {
+function CommunityHeader({profileUrl, setLoading, userId, setSearchResults, setUsernameResults}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -117,7 +120,8 @@ function CommunityHeader({profileUrl, setLoading, userId}: Props) {
     event.preventDefault();
 
     if (searchQuery.trim()) {
-      router.push(`/usernamesearch?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchResults(true);
+      await fetchUsernameResults(searchQuery.trim(), setUsernameResults);
     }
   };
 
