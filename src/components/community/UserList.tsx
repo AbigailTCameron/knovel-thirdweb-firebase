@@ -1,20 +1,40 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import XMark from '../icons/XMark'
+import { fetchUsernameResults } from '../../../functions/community/fetch';
 
 type Props = {
-  usernameResults: any[];
   setSearchResults: Function;
-  handleUsernameSearch ?:() => void;
-  searchQuery : string;
-  setSearchQuery: Function;
 }
 
-function UserList({usernameResults, setSearchResults, handleUsernameSearch, searchQuery, setSearchQuery}: Props) {
+function UserList({setSearchResults}: Props) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [usernameResults, setUsernameResults] = useState([]);
+
+
+  // const handleUsernameSearch = async () => {
+  //   console.log("search query is", searchQuery);
+  //   if (searchQuery.trim()) {
+  //     await fetchUsernameResults(searchQuery.trim(), setUsernameResults);
+  //   }
+  // };
+
+  const quickSearch = async() => {
+    await fetchUsernameResults(searchQuery, setUsernameResults);
+  }
+
+  useEffect(() => {
+    if (searchQuery) {
+      quickSearch(); 
+    } else {
+      setUsernameResults([]); 
+    }
+  }, [searchQuery]);
+
 
   return (
     <div className="w-full h-full">
          <div className="w-3/4 place-self-center flex my-2">
-            <form onSubmit={handleUsernameSearch} className="flex items-center w-full bg-[#2b3a4a] rounded-3xl p-0.5">
+            <div className="flex items-center w-full bg-[#111317] rounded-3xl p-0.5">
                 <input 
                   type="text"
                   value={searchQuery}
@@ -22,12 +42,13 @@ function UserList({usernameResults, setSearchResults, handleUsernameSearch, sear
                   className="flex justify-between py-3 px-3 bg-inherit w-full h-full text-white/70 rounded-3xl focus:outline-none" 
                   placeholder="Search username..."
                 />
-            </form>
+            </div>
           </div>
+          
           {usernameResults.length > 0 ? (
             <div className="flex flex-col w-full mt-6 space-y-2">
               {usernameResults.map((user) => (
-                <div key={user.id} className="flex text-white w-full items-center justify-center hover:cursor-pointer hover:bg-[#030712] p-2">
+                <div key={user.id} className="flex text-white w-full items-center justify-center hover:cursor-pointer hover:bg-[#1c202a] p-2">
                   <div className="w-4/5 flex items-center justify-between">
 
                       <div className="flex space-x-4">
