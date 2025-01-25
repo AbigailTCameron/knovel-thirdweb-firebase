@@ -14,11 +14,10 @@ function CommunityInfo({count, searchResults, setSearchResults}: Props) {
   return (
     <div className="flex w-screen h-full relative">
       {searchResults && (
-        <div className="absolute z-10 w-1/3 h-full bg-[#0b0b0b] left-0 rounded-r-md">
+        <div className="absolute z-10 w-1/3 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
           <UserList 
             setSearchResults={setSearchResults}
           />
-
         </div>
       )}
         <div className="flex flex-col text-white items-center mt-4">

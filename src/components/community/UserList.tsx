@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import XMark from '../icons/XMark'
 import { fetchUsernameResults } from '../../../functions/community/fetch';
+import Profile from '../icons/Profile';
+import { SearchedUser } from '../../..';
 
 type Props = {
   setSearchResults: Function;
@@ -8,15 +10,8 @@ type Props = {
 
 function UserList({setSearchResults}: Props) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [usernameResults, setUsernameResults] = useState([]);
+  const [usernameResults, setUsernameResults] = useState<SearchedUser[]>([]);
 
-
-  // const handleUsernameSearch = async () => {
-  //   console.log("search query is", searchQuery);
-  //   if (searchQuery.trim()) {
-  //     await fetchUsernameResults(searchQuery.trim(), setUsernameResults);
-  //   }
-  // };
 
   const quickSearch = async() => {
     await fetchUsernameResults(searchQuery, setUsernameResults);
@@ -52,10 +47,15 @@ function UserList({setSearchResults}: Props) {
                   <div className="w-4/5 flex items-center justify-between">
 
                       <div className="flex space-x-4">
-                          <img 
-                            src={user.profilePicture}
-                            className="w-[50px] h-[50px] rounded-full"
-                          />
+                          {user.profilePicture ? (
+                              <img 
+                                src={user.profilePicture}
+                                className="w-[50px] h-[50px] rounded-full"
+                              />
+                          ) : (
+                            <Profile className="w-[50px] h-[50px] rounded-full stroke-white"/>
+                          )}
+                        
 
                           <div className="flex flex-col mx-2">
                                 <div className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ function UserList({setSearchResults}: Props) {
           )}
 
           <XMark 
-            className="absolute right-2 top-2 size-5 stroke-white hover:cursor-pointer"
+            className="absolute right-2 top-3 size-5 stroke-white hover:cursor-pointer"
             onClick={() => setSearchResults(false)}
           />
 
