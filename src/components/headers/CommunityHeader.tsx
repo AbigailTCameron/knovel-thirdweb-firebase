@@ -27,10 +27,10 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
   };
 
 
-  const handleDashboardClick = () => {
-    if(pathname !== '/dashboard'){
+  const handleCommunityClick = () => {
+    if(pathname !== '/community'){
       setLoading(true); 
-      router.push('/dashboard');
+      router.push('/community');
     }
   };
 
@@ -82,7 +82,7 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
             </div>
 
             <Dashboard 
-              onClick={handleDashboardClick}
+              onClick={handleCommunityClick}
               className="size-8 hover:cursor-pointer hover:rounded-lg hover:border hover:border-white/50 p-1"
             />
         </div>

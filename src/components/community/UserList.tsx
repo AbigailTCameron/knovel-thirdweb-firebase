@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import XMark from '../icons/XMark'
-import { fetchUsernameResults } from '../../../functions/community/fetch';
+import { fetchUsernameResults, updateFollowList } from '../../../functions/community/fetch';
 import Profile from '../icons/Profile';
 import { SearchedUser } from '../../..';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   setSearchResults: Function;
+  userId: string;
 }
 
-function UserList({setSearchResults}: Props) {
+function UserList({setSearchResults, userId}: Props) {
+  const router = useRouter(); 
   const [searchQuery, setSearchQuery] = useState('');
   const [usernameResults, setUsernameResults] = useState<SearchedUser[]>([]);
 
 
   const quickSearch = async() => {
-    await fetchUsernameResults(searchQuery, setUsernameResults);
+    await fetchUsernameResults(searchQuery, setUsernameResults, userId);
+  }
+
+  const toggleFollow = async(user: string) => {
+    await updateFollowList(userId, user);
+
+    // Update the local state to reflect follow/unfollow changes
+    setUsernameResults((prevResults) =>
+      prevResults.map((u) =>
+        u.id === user ? { ...u, isFollowing: !u.isFollowing } : u
+      )
+    );
   }
 
   useEffect(() => {
@@ -43,7 +57,7 @@ function UserList({setSearchResults}: Props) {
           {usernameResults.length > 0 ? (
             <div className="flex flex-col w-full mt-6 space-y-2">
               {usernameResults.map((user) => (
-                <div key={user.id} className="flex text-white w-full items-center justify-center hover:cursor-pointer hover:bg-[#1c202a] p-2">
+                <div onClick={() => router.push(`/profile/${user.id}`)} key={user.id} className="flex text-white w-full items-center justify-center hover:cursor-pointer hover:bg-[#1c202a] p-2">
                   <div className="w-4/5 flex items-center justify-between">
 
                       <div className="flex space-x-4">
@@ -73,9 +87,17 @@ function UserList({setSearchResults}: Props) {
                           </div>
                       </div>
 
-                      <div className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
-                        <p className="text-sm font-bold">follow</p>
-                      </div>
+                      {user.isFollowing ? (
+                        <div className="border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
+                          <p>following</p>
+                        </div>
+                      ) : (
+                        <div onClick={() => toggleFollow(user.id)} className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
+                          <p className="text-sm font-bold">follow</p>
+                        </div> 
+                      )}
+
+                     
                   </div>
                 </div>
 

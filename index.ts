@@ -61,6 +61,7 @@ export interface SearchedUser {
   verified: boolean;
   drafts: string[];
   published: string[];
+  isFollowing: boolean;
 }
 
 export interface Notification {

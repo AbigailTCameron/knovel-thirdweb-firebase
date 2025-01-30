@@ -1,21 +1,23 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import CommunityHeader from '@/components/headers/CommunityHeader'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserProfile } from '../../../functions/explore/fetch';
-import CommunityInfo from '@/components/community/CommunityInfo';
-import SpinLoader from '@/components/loading/SpinLoader';
-import CommunityHeader from '@/components/headers/CommunityHeader';
+import React, { useEffect, useState } from 'react'
+import { getUserProfile } from '../../../../functions/explore/fetch';
+import ProfileInfo from '@/components/profile/ProfileInfo';
+import { useParams } from 'next/navigation';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
-function Community({}: Props) {
+
+function Profile({}: Props) {
+  const params = useParams<{ id: string }>();
+
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
-  const [loading, setLoading] = useState(false);
-  const [count, setCount] = useState<number>(0);
   const [searchResults, setSearchResults] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -32,15 +34,10 @@ function Community({}: Props) {
   
  }, []);
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
-        <div className="w-1/12 max-w-[150px] h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
+       <div className="w-1/12 max-w-[150px] h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
           <CommunityHeader 
             userId={currentUser}
             profileUrl={profileUrl}
@@ -50,16 +47,16 @@ function Community({}: Props) {
         </div>
 
         <div className="flex-grow h-full">
-          <CommunityInfo 
-            count={count}
-            searchResults={searchResults}
-            setSearchResults={setSearchResults}
-            userId={currentUser || ''}
+          <ProfileInfo
+             searchResults={searchResults}
+             setSearchResults={setSearchResults}
+             userId={currentUser || ''}
+             profileId={params.id}
           />
         </div>
-       
+
     </div>
   )
 }
 
-export default Community
+export default Profile
