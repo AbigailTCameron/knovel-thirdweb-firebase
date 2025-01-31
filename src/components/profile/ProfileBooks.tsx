@@ -35,28 +35,39 @@ function ProfileBooks({books}: Props) {
                     alt={book.title}
                   />
 
-                  <div className="flex flex-col absolute bottom-0 bg-[#1b1c1e] w-full h-1/3 rounded-b-3xl px-4 py-4 space-y-2">
+                  <div className="flex flex-col absolute bottom-0 bg-[#1b1c1e] w-full h-1/3 rounded-b-3xl px-4 py-2 space-y-2">
 
-                    <p className="text-lg font-semibold">{book.title}</p>
+                      <p className="text-lg font-semibold">{book.title}</p>
 
-                    <div>
-                      <p className="text-sm">Price</p>
-                    </div>
+                      <div className="flex items-center justify-between">
+                          <p className="text-sm">Price</p>
 
-                    <div className="flex justify-between">
-                      <div className="flex text-xs space-x-1 items-center">
-                          <Clock 
-                            className="stroke-white size-3"
-                          />
-                          <p>{formatDate(book.created_at)}</p>
+                          <div className='flex text-lg font-medium space-x-1'>
+                            <img 
+                              className='w-[20px] h-[30px]'
+                              src={"/eth.png"}
+                            />
+                            <p>{book.price}</p>
+                            <p>{book.currency}</p>
+                          </div>
+                          
                       </div>
 
-                      <div className="flex text-xs">
-                        <View 
-                          className="stroke-white size-4"
-                        />
+                      <div className="flex items-center justify-between my-1">
+                          <div className="flex text-xs space-x-1 items-center">
+                              <Clock 
+                                className="stroke-white size-3"
+                              />
+                              <p>{formatDate(book.created_at)}</p>
+                          </div>
+
+                          <div className="flex text-xs space-x-1">
+                              <View 
+                                className="stroke-white size-4"
+                              />
+                              <p>{book.views}</p>
+                          </div>
                       </div>
-                    </div>
                    
                   </div>
               </div>
