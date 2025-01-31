@@ -1,24 +1,28 @@
 import React from 'react'
 import ProfileHead from './ProfileHead'
+import { updateFollowList } from '../../../functions/community/fetch';
 
 type Props = {
+  userId: string
   userImage ?: string;
   username ?: string;
   name ?: string;
   isFollowing : boolean;
   profileId: string;
+  setIsFollowing: Function;
 }
 
-function ProfileTop({userImage, name, username, isFollowing, profileId}: Props) {
+function ProfileTop({userId, userImage, name, username, isFollowing, profileId, setIsFollowing}: Props) {
 
 
-  const toggleFollow = async (id: string) => {
-
+  const toggleFollow = async () => {
+    await updateFollowList(userId, profileId);
+    setIsFollowing((prevState: boolean) => !prevState);
   }
 
   return (
     <div className="w-full h-full">
-          <div className="flex space-x-3 items-center">
+          <div className="flex justify-evenly w-full items-center">
               <ProfileHead 
                   userImage={userImage}
               />
@@ -29,11 +33,11 @@ function ProfileTop({userImage, name, username, isFollowing, profileId}: Props) 
               </div>
            
               {isFollowing ? (
-                  <div className="border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
+                  <div onClick={toggleFollow} className="hover:cursor-pointer border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
                     <p>following</p>
                   </div>
                 ) : (
-                  <div onClick={() => toggleFollow(profileId)} className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
+                  <div onClick={toggleFollow} className="hover:cursor-pointer bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
                     <p className="text-sm font-bold">follow</p>
                   </div> 
               )}

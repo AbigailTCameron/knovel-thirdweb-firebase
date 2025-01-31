@@ -3,6 +3,8 @@ import UserList from '../community/UserList'
 import { fetchProfileInfo } from '../../../functions/profile/fetch';
 import ProfileTop from './ProfileTop';
 import SearchIcon2 from '../icons/Search';
+import ProfileBooks from './ProfileBooks';
+import UserTokens from './UserTokens';
 
 type Props = {
   searchResults: boolean;
@@ -16,15 +18,13 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [isFollowing, setIsFollowing] = useState(false); 
+  const [books, setBooks] = useState<string[]>([]); 
+
 
   const getUser = async () => {
-    await fetchProfileInfo(userId, profileId, setUserImage, setName, setUsername, setIsFollowing);
+    await fetchProfileInfo(userId, profileId, setUserImage, setName, setUsername, setIsFollowing, setBooks);
   };
 
-
-  const toggleFollow = async (id: string) => {
-
-  }
 
   useEffect(() => {
     if(userId && profileId){
@@ -46,13 +46,11 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
 
       <div className="relative flex flex-col text-white w-full h-full my-4 mx-6">
 
-        
-
           <div className="flex items-center justify-between w-full space-x-4">
            
-            <div className="flex-grow">
+            <div className="flex-grow w-3/4">
 
-              <div className="bg-[#1c212a] w-3/4 p-2 rounded-xl">
+              <div className="bg-[#1b1c1e] w-4/5 p-2 rounded-xl">
 
                 <div className="flex items-center space-x-2 px-2">
                     <SearchIcon2 className="stroke-white size-5"/>
@@ -64,23 +62,34 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
      
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 w-1/4 right-2">
 
               <ProfileTop 
+                  userId={userId}
                   userImage={userImage}
                   username={username}
                   name={name}
                   isFollowing={isFollowing}
                   profileId={profileId}
+                  setIsFollowing={setIsFollowing}
               />
             </div>
           
 
           </div>
 
-        
+          <div className="w-full h-1/2 space-y-2">
+              <p className="font-semibold text-xl">Featured Books</p>
+              <ProfileBooks 
+                books={books}
+              />
 
+          </div>
 
+          <div className="flex w-3/4 h-1/2 my-4 py-4">
+            <UserTokens />  
+          </div>
+         
           
       </div>
        
