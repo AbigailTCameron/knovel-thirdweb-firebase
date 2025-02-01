@@ -8,8 +8,9 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, incrementBookViews, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
 import {FaStar} from "react-icons/fa";
+import View from '../icons/View';
 
 
 type Props = {
@@ -76,7 +77,11 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
             </div>
 
             <div className="flex w-full items-center justify-center space-x-4">
-                <div onClick={() => router.push(`/read/${id}`)} className="w-1/2 halflg:w-[200px] xsymd:w-[120px]">
+                <div onClick={async() => {
+                  await incrementBookViews(id);
+                  router.push(`/read/${id}`)
+                  }} 
+                  className="w-1/2 halflg:w-[200px] xsymd:w-[120px]">
                   <FlowButton 
                     title='Read'
                     buttonWidth='w-full'
@@ -118,6 +123,11 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
                 <p className="text-4xl ss:text-2xl font-bold">{book?.title}</p>
                 <p className="text-xl font-medium">{book?.author}</p>
                 <StarRating rating={book?.rating ?? 0}/> 
+
+                <div className="flex items-center space-x-1">
+                  <View className="stroke-white size-5"/>
+                  <p className="text-sm">{book?.views}</p>
+                </div>
 
                 <p className="font-light w-3/4 halflg:w-full">{book?.synopsis}</p>
                 

@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getDoc, increment, updateDoc } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -142,5 +142,18 @@ export const updateRating = async (userId: string, bookId: string, rating: numbe
 
   } catch (error) {
     console.error("Error updating rating:", error);
+  }
+};
+
+export const incrementBookViews = async (bookId: string | undefined) => {
+  if (!bookId) return;
+
+  try {
+    const bookRef = doc(db, "books", bookId);
+    await updateDoc(bookRef, {
+      views: increment(+1), // Increment the views count by 1
+    });
+  } catch (error) {
+    console.error("Error incrementing book views:", error);
   }
 };

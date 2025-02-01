@@ -11,7 +11,10 @@ export interface Book {
   rating: number;
   verified: boolean;
   created_at: any;
-  hash: string
+  hash: string;
+  views: number;
+  price: number;
+  currency: string;
 }
 
 export interface BookMetadata {
