@@ -46,7 +46,7 @@ function Profile({}: Props) {
           />
         </div>
 
-        <div className="flex-grow h-full">
+        <div className="flex-grow h-full overflow-hidden">
           <ProfileInfo
              searchResults={searchResults}
              setSearchResults={setSearchResults}
