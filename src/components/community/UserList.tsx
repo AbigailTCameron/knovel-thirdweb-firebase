@@ -88,11 +88,17 @@ function UserList({setSearchResults, userId}: Props) {
                       </div>
 
                       {user.isFollowing ? (
-                        <div className="border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
+                        <div onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFollow(user.id)
+                        }} className="border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
                           <p>following</p>
                         </div>
                       ) : (
-                        <div onClick={() => toggleFollow(user.id)} className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
+                        <div onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFollow(user.id);
+                          }} className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
                           <p className="text-sm font-bold">follow</p>
                         </div> 
                       )}

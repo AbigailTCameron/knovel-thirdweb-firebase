@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getRecommendedAuthors } from '../../../functions/profile/fetch';
 import { SearchedUser } from '../../..';
 import { updateFollowList } from '../../../functions/community/fetch';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   profileId :string;
@@ -10,6 +11,7 @@ type Props = {
 }
 
 function RecommendedAuthors({profileId, userGenres, userId}: Props) {
+  const router = useRouter(); 
   const [recommendedAuthors, setRecommendedAuthors] = useState<SearchedUser[]>([]);
   const [isFollowing, setIsFollowing] = useState(false); 
 
@@ -38,7 +40,7 @@ function RecommendedAuthors({profileId, userGenres, userId}: Props) {
 
       <div className="flex flex-col w-full h-full overflow-y-auto custom-scrollbar space-y-4 p-4 pb-8">
           {recommendedAuthors.map((author) => (
-            <div key={author.id} className="flex space-x-2 justify-between">
+            <div onClick={() => router.push(`/profile/${author.id}`)} key={author.id} className="hover:cursor-pointer flex space-x-2 justify-between">
 
               <div className="flex space-x-1">
                 <img 
@@ -54,11 +56,17 @@ function RecommendedAuthors({profileId, userGenres, userId}: Props) {
               </div>
 
               {author.isFollowing ? (
-                <div onClick={() => toggleFollow(author.id)} className="hover:cursor-pointer border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
+                <div onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFollow(author.id);
+                }} className="hover:cursor-pointer border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
                   <p>following</p>
                 </div>
               ) : (
-                <div onClick={() => toggleFollow(author.id)} className="hover:cursor-pointer bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
+                <div onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFollow(author.id);
+                  }} className="hover:cursor-pointer bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
                   <p className="text-sm font-bold">follow</p>
                 </div> 
               )}
