@@ -5,6 +5,7 @@ import SearchIcon from '../icons/SearchIcon';
 import SettingsIcon from '../icons/SettingsIcon';
 import Profile from '../icons/Profile';
 import Dashboard from '../icons/Dashboard';
+import HomeIcon from '../icons/HomeIcon';
 
 
 type Props = {
@@ -65,6 +66,11 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
       
 
         <div className="flex flex-col w-full h-1/2 space-y-4 items-center self-center place-content-center place-items-center justify-center">
+
+              <div onClick={handleExploreClick} className="hover:cursor-pointer hover:rounded-xl p-1 hover:border hover:border-white/50">
+                  <HomeIcon className="stroke-white"/>  
+              </div>
+              
               <div className="rounded-full w-[40px] h-[40px]">
                   {profileUrl ? (
                       <img 
