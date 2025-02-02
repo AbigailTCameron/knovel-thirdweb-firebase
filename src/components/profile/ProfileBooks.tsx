@@ -2,34 +2,35 @@ import React, { useEffect, useState } from 'react'
 import { fetchBookProfileDetails } from '../../../functions/profile/fetch';
 import { Book } from '../../..';
 import Clock from '../icons/Clock';
-import { timeAgo } from '../../../tools/timeago';
 import { formatDate } from '../../../tools/formatDate';
 import View from '../icons/View';
-import { Router } from 'express';
 import { useRouter } from 'next/navigation';
 
 type Props = {
   books?: string[];
-
+  bookQuery: string;
 }
 
-function ProfileBooks({books}: Props) {
+function ProfileBooks({books, bookQuery}: Props) {
   const router = useRouter();
   const [bookDetails, setBookDetails] = useState<Book[]>([]);
 
 
   useEffect(() => {
-    
     if(books){
       fetchBookProfileDetails(books, setBookDetails)
     }
-    
   }, [books])
+
+  // ** Filter books based on the bookQuery **
+  const filteredBooks = bookDetails.filter((book) =>
+    book.title.toLowerCase().includes(bookQuery.toLowerCase()) // Case-insensitive search
+  );
 
 
   return (
     <div className="flex space-x-6 overflow-x-auto custom-scrollbar pr-4">
-        {bookDetails.map((book, index) => (
+        {filteredBooks.map((book, index) => (
           <div onClick={() => router.push(`/book/${book.id}`)} key={index} className="flex hover:cursor-pointer hover:border-white hover:border-[0.5px] rounded-3xl p-[1px]">
                <div className="relative w-[250px] h-[400px] sm:w-[180px] sm:h-[270px] flex-shrink-0">
                   <img 

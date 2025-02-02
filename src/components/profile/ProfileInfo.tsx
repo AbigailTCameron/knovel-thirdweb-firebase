@@ -21,6 +21,8 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
   const [isFollowing, setIsFollowing] = useState(false); 
   const [books, setBooks] = useState<string[]>([]); 
   const [userGenres, setUserGenres] = useState<string[]>([]); 
+  const [bookQuery, setBookQuery] = useState('');
+
 
   const getUser = async () => {
     await fetchProfileInfo(userId, profileId, setUserImage, setName, setUsername, setIsFollowing, setBooks, setUserGenres);
@@ -52,13 +54,17 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
            
               <div className="flex-grow w-3/4">
 
-                <div className="bg-[#1b1c1e] w-4/5 p-2 rounded-xl">
-
-                  <div className="flex items-center space-x-2 px-2">
-                      <SearchIcon2 className="stroke-white size-5"/>
-                      <p>Search user's books collection</p>
-                  </div>
-
+                <div className="flex items-center bg-[#1b1c1e] w-4/5 p-2 rounded-xl">
+                  <SearchIcon2 className="stroke-white size-5"/>
+                  <input 
+                    className="flex w-full focus:outline-none items-center bg-[#1b1c1e] space-x-2 px-2"
+                    placeholder="Search user's books collection"
+                    type="text"
+                    value={bookQuery}
+                    onChange={(e) => setBookQuery(e.target.value)}
+                  />
+                      
+           
                 </div>
             
               </div>
@@ -81,6 +87,7 @@ function ProfileInfo({ searchResults, setSearchResults, userId, profileId}: Prop
               <p className="font-semibold text-xl">Featured Books</p>
               <ProfileBooks 
                 books={books}
+                bookQuery={bookQuery}
               />
           </div>
 
