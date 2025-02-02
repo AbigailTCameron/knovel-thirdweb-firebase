@@ -43,40 +43,44 @@ export const fetchUsernameResults = async(queryText: string, setResults: Functio
 }
 
 
-export const updateFollowList = async(userId: string, user: string) => {
+export const updateFollowList = async (userId: string, user: string) => {
   try {
-      // Reference to the user's profile document in Firestore
-      const userRef = doc(db, "users", userId);
-      const userSnapshot = await getDoc(userRef);
+    // Reference to the user's profile document
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
 
-      const userLikeRef = doc(db, "users", user);
-      const userLikeSnapshot = await getDoc(userLikeRef);
+    // Reference to the followed user's document
+    const userLikeRef = doc(db, "users", user);
+    const userLikeSnapshot = await getDoc(userLikeRef);
 
-      if (userSnapshot.exists()) {
-        const data = userSnapshot.data();
-        const following = data.following || [];
+    if (userSnapshot.exists()) {
+      const data = userSnapshot.data();
+      const following = data.following || [];
 
-        if(following.includes(user)){
-            await updateDoc(userRef, {
-              following: arrayRemove(user),
-            });
+      if (following.includes(user)) {
+        // First update the `following` array in the current user's document
+        await updateDoc(userRef, {
+          following: arrayRemove(user),
+        });
 
-            await updateDoc(userLikeRef, {
-              followerCount: increment(-1), 
-            });
+        // THEN separately update the `followerCount` field in the other user's document
+        await updateDoc(userLikeRef, {
+          followerCount: increment(-1),
+        });
 
+      } else {
+        // First update the `following` array
+        await updateDoc(userRef, {
+          following: arrayUnion(user),
+        });
 
-        }else {
-            await updateDoc(userRef, {
-              following: arrayUnion(user),
-            });
-
-            await updateDoc(userLikeRef, {
-              followerCount: increment(1), 
-            });
-        }
+        // THEN separately update `followerCount`
+        await updateDoc(userLikeRef, {
+          followerCount: increment(1),
+        });
       }
-  }catch (error) {
+    }
+  } catch (error) {
     console.error("Error updating follow list:", error);
   }
-}
+};
