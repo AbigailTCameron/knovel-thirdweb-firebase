@@ -60,6 +60,7 @@ function Community({}: Props) {
             setSearchResults={setSearchResults}
             userId={currentUser || ''}
             userGenres={genreOptions}
+            setUserGenres={setGenreOptions}
           />
         </div>
        

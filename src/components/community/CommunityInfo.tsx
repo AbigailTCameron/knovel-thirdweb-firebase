@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserList from './UserList';
 import { genres } from '../../../bookGenres';
 import FlowButton from '../buttons/FlowButton';
@@ -12,9 +12,11 @@ type Props = {
   setSearchResults: Function;
   userId: string;
   userGenres: string[]; 
+  setUserGenres: Function;
+
 }
 
-function CommunityInfo({searchResults, setSearchResults, userId, userGenres}: Props) {
+function CommunityInfo({searchResults, setSearchResults, userId, userGenres, setUserGenres}: Props) {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   const toggleGenre = (genre: string) => {
@@ -24,14 +26,10 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres}: Pr
   };
 
   const saveGenres = async () => {
-    if (selectedGenres.length === 0){
-      updateGenres(userId, genres);
-    }else {
-      updateGenres(userId, selectedGenres);
-    }
-     
+    const newGenres = selectedGenres.length === 0 ? genres : selectedGenres;
+    await updateGenres(userId, newGenres);  
+    setUserGenres(newGenres);   
   };
-
 
 
   return (
