@@ -84,3 +84,14 @@ export const updateFollowList = async (userId: string, user: string) => {
     console.error("Error updating follow list:", error);
   }
 };
+
+export const updateGenres = async(userId: string, selectedGenres: string[]) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, { genres: selectedGenres });
+    console.log("Genres updated successfully!");
+
+  }catch(err){
+    console.error("Error trying to save the genres", err); 
+  }
+}

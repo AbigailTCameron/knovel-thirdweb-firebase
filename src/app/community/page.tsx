@@ -16,13 +16,17 @@ function Community({}: Props) {
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState<number>(0);
   const [searchResults, setSearchResults] = useState(false);
+  const [genreOptions, setGenreOptions] = useState([]); 
 
   useEffect(() => { 
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         getUserProfile(user.uid, setProfileUrl);
+         const data = await getUserProfile(user.uid, setProfileUrl);
+         if(data?.genres){
+          setGenreOptions(data.genres);
+         }     
        }else {
          setProfileUrl(''); 
        }
@@ -55,6 +59,7 @@ function Community({}: Props) {
             searchResults={searchResults}
             setSearchResults={setSearchResults}
             userId={currentUser || ''}
+            userGenres={genreOptions}
           />
         </div>
        
