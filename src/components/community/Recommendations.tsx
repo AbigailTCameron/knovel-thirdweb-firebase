@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import StarRating from '../StarRating'
-import { fetchAuthorProfile } from '../../../functions/community/fetch'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -9,18 +8,6 @@ type Props = {
 
 function Recommendations({results}: Props) {
   const router = useRouter(); 
-  const [authorProfiles, setAuthorProfiles] = useState<{ [key: string]: string }>({});
-
-
-  const fetchAuthor = async () => {
-    await fetchAuthorProfile(results, setAuthorProfiles)
-  }
-
-  useEffect(() => {
-    if(results.length > 0) {
-      fetchAuthor();
-    }
-  }, [results])
 
   return (
     <div className="flex flex-col w-full px-4 overflow-hidden text-white space-y-2">
@@ -33,10 +20,10 @@ function Recommendations({results}: Props) {
                   <div onClick={() => router.push(`/book/${book.id}`)} key={book.id} className="flex w-full flex-col text-white hover:cursor-pointer">
                     
                       <div className="flex w-[300px] h-[240px] rounded-md">
-                          {authorProfiles[book.authorId] && (
+                          {book.authorProfile && (
                               <img 
                                 className='w-full h-hull rounded-md'
-                                src={authorProfiles[book.authorId]}
+                                src={book.authorProfile}
                               />
                           )}
                       </div>

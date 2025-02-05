@@ -104,36 +104,53 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
 
     const querySnapshot = await getDocs(booksQuery);
 
-    const results = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
 
-    console.log("the results are", results)
-    setResults(results);
+    const books = await Promise.all(
+      querySnapshot.docs.map(async (docSnapshot) => {
+        const bookData = docSnapshot.data();
+        const authorId = bookData.authorId;
+
+        // Fetch author profile
+        let authorProfile = "";
+        if (authorId) {
+          const userRef = doc(db, "users", authorId);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            authorProfile = userSnap.data().profilePicture || "";
+          }
+        }
+
+        return {
+          id: docSnapshot.id,
+          ...bookData,
+          authorProfile, // Add author profile directly to book object
+        };
+      }))
+
+    setResults(books);
   }catch(err){
     console.error("Error trying to get the recommended books.", err); 
   }
 }
 
-export const fetchAuthorProfile = async(results: any[], setAuthorProfiles: any) => {
-  try {
-    const profileData: { [key: string]: string } = {};
+// export const fetchAuthorProfile = async(results: any[], setAuthorProfiles: any) => {
+//   try {
+//     const profileData: { [key: string]: string } = {};
 
-    results.map(async(book) => {
-      if(book.authorId){
-        const userRef = doc(db, 'users', book.authorId);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          profileData[book.authorId] = userSnap.data().profilePicture || ''; 
-        }
-      }
-    })
+//     results.map(async(book) => {
+//       if(book.authorId){
+//         const userRef = doc(db, 'users', book.authorId);
+//         const userSnap = await getDoc(userRef);
+//         if (userSnap.exists()) {
+//           profileData[book.authorId] = userSnap.data().profilePicture || ''; 
+//         }
+//       }
+//     })
 
-    setAuthorProfiles(profileData);
+//     setAuthorProfiles(profileData);
 
 
-  }catch(err){
-    console.error("Error trying to get the author profile.", err); 
-  }
-}
+//   }catch(err){
+//     console.error("Error trying to get the author profile.", err); 
+//   }
+// }
