@@ -42,7 +42,6 @@ export const fetchUsernameResults = async(queryText: string, setResults: Functio
   }
 }
 
-
 export const updateFollowList = async (userId: string, user: string) => {
   try {
     // Reference to the user's profile document
@@ -66,6 +65,7 @@ export const updateFollowList = async (userId: string, user: string) => {
         // THEN separately update the `followerCount` field in the other user's document
         await updateDoc(userLikeRef, {
           followerCount: increment(-1),
+          followers: arrayRemove(userId)
         });
 
       } else {
@@ -77,6 +77,7 @@ export const updateFollowList = async (userId: string, user: string) => {
         // THEN separately update `followerCount`
         await updateDoc(userLikeRef, {
           followerCount: increment(1),
+          followers: arrayUnion(userId)
         });
       }
     }
@@ -93,5 +94,46 @@ export const updateGenres = async(userId: string, selectedGenres: string[]) => {
 
   }catch(err){
     console.error("Error trying to save the genres", err); 
+  }
+}
+
+export const recommendedBooks = async(userGenres: string[], setResults: Function) => {
+  try {
+    const booksCollection = collection(db, "books");
+    const booksQuery = query(booksCollection, where("genres", "array-contains-any", userGenres));
+
+    const querySnapshot = await getDocs(booksQuery);
+
+    const results = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    console.log("the results are", results)
+    setResults(results);
+  }catch(err){
+    console.error("Error trying to get the recommended books.", err); 
+  }
+}
+
+export const fetchAuthorProfile = async(results: any[], setAuthorProfiles: any) => {
+  try {
+    const profileData: { [key: string]: string } = {};
+
+    results.map(async(book) => {
+      if(book.authorId){
+        const userRef = doc(db, 'users', book.authorId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          profileData[book.authorId] = userSnap.data().profilePicture || ''; 
+        }
+      }
+    })
+
+    setAuthorProfiles(profileData);
+
+
+  }catch(err){
+    console.error("Error trying to get the author profile.", err); 
   }
 }

@@ -53,7 +53,7 @@ function Community({}: Props) {
           />
         </div>
 
-        <div className="flex-grow h-full">
+        <div className="w-full h-full">
           <CommunityInfo 
             count={count}
             searchResults={searchResults}
