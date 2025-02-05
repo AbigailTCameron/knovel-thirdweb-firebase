@@ -132,25 +132,3 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
     console.error("Error trying to get the recommended books.", err); 
   }
 }
-
-// export const fetchAuthorProfile = async(results: any[], setAuthorProfiles: any) => {
-//   try {
-//     const profileData: { [key: string]: string } = {};
-
-//     results.map(async(book) => {
-//       if(book.authorId){
-//         const userRef = doc(db, 'users', book.authorId);
-//         const userSnap = await getDoc(userRef);
-//         if (userSnap.exists()) {
-//           profileData[book.authorId] = userSnap.data().profilePicture || ''; 
-//         }
-//       }
-//     })
-
-//     setAuthorProfiles(profileData);
-
-
-//   }catch(err){
-//     console.error("Error trying to get the author profile.", err); 
-//   }
-// }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import StarRating from '../StarRating'
 import { useRouter } from 'next/navigation'
+import View from '../icons/View';
 
 type Props = {
   results: any[]
@@ -46,6 +46,11 @@ function Recommendations({results}: Props) {
                               src="/verified.png"
                             />
                           )}
+                        </div>
+
+                        <div className="flex items-center space-x-1 text-white/50 text-sm">
+                          <View className="size-4"/>
+                          <p>{book.views}</p>
                         </div>
                     </div>
 
