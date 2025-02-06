@@ -12,6 +12,8 @@ type Props = {
 
 function Feed({userGenres, userId}: Props) {
   const [results, setResults] = useState([]);
+  const [lastVisibleDoc, setLastVisibleDoc] = useState<any>(null); // Track last document
+
 
 
   const feeds = [
@@ -22,7 +24,7 @@ function Feed({userGenres, userId}: Props) {
   ];
 
   const loadFeed = async() => {
-    await recommendedBooks(userGenres, setResults);
+    await recommendedBooks(userGenres, setResults, lastVisibleDoc, setLastVisibleDoc);
   }
 
   useEffect(() => {
@@ -31,8 +33,8 @@ function Feed({userGenres, userId}: Props) {
   }, [])
 
   return (
-    <div className="flex flex-col w-full h-full px-8">
-        <div className="sticky top-0 w-full items-center justify-center z-40">
+    <div className="flex flex-col w-full h-full px-8 overflow-y-scroll">
+        <div className="sticky top-0 w-full items-center justify-center z-40 backdrop-blur-md">
           <FeedHeader 
             feeds={feeds}
           />
@@ -42,10 +44,11 @@ function Feed({userGenres, userId}: Props) {
         <div className="flex w-full h-fit">
           <Recommendations 
             results={results}
+            loadMore={loadFeed}
           />
         </div>
 
-        <div className="flex w-full h-fit my-4">
+        <div className="flex w-full h-fit my-8">
           <UpdatedReading 
           
           />

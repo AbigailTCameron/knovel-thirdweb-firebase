@@ -1,20 +1,35 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import View from '../icons/View';
 
 type Props = {
-  results: any[]
+  results: any[];
+  loadMore: () => void;
 }
 
-function Recommendations({results}: Props) {
+function Recommendations({results, loadMore}: Props) {
   const router = useRouter(); 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+
+    if (scrollLeft + clientWidth >= scrollWidth - 10) {
+      loadMore(); // Load more books when reaching the end
+    }
+  };
 
   return (
     <div className="flex flex-col w-full overflow-hidden text-white space-y-2">
         <p className="text-xl font-bold">You might like:</p>
 
         <div className="w-full">
-              <div className="flex w-full h-full space-x-4 overflow-x-auto custom-scrollbar px-4 pr-36">
+              <div 
+              ref={containerRef}
+              onScroll={handleScroll} 
+              className="flex w-full h-full space-x-4 overflow-x-auto custom-scrollbar px-4 pr-36">
              
                 {results.map((book) => (
                   <div onClick={() => router.push(`/book/${book.id}`)} key={book.id} className="flex w-full flex-col text-white hover:cursor-pointer">

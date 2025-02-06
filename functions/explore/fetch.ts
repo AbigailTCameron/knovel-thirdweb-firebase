@@ -212,13 +212,7 @@ export const fetchNotifications = async (userId: string, setNotifications: Funct
         };
       }))
 
-      console.log("the notifications are", notifs)
-
-
       setNotifications(notifs);
-
-    // const notifications = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Notification[]
-    // return notifications;
   } catch (err) {
     console.error("Error fetching notifications:", err);
     return [];

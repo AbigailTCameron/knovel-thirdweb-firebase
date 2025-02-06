@@ -4,9 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
 import UserProfileImage from './UserProfileImage';
 import AccountDropdown from '../explore/AccountDropdown';
-import { deleteNotif, fetchNotifications, fetchSearchResults, markNotificationAsRead } from '../../../functions/explore/fetch';
-import { timeAgo } from '../../../tools/timeago';
-import { Notification } from '../../..';
+import { fetchSearchResults } from '../../../functions/explore/fetch';
 import SearchResults from '../search/SearchResults';
 
 
@@ -20,12 +18,9 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdown, setDropdown] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
 
@@ -40,10 +35,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setDropdown(false);
-    }
-
-    if(notificationRef.current && !notificationRef.current.contains(event.target as Node)){
-      setShowNotifications(false);
     }
   };
 
@@ -73,30 +64,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
     if(pathname !== '/community'){
       setLoading(true); 
       router.push('/community');
-    }
-  }
-
-  // const handleNotificationClick = (notificationId: string) => {
-  //   markNotificationAsRead(notificationId);
-  //   loadNotifications(); // Refresh notifications
-  // };
-
-  // const loadNotifications = async () => {
-  //   if(userId){
-  //       const notifications = await fetchNotifications(userId);
-  //       setNotifications(notifications);
-  //       setNewNotifications(notifications.some((n) => !n.isRead));
-  //   }
-  
-  // };
-
-  const deleteNotification = async(id: string) => {
-    const { success } = await deleteNotif(id);
-    if (success) {
-      setNotifications((prevNotifications: any[]) =>
-        prevNotifications.filter((notification) => notification.id !== id)
-      );    } else {
-      alert('Failed to delete notification. Please try again.');
     }
   }
 

@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, increment, or, query, updateDoc, where } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, increment, limit, or, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -97,13 +97,30 @@ export const updateGenres = async(userId: string, selectedGenres: string[]) => {
   }
 }
 
-export const recommendedBooks = async(userGenres: string[], setResults: Function) => {
+export const recommendedBooks = async(userGenres: string[], setResults: Function, lastVisibleDoc: any, setLastVisibleDoc: Function) => {
   try {
     const booksCollection = collection(db, "books");
-    const booksQuery = query(booksCollection, where("genres", "array-contains-any", userGenres));
+    let booksQuery = query(
+      booksCollection, 
+      where("genres", "array-contains-any", userGenres),
+      limit(10)
+    );
+
+ 
+
+    // If there's a lastDoc, use it for pagination
+    if (lastVisibleDoc) {
+      booksQuery = query(
+        booksCollection,
+        where("genres", "array-contains-any", userGenres),
+        startAfter(lastVisibleDoc),
+        limit(10)
+      );
+    }
+  
 
     const querySnapshot = await getDocs(booksQuery);
-
+    if (querySnapshot.empty) return;
 
     const books = await Promise.all(
       querySnapshot.docs.map(async (docSnapshot) => {
@@ -127,7 +144,13 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
         };
       }))
 
-    setResults(books);
+      setResults((prevResults: any) => {
+        const existingIds = new Set(prevResults.map((book: any) => book.id));
+        const newBooks = books.filter((book) => !existingIds.has(book.id));
+        return [...prevResults, ...newBooks];
+      });
+      // Store the last document for the next pagination request
+      setLastVisibleDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
   }catch(err){
     console.error("Error trying to get the recommended books.", err); 
   }

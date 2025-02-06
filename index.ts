@@ -74,4 +74,5 @@ export interface Notification {
   isRead: boolean;
   commenterProfile: string;
   bookImage: string;
+  bookId: string;
 }
