@@ -4,8 +4,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
 import UserProfileImage from './UserProfileImage';
 import AccountDropdown from '../explore/AccountDropdown';
-import FilledNotifications from '../icons/FilledNotification';
-import Notifications from '../icons/Notifications';
 import { deleteNotif, fetchNotifications, fetchSearchResults, markNotificationAsRead } from '../../../functions/explore/fetch';
 import { timeAgo } from '../../../tools/timeago';
 import { Notification } from '../../..';
@@ -26,7 +24,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dropdown, setDropdown] = useState(false);
-  const [newNotifications, setNewNotifications] = useState<boolean | null>(null); 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -79,19 +76,19 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
     }
   }
 
-  const handleNotificationClick = (notificationId: string) => {
-    markNotificationAsRead(notificationId);
-    loadNotifications(); // Refresh notifications
-  };
+  // const handleNotificationClick = (notificationId: string) => {
+  //   markNotificationAsRead(notificationId);
+  //   loadNotifications(); // Refresh notifications
+  // };
 
-  const loadNotifications = async () => {
-    if(userId){
-        const notifications = await fetchNotifications(userId);
-        setNotifications(notifications);
-        setNewNotifications(notifications.some((n) => !n.isRead));
-    }
+  // const loadNotifications = async () => {
+  //   if(userId){
+  //       const notifications = await fetchNotifications(userId);
+  //       setNotifications(notifications);
+  //       setNewNotifications(notifications.some((n) => !n.isRead));
+  //   }
   
-  };
+  // };
 
   const deleteNotification = async(id: string) => {
     const { success } = await deleteNotif(id);
@@ -116,11 +113,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   }, [searchQuery]);
 
   useEffect(() => {
-    loadNotifications();
-  }, [userId]);
-
-
-  useEffect(() => {
     router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
     router.prefetch('/settings'); 
     router.prefetch('/explore'); 
@@ -134,7 +126,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
     };
   }, []);
 
- 
 
 
   return (
@@ -185,48 +176,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
             <div onClick={handleClickCommunity} className='flex xl:right-20 halfxl:right-1/2 halflg:hidden hover:cursor-pointer'>
               community
             </div>
-
-            <div ref={notificationRef} className="hover:cursor-pointer halflg:absolute halflg:right-1/2 sm:right-3/4">
-                {newNotifications ? (
-                  <FilledNotifications onClick={() => setShowNotifications((prev) => !prev)} className="fill-red-500 size-6 xs:size-4" />
-                ) : (
-                  <Notifications onClick={() => setShowNotifications((prev) => !prev)} className="stroke-white size-6 xs:size-4" />
-                )}
-
-                {showNotifications && (
-                    <div className="absolute w-full min-w-64 overflow-x-hidden right-0 mt-8 bg-[#1d242e] max-h-[75vh] rounded-lg shadow-xl z-50 overflow-y-auto">
-
-                    {notifications.length > 0 ? (
-                      <div>
-                          {notifications.map((notification) => (
-                        <div 
-                          key={notification.id}                 
-                          onClick={() => handleNotificationClick(notification.id)}
-                          className="flex items-center w-full justify-center space-x-2 p-4 border-b-[0.5px] last:border-b-0"
-                        >
-                          {!notification.isRead && (
-                            <div className="flex w-[5px] h-[5px] rounded-full bg-red-600">
-                            </div>
-                          )}
-                            <div className="flex flex-col space-y-1">
-                              <p>{notification.message}</p>
-                              <div className="text-xs">{timeAgo(notification.createdAt)}</div>
-                              <p onClick={() => deleteNotification(notification.id)} className="text-[12px] mt-1 hover:underline">delete</p>
-                            </div>
-                           
-                        </div>
-                      ))}
-                      </div>
-                    ) : (
-                          <p className='p-2'>no new notifications</p>
-                    )}
-                    
-                    
-                    </div>
-                )}
-               
-            </div>
-
           
             <div ref={dropdownRef} className="hover:cursor-pointer halflg:absolute halflg:right-0">
               <UserProfileImage 

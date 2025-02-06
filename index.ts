@@ -72,4 +72,6 @@ export interface Notification {
   message: string;
   createdAt: string;
   isRead: boolean;
+  commenterProfile: string;
+  bookImage: string;
 }

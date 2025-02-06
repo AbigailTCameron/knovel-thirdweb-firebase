@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/navigation'
 import View from '../icons/View';
 
@@ -10,7 +10,7 @@ function Recommendations({results}: Props) {
   const router = useRouter(); 
 
   return (
-    <div className="flex flex-col w-full px-4 overflow-hidden text-white space-y-2">
+    <div className="flex flex-col w-full overflow-hidden text-white space-y-2">
         <p className="text-xl font-bold">You might like:</p>
 
         <div className="w-full">

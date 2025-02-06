@@ -77,6 +77,7 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres, set
             <div className="flex w-full h-full">
               <Feed 
                 userGenres={userGenres}
+                userId={userId}
               />
             </div>
           )}
