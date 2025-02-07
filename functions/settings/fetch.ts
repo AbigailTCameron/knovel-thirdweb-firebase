@@ -41,7 +41,7 @@ export const saveSettingsProfile = async (userId: string, name: string, username
   try{
       // Normalize the username: remove trailing spaces and convert to lowercase
       const normalizedUsername = username.trim().toLowerCase();
-      
+
       // Step 1: Check if the username is already taken
       const usersCollection = collection(db, "users");
       const usernameQuery = query(usersCollection, where("username", "==", normalizedUsername));

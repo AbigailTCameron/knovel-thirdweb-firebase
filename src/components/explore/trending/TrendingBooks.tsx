@@ -39,11 +39,11 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
                   <div className="flex-col w-[250px] lg:w-[150px]">
                     <p className="text-lg halfxl:text-base sm:text-sm xs:text-base font-semibold line-clamp-3">{book.title}</p>
 
-                    <div className="flex">
+                    <div className="flex space-x-1">
                           <p className="text-sm halfxl:text-xs">{book.author}</p>
                           {book.verified && (
                             <img 
-                              className="w-[20px] h-[20px] halfxl:w-[15px] halfxl:h-[15px]"
+                              className="w-[15px] h-[15px] halfxl:w-[15px] halfxl:h-[15px]"
                               src="/verified.png"
                               alt="verified"
                               width={"20"}

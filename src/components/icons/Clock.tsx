@@ -2,10 +2,9 @@ import React from "react";
 
 type Props = {
   className ?: string;
-  onClick ?: () => void;
 };
 
-function XMark({className, onClick}: Props) {
+function Clock({className}: Props) {
   return (
     <svg
       width="40px"
@@ -14,12 +13,18 @@ function XMark({className, onClick}: Props) {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      color="#000000"
       className={className}
-      onClick={onClick}
     >
       <path
-        d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426"
-        strokeWidth="4"
+        d="M12 6L12 12L18 12"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
@@ -27,4 +32,4 @@ function XMark({className, onClick}: Props) {
   );
 }
 
-export default XMark;
+export default Clock;

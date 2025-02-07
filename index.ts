@@ -55,9 +55,24 @@ export interface User {
   published: string[];
 }
 
+export interface SearchedUser {
+  id: string;
+  name: string;
+  username: string;
+  profilePicture: string;
+  bookmark: string[];
+  verified: boolean;
+  drafts: string[];
+  published: string[];
+  isFollowing: boolean;
+}
+
 export interface Notification {
   id: string;
   message: string;
   createdAt: string;
   isRead: boolean;
+  commenterProfile: string;
+  bookImage: string;
+  bookId: string;
 }

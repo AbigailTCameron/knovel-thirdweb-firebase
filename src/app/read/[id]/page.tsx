@@ -69,7 +69,7 @@ function Read({}: Props) {
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">
-      <div  className="sticky top-0 w-full z-50">
+      <div className="sticky top-0 w-full z-50">
           <ExploreHeader 
             userId={currentUser}
             profileUrl={profileUrl}

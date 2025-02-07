@@ -167,7 +167,7 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
   }
 }
 
-export const fetchNotifications = async (userId: string) => {
+export const fetchNotifications = async (userId: string, setNotifications: Function) => {
   try {
     const notificationsRef = collection(db, "notifications");
     const q = query(
@@ -178,8 +178,41 @@ export const fetchNotifications = async (userId: string) => {
     
     const querySnapshot = await getDocs(q);
 
-    const notifications = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Notification[]
-    return notifications;
+    const notifs = await Promise.all(
+      querySnapshot.docs.map(async (docSnapshot) => {
+        const notifData = docSnapshot.data();
+        const commenterId = notifData.commenterId;
+        const bookId = notifData.bookId;
+
+        // Fetch commenter profile
+        let commenterProfile = "";
+        if (commenterId) {
+          const userRef = doc(db, "users", commenterId);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            commenterProfile = userSnap.data().profilePicture || "";
+          }
+        }
+
+        // Fetch book
+        let bookImage = "";
+        if (bookId) {
+          const bookRef = doc(db, "books", bookId);
+          const bookSnap = await getDoc(bookRef);
+          if (bookSnap.exists()) {
+            bookImage = bookSnap.data().book_image || "";
+          }
+        }
+
+        return {
+          id: docSnapshot.id,
+          ...notifData,
+          commenterProfile, 
+          bookImage
+        };
+      }))
+
+      setNotifications(notifs);
   } catch (err) {
     console.error("Error fetching notifications:", err);
     return [];

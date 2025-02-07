@@ -1,12 +1,12 @@
 'use client'
 
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import CommunityInfo from '@/components/community/CommunityInfo';
 import SpinLoader from '@/components/loading/SpinLoader';
+import CommunityHeader from '@/components/headers/CommunityHeader';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -14,13 +14,18 @@ function Community({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState(false);
+  const [genreOptions, setGenreOptions] = useState([]); 
 
   useEffect(() => { 
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         getUserProfile(user.uid, setProfileUrl);
+         const data = await getUserProfile(user.uid, setProfileUrl);
+         if(data?.genres){
+          setGenreOptions(data.genres);
+         }     
        }else {
          setProfileUrl(''); 
        }
@@ -37,17 +42,24 @@ function Community({}: Props) {
   }
 
   return (
-    <div className="flex w-screen h-screen flex-col items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
+    <div className="flex w-screen h-screen overflow-hidden">
+        <div className="w-1/12 h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
+          <CommunityHeader 
             userId={currentUser}
             profileUrl={profileUrl}
             setLoading={setLoading}
+            setSearchResults={setSearchResults}
           />
         </div>
 
-        <div className="flex w-full h-full">
-          <CommunityInfo />
+        <div className="flex w-[calc(100%-150px)] h-full">
+          <CommunityInfo 
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
+            userId={currentUser || ''}
+            userGenres={genreOptions}
+            setUserGenres={setGenreOptions}
+          />
         </div>
        
     </div>
