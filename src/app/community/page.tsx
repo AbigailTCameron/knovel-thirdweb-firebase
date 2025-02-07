@@ -14,7 +14,6 @@ function Community({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
-  const [count, setCount] = useState<number>(0);
   const [searchResults, setSearchResults] = useState(false);
   const [genreOptions, setGenreOptions] = useState([]); 
 
@@ -55,7 +54,6 @@ function Community({}: Props) {
 
         <div className="w-full h-full">
           <CommunityInfo 
-            count={count}
             searchResults={searchResults}
             setSearchResults={setSearchResults}
             userId={currentUser || ''}

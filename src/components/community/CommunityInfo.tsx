@@ -8,7 +8,6 @@ import { updateGenres } from '../../../functions/community/fetch';
 import Feed from './Feed';
 
 type Props = {
-  count : number;
   searchResults: boolean;
   setSearchResults: Function;
   userId: string;

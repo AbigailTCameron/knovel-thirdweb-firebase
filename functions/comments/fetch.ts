@@ -30,11 +30,13 @@ export const createNotification = async (
   commentId: string,
   commenterId: string,
   commentText: string,
-  bookTitle: string
+  bookTitle: string,
+  username: string,
+  name: string
 ): Promise<{ success: boolean }> => {
   try {
     const notificationRef = doc(db, "notifications", `${bookId}_${commentId}`);
-    const notificationMessage = `Your book, ${bookTitle}, received a new comment: "${commentText.substring(0, 50)}..."`;
+    const notificationMessage = `${name || username} commented on your book, ${bookTitle}: "${commentText.substring(0, 150)}..."`;
 
     await setDoc(notificationRef, {
       recipientId,
@@ -53,7 +55,7 @@ export const createNotification = async (
   }
 };
 
-export const addComment = async(authorId:string, bookId: string, userId: string, comment: string, title: string) => {
+export const addComment = async(authorId:string, bookId: string, userId: string, comment: string, title: string, username: string, name: string) => {
   try {
     //const commentId = crypto.randomUUID();
 
@@ -70,7 +72,7 @@ export const addComment = async(authorId:string, bookId: string, userId: string,
     const docRef = await addDoc(userBookCommentCollectionRef, newComment);
 
     // Create a notification for the book author
-    const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment, title);
+    const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment, title, username, name);
 
     if (!notificationResult.success) {
       console.warn("Failed to create notification.");

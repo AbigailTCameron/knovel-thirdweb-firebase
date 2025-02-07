@@ -13,8 +13,8 @@ type Props = {
   authorId: string;
   setShowChat : Function;
   title : string;
-  username?: string;
-  name?: string;
+  username: string;
+  name: string;
   setUsernamePopup: Function;
 }
 
@@ -39,7 +39,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
     }
     if (!commentText.trim()) return; // Avoid empty comments
 
-    const result = await addComment(authorId, bookId, userId, commentText, title);
+    const result = await addComment(authorId, bookId, userId, commentText, title, username, name);
     if (result.success) {
       const newComment: Comment = {
         commenter: userId,
