@@ -29,7 +29,7 @@ function Recommendations({results, loadMore}: Props) {
               <div 
               ref={containerRef}
               onScroll={handleScroll} 
-              className="flex w-full h-full space-x-4 overflow-x-auto custom-scrollbar px-4 pr-36">
+              className="flex w-full h-full space-x-4 overflow-x-auto custom-scrollbar px-4">
              
                 {results.map((book) => (
                   <div onClick={() => router.push(`/book/${book.id}`)} key={book.id} className="flex w-full flex-col text-white hover:cursor-pointer">

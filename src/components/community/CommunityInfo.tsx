@@ -6,6 +6,7 @@ import { genres } from '../../../bookGenres';
 import FlowButton from '../buttons/FlowButton';
 import { updateGenres } from '../../../functions/community/fetch';
 import Feed from './Feed';
+import { fetchNotifications } from '../../../functions/explore/fetch';
 
 type Props = {
   searchResults: boolean;
@@ -18,6 +19,8 @@ type Props = {
 
 function CommunityInfo({searchResults, setSearchResults, userId, userGenres, setUserGenres}: Props) {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
 
   const toggleGenre = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -30,6 +33,16 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres, set
     await updateGenres(userId, newGenres);  
     setUserGenres(newGenres);   
   };
+
+  const loadNotifications = async () => {
+    if(userId){
+        await fetchNotifications(userId, setNotifications);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [userId]);
 
 
   return (
@@ -45,7 +58,7 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres, set
 
       <div className="flex w-full h-full">
 
-          {userGenres.length == 0 ? (
+          {userGenres.length == 0 && notifications.length == 0 ? (
             <div className="w-full h-full flex items-center justify-center">
               <div className="w-1/2 h-1/2 bg-[#1b1c1e] rounded-xl p-6 text-white overflow-y-auto custom-scrollbar">
                   <p className="text-lg font-bold">Pick Your Favorite Genres</p>
@@ -77,6 +90,8 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres, set
               <Feed 
                 userGenres={userGenres}
                 userId={userId}
+                notifications={notifications}
+                setNotifications={setNotifications}
               />
             </div>
           )}

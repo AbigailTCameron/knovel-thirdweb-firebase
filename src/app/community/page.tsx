@@ -43,7 +43,7 @@ function Community({}: Props) {
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
-        <div className="w-1/12 max-w-[150px] h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
+        <div className="w-1/12 h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
           <CommunityHeader 
             userId={currentUser}
             profileUrl={profileUrl}
@@ -52,7 +52,7 @@ function Community({}: Props) {
           />
         </div>
 
-        <div className="w-full h-full">
+        <div className="flex w-[calc(100%-150px)] h-full">
           <CommunityInfo 
             searchResults={searchResults}
             setSearchResults={setSearchResults}

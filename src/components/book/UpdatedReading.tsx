@@ -8,7 +8,7 @@ function UpdatedReading({}: Props) {
       <p className="text-xl font-bold">Continue Reading:</p>
 
       <div className="flex w-full h-full items-center justify-center">
-        <p>You have no updated books being read</p>
+        <p>You have no updated books to read.</p>
       </div>
     </div>
   )

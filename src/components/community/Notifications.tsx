@@ -5,18 +5,12 @@ import { useRouter } from 'next/navigation';
 
 type Props = {
   userId: string;
+  notifications: any[];
+  setNotifications: Function;
 }
 
-function Notifications({userId}: Props) {
+function Notifications({userId, notifications, setNotifications}: Props) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  const loadNotifications = async () => {
-    if(userId){
-        await fetchNotifications(userId, setNotifications);
-    }
-  
-  };
 
   const deleteNotification = async(id: string) => {
     const { success } = await deleteNotif(id);
@@ -27,10 +21,6 @@ function Notifications({userId}: Props) {
       alert('Failed to delete notification. Please try again.');
     }
   }
-
-  useEffect(() => {
-    loadNotifications();
-  }, [userId]);
 
 
   return (

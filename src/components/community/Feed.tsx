@@ -8,13 +8,13 @@ import Notifications from './Notifications';
 type Props = {
   userGenres: string[];
   userId: string;
+  notifications: any[];
+  setNotifications: Function;
 }
 
-function Feed({userGenres, userId}: Props) {
+function Feed({userGenres, userId, notifications, setNotifications}: Props) {
   const [results, setResults] = useState([]);
   const [lastVisibleDoc, setLastVisibleDoc] = useState<any>(null); // Track last document
-
-
 
   const feeds = [
     {title: 'recommendations'},
@@ -41,22 +41,23 @@ function Feed({userGenres, userId}: Props) {
         </div>
 
        
-        <div className="flex w-full h-fit">
+        <div id="recommendations" className="flex w-full h-fit">
           <Recommendations 
             results={results}
             loadMore={loadFeed}
           />
         </div>
 
-        <div className="flex w-full h-fit my-8">
+        <div id="reading" className="flex w-full h-fit my-8">
           <UpdatedReading 
-          
           />
         </div>
 
-        <div className="flex w-full h-fit my-4">
+        <div id="notifications" className="flex w-full h-fit my-4">
           <Notifications 
             userId={userId}
+            notifications={notifications}
+            setNotifications={setNotifications}
           />
         </div>
        
