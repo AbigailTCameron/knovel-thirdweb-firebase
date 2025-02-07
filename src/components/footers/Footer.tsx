@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import FaqsPopup from './FaqsPopup';
 import LinkedIn from '../icons/LinkedIn';
 import UpArrow from '../icons/UpArrow';
+import X from '../icons/X';
 
 
 function Footer() {
@@ -47,6 +48,11 @@ function Footer() {
                       <a className="flex items-center space-x-2" target="_blank" href="https://www.linkedin.com/company/knovelprotocol/">
                         <LinkedIn />
                         <p>LinkedIn</p>
+                      </a>
+
+                      <a className="flex" target="_blank" href="https://x.com/knovelprotocol">
+                        <X className="stroke-white size-6"/>
+
                       </a>
                   </div>
 

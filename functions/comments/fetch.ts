@@ -137,8 +137,6 @@ export const fetchLikesCount = async (authorId: string, bookId: string, commentI
   }
 };
 
-
-
 export const toggleLikeComment = async (authorId: string, bookId: string, commentId: string, userId: string) => {
   try {
     const commentRef = doc(db, "comments", authorId, "books", bookId, "comments", commentId);
@@ -147,22 +145,23 @@ export const toggleLikeComment = async (authorId: string, bookId: string, commen
     let liked;
     if (commentSnapshot.exists()) {
       const data = commentSnapshot.data();
-      if(data.likes.includes(userId)){
-          await updateDoc(commentRef, {
-            likes: arrayRemove(userId),
-            likeCount: increment(-1), 
-          });
-          liked = false;
-      }else {
-          await updateDoc(commentRef, {
-            likes: arrayUnion(userId),
-            likeCount: increment(1), 
-          });
-          liked = true;
-      }
+
+      // Ensure likes is always an array
+      const likesArray = Array.isArray(data.likes) ? data.likes : [];
+      const isLiked = likesArray.includes(userId);
+
+      const updateData = isLiked
+      ? { likes: arrayRemove(userId), likeCount: increment(-1) }
+      : { likes: arrayUnion(userId), likeCount: increment(1) };
+
+      // Update the document
+      await updateDoc(commentRef, updateData);
+
+      // Return the new liked state
+      return { success: true, liked: !isLiked };
     }
-  
-    return { success: true, liked };
+    
+    return { success: false, liked: false };
 
   } catch (err) {
     console.error("Error liking comment:", err);

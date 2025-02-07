@@ -8,21 +8,41 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, updateBookmarkData } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, incrementBookViews, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
+import {FaStar} from "react-icons/fa";
+import View from '../icons/View';
 
 
 type Props = {
   id ?: string
   userId ?: string;
   bookmarks : string[];
+  userRating : number;
+  setUserRating: Function;
 }
 
-function BookInfo({userId, id, bookmarks}: Props) {
+function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
   const router = useRouter();
 
   const [book, setBook] = useState<Book>();
   const [bookmark, setBookmark] = useState<boolean>(false); 
   const [error, setError] = useState<string>(''); 
+  const [hoverRating, setHoverRating] = useState<number>(0); // Temporary hover rating
+
+
+  const handleSaveRating = async(newRating: number) => {
+    if (!userId || !id) return;
+    setHoverRating(0);
+
+    if (newRating === userRating) {
+      await updateRating(userId, id, null, userRating);
+      setUserRating(0);
+    }else{
+      await updateRating(userId, id, newRating, userRating);
+      setUserRating(newRating);
+    }
+  };
+
 
   const handleBookmarkClick = async () => {
     const newBookmarkState = !bookmark;
@@ -57,7 +77,11 @@ function BookInfo({userId, id, bookmarks}: Props) {
             </div>
 
             <div className="flex w-full items-center justify-center space-x-4">
-                <div onClick={() => router.push(`/read/${id}`)} className="w-1/2 halflg:w-[200px] xsymd:w-[120px]">
+                <div onClick={async() => {
+                  await incrementBookViews(id);
+                  router.push(`/read/${id}`)
+                  }} 
+                  className="w-1/2 halflg:w-[200px] xsymd:w-[120px]">
                   <FlowButton 
                     title='Read'
                     buttonWidth='w-full'
@@ -78,6 +102,20 @@ function BookInfo({userId, id, bookmarks}: Props) {
               </div>
               
             </div>
+
+            <div className="flex text-5xl space-x-2 mt-2">
+                {[1, 2, 3, 4, 5].map((value) => (
+                      <FaStar key={value} 
+                        className={`text-5xl ${
+                          (hoverRating || userRating) >= value ? 'text-yellow-500' : 'text-gray-400'
+                        } hover:text-yellow-500`}
+                          onMouseEnter={() => setHoverRating(value)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          onClick={() => handleSaveRating(value)}
+                      />  
+                ))}
+
+            </div>
         </div>
 
         <div className="w-full h-full basis-2/3 halflgyhalflg:basis-3/4 ylg:basis-3/4 flex-col space-y-8 text-white overflow-y-auto">
@@ -85,6 +123,11 @@ function BookInfo({userId, id, bookmarks}: Props) {
                 <p className="text-4xl ss:text-2xl font-bold">{book?.title}</p>
                 <p className="text-xl font-medium">{book?.author}</p>
                 <StarRating rating={book?.rating ?? 0}/> 
+
+                <div className="flex items-center space-x-1">
+                  <View className="stroke-white size-5"/>
+                  <p className="text-sm">{book?.views}</p>
+                </div>
 
                 <p className="font-light w-3/4 halflg:w-full">{book?.synopsis}</p>
                 

@@ -9,9 +9,9 @@ function Genre() {
     {genre: 'horror', title: 'Horror'},
     {genre: 'adventure', title: 'Adventure'},
     {genre: 'classics', title: 'Classics'},
-    {genre: 'marriage', title: 'Marriage'},
-    {genre: 'regency', title: 'Regency'}
-
+    {genre: '19th century', title: '19th Century'},
+    {genre: 'mystery', title: 'Mystery'},
+    {genre: 'marriage', title: 'Marriage'}
   ];
 
   return (

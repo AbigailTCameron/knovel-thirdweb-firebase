@@ -3,6 +3,7 @@ import SolidHeart from '../icons/SolidHeart';
 import EmptyHeart from '../icons/EmptyHeart';
 import { timeAgo } from '../../../tools/timeago';
 import { deleteComment, fetchCommenterImageAndName, fetchLikesCount, toggleLikeComment } from '../../../functions/comments/fetch';
+import Profile from '../icons/Profile';
 
 
 
@@ -27,7 +28,7 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
   useEffect(() => {
     const fetchCommenterInfo = async() => {
       await fetchCommenterImageAndName(commenterId, setProfileUrl, setUsername, setFullName)
-      const numOfLikes = await fetchLikesCount(commenterId, bookId, commentId, userId, setLiked); 
+      const numOfLikes = await fetchLikesCount(authorId, bookId, commentId, userId, setLiked); 
       setLikesCount(numOfLikes);
     }
 
@@ -36,7 +37,7 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
   }, [commenterId]);
 
   const handleToggleLike = async () => {
-    const { success, liked: newLiked } = await toggleLikeComment(commenterId, bookId, commentId, userId);
+    const { success, liked: newLiked } = await toggleLikeComment(authorId, bookId, commentId, userId);
     if (success) {
       setLiked(newLiked ?? false);
       setLikesCount((prev) => (newLiked ? prev + 1 : prev - 1));
@@ -63,9 +64,8 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
               src={profileUrl}
              />
           ) : (
-            <img 
-              className="w-[30px] h-[30px] rounded-full"
-              src={"/bg.png"}
+            <Profile 
+              className="w-[30px] h-[30px] rounded-full stroke-white"
             />
           )}
            

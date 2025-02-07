@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getDoc, increment, updateDoc } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -88,3 +88,72 @@ export const updateBookmarkData = async(userId: string, bookId: string) => {
     console.error("Error updating bookmarks:", error);
   }
 }
+
+export const updateRating = async (userId: string, bookId: string, rating: number | null, oldRating: number) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const bookDocRef = doc(db, "books", bookId);
+
+    const userDoc = await getDoc(userDocRef);
+    const bookDoc = await getDoc(bookDocRef);
+
+    const bookData = bookDoc.exists() ? bookDoc.data() : {};
+    const currentAverageRating: number = bookData.rating ?? 0;
+    const currentRatingNums: number = bookData.rating_nums ?? 0;
+    let newRatingNums = currentRatingNums;
+    let newAverageRating = currentAverageRating;
+
+    if (userDoc.exists()) {
+      const currentRatings = userDoc.data()?.rated || [];
+
+      if (rating === null) {
+        // Remove the existing rating for this book
+        const updatedRatings = currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId);
+        await updateDoc(userDocRef, { rated: updatedRatings });
+
+        if(oldRating !== 0){
+            newRatingNums = Math.max(newRatingNums - 1, 0); 
+            newAverageRating = newRatingNums > 0
+            ? ((currentAverageRating * currentRatingNums) - oldRating) / newRatingNums
+            : 0;
+        }
+      } else {
+        if (oldRating !== 0) {
+          // Update existing rating
+          newAverageRating = ((currentAverageRating * currentRatingNums) - oldRating + rating) / currentRatingNums;
+        } else {
+          // Add new rating          
+          newRatingNums += 1;
+          newAverageRating = ((currentAverageRating * currentRatingNums) + rating) / newRatingNums;
+        }
+
+        const updatedRatings = [
+          ...currentRatings.filter((item: { bookId: string }) => item.bookId !== bookId),
+          { bookId, rating },
+        ];
+        await updateDoc(userDocRef, { rated: updatedRatings });
+      }
+    }
+
+    await updateDoc(bookDocRef, {
+      rating: parseFloat(newAverageRating.toFixed(2)), // Ensure precision is limited to 2 decimal places
+      rating_nums: newRatingNums,
+    });
+
+  } catch (error) {
+    console.error("Error updating rating:", error);
+  }
+};
+
+export const incrementBookViews = async (bookId: string | undefined) => {
+  if (!bookId) return;
+
+  try {
+    const bookRef = doc(db, "books", bookId);
+    await updateDoc(bookRef, {
+      views: increment(+1), // Increment the views count by 1
+    });
+  } catch (error) {
+    console.error("Error incrementing book views:", error);
+  }
+};

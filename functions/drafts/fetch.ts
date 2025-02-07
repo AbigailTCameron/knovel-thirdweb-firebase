@@ -506,7 +506,10 @@ export async function pushToBooks(userId: string, name: string, title: string, s
         txhash: txhash,
         hash: cid,
         search_keywords: generateKeywords(title, name),
-        verified: false
+        verified: false,
+        views: 0,
+        price: 0,
+        currency: "ETH"
       };
 
       // Step 2: Save draft data to Firestore
