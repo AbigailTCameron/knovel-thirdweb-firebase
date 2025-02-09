@@ -33,7 +33,7 @@ function Feed({userGenres, userId, notifications, setNotifications}: Props) {
   }, [])
 
   return (
-    <div className="flex flex-col w-full h-full px-8 overflow-y-scroll">
+    <div className="flex flex-col w-full h-full px-8 halfxl:px-4 overflow-y-scroll">
         <div className="sticky top-0 w-full items-center justify-center z-40 backdrop-blur-md">
           <FeedHeader 
             feeds={feeds}
