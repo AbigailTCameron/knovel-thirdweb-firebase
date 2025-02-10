@@ -48,7 +48,7 @@ function CommunityInfo({searchResults, setSearchResults, userId, userGenres, set
   return (
     <div className="flex w-full h-full relative">
       {searchResults && (
-        <div className="absolute z-50 w-1/3 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
+        <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
           <UserList 
             setSearchResults={setSearchResults}
             userId={userId}

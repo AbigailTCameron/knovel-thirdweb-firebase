@@ -22,7 +22,7 @@ function ProfileTop({userId, userImage, name, username, isFollowing, profileId, 
 
   return (
     <div className="w-full h-full">
-          <div className="flex justify-evenly w-full items-center">
+          <div className="flex space-x-2 w-full items-center lg:flex-col sm:flex-row">
               <ProfileHead 
                   userImage={userImage}
               />
