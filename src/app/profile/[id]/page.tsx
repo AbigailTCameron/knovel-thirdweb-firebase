@@ -36,8 +36,8 @@ function Profile({}: Props) {
 
 
   return (
-    <div className="flex w-screen h-screen overflow-hidden">
-       <div className="w-1/12 max-w-[150px] h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
+    <div className="flex sm:flex-col w-screen h-screen overflow-hidden sm:overflow-y-auto">
+       <div className="w-1/12 sm:w-full sm:h-fit sm:sticky sm:top-0 h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
           <CommunityHeader 
             userId={currentUser}
             profileUrl={profileUrl}
@@ -46,7 +46,7 @@ function Profile({}: Props) {
           />
         </div>
 
-        <div className="flex-grow h-full overflow-hidden">
+        <div className="flex-grow h-full sm:w-full overflow-hidden sm:overflow-y-auto">
           <ProfileInfo
              searchResults={searchResults}
              setSearchResults={setSearchResults}

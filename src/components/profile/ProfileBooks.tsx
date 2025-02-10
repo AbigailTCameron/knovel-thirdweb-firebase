@@ -29,26 +29,26 @@ function ProfileBooks({books, bookQuery}: Props) {
 
 
   return (
-    <div className="flex space-x-6 overflow-x-auto custom-scrollbar pr-4">
+    <div className="flex space-x-6 h-full overflow-x-auto custom-scrollbar pr-4">
         {filteredBooks.map((book, index) => (
           <div onClick={() => router.push(`/book/${book.id}`)} key={index} className="flex hover:cursor-pointer hover:border-white hover:border-[0.5px] rounded-3xl p-[1px]">
-               <div className="relative w-[250px] h-[400px] sm:w-[180px] sm:h-[270px] flex-shrink-0">
+               <div className="relative w-[250px] md:w-[200px] h-[400px] md:h-[320px] sm:w-[150px] sm:h-[240px] flex-shrink-0">
                   <img 
                     className="z-10 p-0.5 w-full h-full group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-3xl object-cover" 
                     src={book.book_image} 
                     alt={book.title}
                   />
 
-                  <div className="flex flex-col absolute bottom-0 bg-[#1b1c1e] w-full h-1/3 rounded-b-3xl px-4 py-2 space-y-2">
+                  <div className="flex flex-col absolute bottom-0 bg-[#1b1c1e] w-full h-1/3 md:h-2/5 md:-bottom-[10px] rounded-b-3xl px-4 py-2 space-y-2">
 
                       <p className="text-lg font-semibold text-white">{book.title}</p>
 
-                      <div className="flex items-center justify-between text-white/70">
+                      <div className="flex sm:hidden items-center justify-between text-white/70">
                           <p className="text-sm">Price</p>
 
-                          <div className='flex text-lg font-medium space-x-1 text-white'>
+                          <div className='flex text-lg md:text-base font-medium space-x-1 text-white'>
                             <img 
-                              className='w-[20px] h-[30px]'
+                              className='w-[20px] md:w-[10px] h-[30px] md:h-[20px]'
                               src={"/eth.png"}
                             />
                             <p>{(book.price).toFixed(2)}</p>
@@ -57,7 +57,7 @@ function ProfileBooks({books, bookQuery}: Props) {
                           
                       </div>
 
-                      <div className="flex items-center justify-between my-1 text-white/70">
+                      <div className="flex sm:hidden items-center justify-between my-1 text-white/70">
                           <div className="flex text-xs space-x-1 items-center">
                               <Clock 
                                 className="stroke-white/70 size-3"
