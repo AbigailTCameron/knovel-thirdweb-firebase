@@ -54,8 +54,9 @@ function Connect({}: Props) {
                 auth={{
                     getLoginPayload: async ({ address }) => generatePayload({ address }),
                     doLogin: async (params) => {
-                      const token = await login(params); 
-                      if(token) {
+                      const result = await login(params); 
+                      if(result && result.token) {
+                        const {token} = result;
                         firebaseAuthClient(token, router);
                       }
                       

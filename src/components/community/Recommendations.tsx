@@ -34,12 +34,12 @@ function Recommendations({results, loadMore}: Props) {
           <div 
           ref={containerRef}
           onScroll={handleScroll} 
-          className="flex w-full h-full space-x-4 overflow-x-auto custom-scrollbar px-4">
+          className="flex w-full h-full space-x-4 halfxl:space-x-6 overflow-x-auto custom-scrollbar px-4">
          
             {results.map((book) => (
               <div onClick={() => router.push(`/book/${book.id}`)} key={book.id} className="flex w-full flex-col text-white hover:cursor-pointer">
                 
-                  <div className="flex w-[300px] h-[240px] rounded-md">
+                  <div className="flex w-[300px] halfxl:w-[200px] md:w-[150px] h-[240px] halfxl:h-[160px] md:h-[120px] rounded-md">
                       {book.authorProfile && (
                           <img 
                             className='w-full h-hull rounded-md'
@@ -48,7 +48,7 @@ function Recommendations({results, loadMore}: Props) {
                       )}
                   </div>
 
-                  <div className="flex -mt-[130px] ml-[10px] w-[100px] h-[160px] border border-white rounded-xl">
+                  <div className="flex -mt-[130px] ml-[10px] halfxl:-mt-[80px] md:-mt-[50px] w-[100px] halfxl:w-[80px] md:w-[50px] h-[160px] halfxl:h-[128px] md:h-[80px] border border-white rounded-xl">
                     <img 
                       className="w-full h-full rounded-xl"
                       src={book.book_image}
@@ -56,10 +56,10 @@ function Recommendations({results, loadMore}: Props) {
                   </div>
 
                   <div className="flex flex-col">
-                    <p className="text-xl font-bold">{book.title}</p>
+                    <p className="text-xl md:text-lg font-bold">{book.title}</p>
 
                     <div className='flex items-center space-x-1'>
-                      <p className="font-medium">{book.author}</p>
+                      <p className="font-medium md:text-sm">{book.author}</p>
                       {book.verified && (
                         <img 
                           className='w-[15px] h-[15px]'

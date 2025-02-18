@@ -50,9 +50,9 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
   }, [])
 
   return (
-    <div className="relative flex flex-col z-40 w-full h-full text-white items-center font-mono text-sm py-6 px-6 md:p-4 sm:px-2 xs:px-1">
+    <div className="relative flex flex-col sm:flex-row z-40 w-full h-full sm:h-fit text-white items-center font-mono text-sm py-6 px-6 md:p-4 sm:px-2 xs:px-1">
         
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex items-center justify-center">
              <div className="flex w-[70px] h-fit hover:cursor-pointer">
                   <img 
                     onClick={handleExploreClick}
@@ -65,7 +65,7 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
         </div>
       
 
-        <div className="flex flex-col w-full h-1/2 space-y-4 items-center self-center place-content-center place-items-center justify-center">
+        <div className="flex flex-col sm:flex-row w-full h-1/2 space-y-4 sm:space-y-0 sm:space-x-2 items-center self-center place-content-center place-items-center justify-center">
 
               <div onClick={handleExploreClick} className="hover:cursor-pointer hover:rounded-xl p-1 hover:border hover:border-white/50">
                   <HomeIcon className="stroke-white"/>  
@@ -94,7 +94,7 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
         </div>
 
 
-        <div onClick={handleSettingsClick} className="absolute bottom-10 hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
+        <div onClick={handleSettingsClick} className="absolute sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
           <SettingsIcon/>
         </div>
       

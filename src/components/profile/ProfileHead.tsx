@@ -10,12 +10,12 @@ function ProfileHead({userImage}: Props) {
     <div className="">
       {userImage ? (
         <img 
-         className="w-[70px] h-[70px] rounded-full"
+         className="w-[60px] h-[60px] lg:w-[40px] lg:h-[40px] rounded-full"
          src={userImage}
        />
       ) : (
         <Profile 
-          className="w-[60px] h-[60px] rounded-full"
+          className="w-[60px] h-[60px] lg:w-[40px] lg:h-[40px] rounded-full"
         />
       )}
      
