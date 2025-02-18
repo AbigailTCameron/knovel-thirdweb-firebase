@@ -16,6 +16,12 @@ const thirdwebAuth = createAuth({
   domain: process.env.NEXT_PUBLIC_THIRDWEB_AUTH_DOMAIN || "",
   adminAccount: privateKeyToAccount({ client: client, privateKey }),
   client: client,
+  jwt: {
+    expirationTimeSeconds: 60 * 60 * 24 * 30,
+  },
+  login: {
+    payloadExpirationTimeSeconds: 60 * 60 * 24 * 30
+  }
 });
 
 const {auth} = initializeFirebaseServer(); 
@@ -25,16 +31,24 @@ export const generatePayload = thirdwebAuth.generatePayload;
 
 export async function login(payload: VerifyLoginPayloadParams) {
   const verifiedPayload = await thirdwebAuth.verifyPayload(payload);
+
   if (verifiedPayload.valid) {
     const jwt = await thirdwebAuth.generateJWT({
       payload: verifiedPayload.payload,
     });
     (await cookies()).set("jwt", jwt);
 
+    const verifyJWT = await thirdwebAuth.verifyJWT({jwt})
+    if (!verifyJWT.valid) {
+      return false;
+    }
+  
+    const jwtExp = verifyJWT.parsedJWT.exp;     
+
     const address = verifiedPayload.payload.address;
     const token = await auth.createCustomToken(address); 
     
-    return token;
+    return {token, jwtExp};
   }
 }
 

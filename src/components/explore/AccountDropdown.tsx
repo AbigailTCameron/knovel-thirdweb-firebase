@@ -26,7 +26,7 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
   return (
     <div className="flex flex-col space-y-4 py-4 w-full text-sm font-medium text-[#e3e4e5]">
     
-        <ConnectButton 
+        <ConnectButton
           client={client}
           chain={camp}
           detailsButton={{
@@ -40,10 +40,14 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
             }
           }}
           auth={{
-            getLoginPayload: async ({ address }) => generatePayload({ address }),
+            getLoginPayload: async ({ address }) => {
+              console.log("do we get here")
+              return generatePayload({ address })
+            },
             doLogin: async (params) => {
-              const token = await login(params); 
-              if(token) {
+              const result = await login(params); 
+              if(result && result.token) {
+                const {token} = result;
                 firebaseAuthClient(token, router);
               }
               
@@ -56,7 +60,6 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
               await firebaseLogout(router); 
             },
           }}
-      
         />
 
         <div onClick={handleDashboardClick} className="flex items-center space-x-2 hover:cursor-pointer hover:bg-black px-3 py-3">
