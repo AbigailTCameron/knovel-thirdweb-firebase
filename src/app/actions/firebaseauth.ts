@@ -40,24 +40,11 @@ export const firebaseAuthClient = (token: string, router: any) => {
   });
 }
 
+
 export const firebaseLogout = async(router: any) => {
   await signOut(auth).then(() => {
     router.push('/'); 
   })
 }
-
-
-// export const firebaseLogout = async (router?: any) => {
-//   await signOut(auth)
-//     .then(() => {
-//       console.log("Successfully logged out from Firebase.");
-//       if (router) {
-//         router.push('/');
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Error logging out of Firebase:", error);
-//     });
-// };
 
 

@@ -41,7 +41,6 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
           }}
           auth={{
             getLoginPayload: async ({ address }) => {
-              console.log("do we get here")
               return generatePayload({ address })
             },
             doLogin: async (params) => {
