@@ -61,6 +61,19 @@ export async function isLoggedIn() {
  
   const authResult = await thirdwebAuth.verifyJWT({ jwt: jwt.value });
 
+  if (!authResult.valid) {
+    return false;
+  }
+
+  const jwtExp = authResult.parsedJWT.exp;
+  const currentTime = Math.floor(Date.now() / 1000);
+  const threshold = 60 * 60 * 24; // Refresh if less than a day
+
+  if (jwtExp - currentTime <= threshold) {
+    await logout();
+    return true;
+  }
+
   return authResult.valid;
 }
 
