@@ -7,13 +7,13 @@ type Props = {
 function X({ className }: Props) {
   return (
     <svg
-      width="40px"
-      height="40px"
+      width="25px"
+      height="25px"
       viewBox="0 0 24 24"
       strokeWidth="1.4"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      color="#000000"
+      stroke="currentColor"
       className={className}
     >
       <path

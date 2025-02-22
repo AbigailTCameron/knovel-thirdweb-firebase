@@ -3,6 +3,7 @@ import FaqsPopup from './FaqsPopup';
 import LinkedIn from '../icons/LinkedIn';
 import UpArrow from '../icons/UpArrow';
 import X from '../icons/X';
+import Youtube from '../icons/Youtube';
 
 
 function Footer() {
@@ -23,7 +24,7 @@ function Footer() {
               <div className="flex items-center basis-1/3 font-mono ">
                 <img 
                   src={"/knovel-logo-white.png"}
-                  className="w-1/6 xxl:w-[90px] sm:w-[60px] h-full sm:h-[60px]"
+                  className="w-1/6 xxl:w-[90px] sm:w-[60px] h-fit sm:h-[60px]"
                 />
 
                 <div onClick={scrollToTop} className="hover:cursor-pointer flex items-center space-x-1">
@@ -45,15 +46,22 @@ function Footer() {
 
                   <div className="flex flex-col">
                       <p className="text-white/40">Social</p>
-                      <a className="flex items-center space-x-2" target="_blank" href="https://www.linkedin.com/company/knovelprotocol/">
-                        <LinkedIn />
-                        <p>LinkedIn</p>
-                      </a>
 
-                      <a className="flex" target="_blank" href="https://x.com/knovelprotocol">
-                        <X className="stroke-white size-6"/>
+                      <div className="grid grid-cols-2 gap-2 items-center">
+                        <a className="flex" target="_blank" href="https://www.youtube.com/@KnovelProtocol">
+                          <Youtube />
+                        </a>
 
-                      </a>
+                        <a className="flex" target="_blank" href="https://www.linkedin.com/company/knovelprotocol/">
+                          <LinkedIn />
+                        </a>
+
+                        <a className="flex" target="_blank" href="https://x.com/knovelprotocol">
+                          <X/>
+                        </a>
+                      </div>
+
+                    
                   </div>
 
               </div>
