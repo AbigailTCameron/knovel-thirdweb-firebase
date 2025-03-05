@@ -12,9 +12,15 @@ import Connect from "@/components/home/Connect";
 import Technology from "@/components/home/Technology";
 import ComingSoon from "@/components/home/ComingSoon";
 import Footer from "@/components/footers/Footer";
+import { defineChain } from 'thirdweb/chains'
+
 
 export default function Home() {
   const router = useRouter(); 
+  const camp = defineChain({
+    id: 123420001114,
+  });
+
   return (
     <div className="flex w-screen min-h-screen flex-col items-center overflow-x-hidden">
         <div className="sticky top-0 w-full z-50">
@@ -55,6 +61,7 @@ export default function Home() {
 
               <ConnectButton 
                 client={client}
+                chain={camp}
                 connectModal={{ 
                   size: "wide",
                   title: "Knovel Protocol ",
