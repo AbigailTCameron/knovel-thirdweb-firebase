@@ -13,7 +13,7 @@ type Props = {}
 function LandingHeader({}: Props) {
   const router = useRouter(); 
   const camp = defineChain({
-    id: 325000,
+    id: 123420001114,
   });
 
   return (
