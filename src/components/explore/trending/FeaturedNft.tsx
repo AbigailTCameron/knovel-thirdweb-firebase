@@ -25,8 +25,6 @@ function FeaturedNft({setMintPopup}: Props) {
             </div>
       </div>
 
-      
-
 
       <div className="">
          <img 

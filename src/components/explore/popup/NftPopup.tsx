@@ -1,14 +1,12 @@
-import CloseIcon from '@/components/icons/CloseIcon';
 import XMark from '@/components/icons/XMark';
 import React from 'react'
 
 type Props = {
-  setTitle : Function; 
   onConfirm : Function;
   onCancel ?: () => void;
 }
 
-function NftMint({setTitle, onConfirm, onCancel}: Props) {
+function NftMint({onConfirm, onCancel}: Props) {
 
   const handleConfirm = () => {
     onConfirm();
@@ -20,7 +18,10 @@ function NftMint({setTitle, onConfirm, onCancel}: Props) {
             <div className="flex flex-col mb-4 space-y-2 items-center text-center">
                   <p className='text-4xl font-extrabold'>KNOVEL'S EARLY ACCESS BADGES</p>
             </div>
-            <XMark className="hover:cursor-pointer stroke-white absolute right-4 top-2 size-6"/>
+            <XMark 
+              onClick={onCancel} 
+              className="hover:cursor-pointer stroke-white absolute right-3 top-3 size-5"
+            />
 
             <div className="flex justify-center w-full h-full space-x-2 items-center">
               
@@ -39,12 +40,15 @@ function NftMint({setTitle, onConfirm, onCancel}: Props) {
                   
                   <p className='text-sm font-light text-right'>Max Mint amount: 1</p>
 
-                 <div className="flex justify-between border-t border-b border-whit my-4">
-                    <p>Total</p>
-                    <p>FREE</p>
+                 <div className="w-full flex border-t border-b border-white my-2">
+                    <div className="flex w-full text-lg justify-between my-3">
+                        <p>Total</p>
+                        <p>FREE</p>
+                    </div>
+                  
                  </div>
 
-                 <div className="bg-[#5D3FD3] rounded-xl text-center text-lg w-full p-2 font-semibold">
+                 <div onClick={handleConfirm} className="hover:cursor-pointer bg-[#5D3FD3] rounded-xl text-center text-lg w-full p-4 font-semibold">
                     <p>MINT</p>
                  </div>
                </div>
