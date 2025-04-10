@@ -4,9 +4,10 @@ import React from 'react'
 type Props = {
   onConfirm : Function;
   onCancel ?: () => void;
+  userBalance: number;
 }
 
-function NftMint({onConfirm, onCancel}: Props) {
+function NftMint({onConfirm, onCancel, userBalance}: Props) {
 
   const handleConfirm = () => {
     onConfirm();
@@ -48,9 +49,18 @@ function NftMint({onConfirm, onCancel}: Props) {
                   
                  </div>
 
-                 <div onClick={handleConfirm} className="hover:cursor-pointer bg-[#5D3FD3] rounded-xl text-center text-lg w-full p-4 font-semibold">
-                    <p>MINT</p>
-                 </div>
+                 {userBalance > 0 ? (
+                  <div className="bg-white/30 hover:cursor-not-allowed rounded-xl p-4 text-center text-lg w-full font-semibold">
+                    <p>Already minted</p>
+                  </div>
+
+                 ) : (
+                  <div onClick={handleConfirm} className="hover:cursor-pointer bg-[#5D3FD3] rounded-xl text-center text-lg w-full p-4 font-semibold">
+                        <p>MINT</p>
+                  </div>
+
+                 )}
+                
                </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase'
-import { getUserProfile } from '../../../functions/explore/fetch'
+import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
 import { onAuthStateChanged } from 'firebase/auth'
 import ExploreHeader from '@/components/headers/ExploreHeader'
 import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
@@ -9,6 +9,7 @@ import Trending from '@/components/explore/trending/Trending'
 import Genre from '@/components/explore/genre/Genre'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
+import Butterfly from '@/components/loading/Butterfly'
 
 
 type Props = {}
@@ -20,6 +21,8 @@ function page({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
   const [mintPopup, setMintPopup] = useState<boolean>(false);
+  const [mintLoading, setMintLoading] = useState(false);
+  const [userBalance, setUserBalance] = useState(0);
 
 
   useEffect(() => { 
@@ -37,14 +40,36 @@ function page({}: Props) {
    
   }, []);
 
+  useEffect(() => {
+    if (currentUser) {
+      fetchUserNftBalance(currentUser, setUserBalance);
+    }
+  }, [currentUser]);
+
+
   if(loading){
     return (
       <SpinLoader />
     )
   }
 
-  const mint = () => {
-    
+  const mint = async() => {
+    if(currentUser){
+      setMintLoading(true);
+      await mintNft(currentUser); 
+      setMintLoading(false);
+
+    }
+  }
+
+  if(mintLoading){
+    return (
+      <Butterfly />
+    )
+  }
+
+  if (loading) {
+    return <SpinLoader />;
   }
 
   return (
@@ -58,9 +83,12 @@ function page({}: Props) {
         </div>
 
         <div className="flex flex-col w-full" style={{ height: '75vh' }}>
-          <div onClick={() => setMintPopup(true)} className="flex items-center h-[40px] bg-[#5D3FD3] w-full text-center hover:cursor-pointer">
-            <p className="w-full text-lg font-bold text-white text-center"> Claim your golden badge now!</p>
-          </div>
+          {userBalance <= 0 && (
+            <div onClick={() => setMintPopup(true)} className="flex items-center h-[40px] bg-[#5D3FD3] w-full text-center hover:cursor-pointer">
+              <p className="w-full text-lg font-bold text-white text-center"> Claim your golden badge now!</p>
+            </div>
+          )}
+        
           <TrendingCarousel 
             setMintPopup={setMintPopup}
           />
@@ -78,6 +106,7 @@ function page({}: Props) {
           <NftMint 
             onCancel={() => setMintPopup(false)}
             onConfirm={mint}
+            userBalance={userBalance}
           />
         )}
     </div>
