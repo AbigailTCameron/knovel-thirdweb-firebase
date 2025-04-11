@@ -42,11 +42,19 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
     }
   };
 
+  const handleCollectiblesClick = () => {
+    if(pathname !== `/collection/${userId}`){
+      setLoading(true); 
+      router.push(`/collection/${userId}`);
+    }
+  }
+
   useEffect(() => {
     router.prefetch('/dashboard'); // prefetch the dashboard page for faster loading
     router.prefetch('/settings'); 
     router.prefetch('/explore'); 
     router.prefetch('/community'); 
+    router.prefetch(`/collection/${userId}`);
   }, [])
 
   return (
@@ -71,7 +79,7 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
                   <HomeIcon className="stroke-white"/>  
               </div>
               
-              <div className="rounded-full w-[40px] h-[40px]">
+              <div onClick={handleCollectiblesClick} className="rounded-full w-[40px] h-[40px] hover:cursor-pointer">
                   {profileUrl ? (
                       <img 
                         className="rounded-full w-full h-full"

@@ -13,7 +13,12 @@ import {
   updateDoc,
   where
 } from "firebase/firestore";
+import { smartWallet } from "thirdweb/wallets";
+import { defineChain } from "thirdweb/chains";
+import { client, personalAccount } from "@/lib/client";
 import { Notification } from "../..";
+import { getContract, sendTransaction } from "thirdweb";
+import { balanceOf, claimTo } from "thirdweb/extensions/erc1155";
 
 const { db } = initializeFirebaseClient();
 
@@ -252,3 +257,70 @@ export const deleteNotif = async (commentId: string) => {
 
   }
 }
+
+
+const smartContractConfig = async() => {
+  // Configure the smart wallet
+  const wallet = smartWallet({
+    chain: defineChain(123420001114),
+    sponsorGas: true,
+  });
+
+  // Connect the smart wallet
+  const smartAccount = await wallet.connect({
+    client,
+    personalAccount,
+  });
+
+  // connect to your contract
+  const contract = getContract({
+    client,
+    chain: defineChain(123420001114),
+    address: "0x9c327f77070124C072eC3f2456DD42838fECDE33",
+  });
+
+  return {contract, smartAccount}
+}
+
+export const mintNft = async (userId: string) => {
+
+  try {
+      const {contract, smartAccount} = await smartContractConfig(); 
+
+      const transaction = claimTo({
+        contract,
+        to: userId,
+        tokenId: BigInt(0),
+        quantity: BigInt(1)
+      });
+
+      const { transactionHash } = await sendTransaction({
+        transaction,
+        account: smartAccount,
+      });
+
+      console.log(`Transaction successful with hash: ${transactionHash}`);
+  }catch(err){
+    console.error("Error trying to call public registry smart contract", err);
+  }
+
+}
+
+
+export const fetchUserNftBalance = async (userId: string, setUserBalance: Function) => {
+  if (userId) {
+    try {
+      const {contract, } = await smartContractConfig(); 
+
+      const balance = await balanceOf({
+        contract,
+        owner: userId,
+        tokenId: BigInt(0), // Replace 0 with your actual tokenId
+      });
+      setUserBalance(Number(balance));
+      //console.log("The balance is", Number(balance));
+    } catch (error) {
+      console.error("Error fetching user balance:", error);
+    }
+  }
+};
