@@ -33,12 +33,13 @@ function DashboardInfo({userId, setLoading, draftsLength, publishedLength, bookm
       router.push(`/publish`);
     }
   }
+  
 
   useEffect(() => {
     if(userId){
       router.prefetch(`/drafts/${userId}`);
       router.prefetch(`/readinglist/${userId}`);
-      router.prefetch(`/publish`)
+      router.prefetch(`/publish`);
     }
   }, [userId])
 
@@ -63,10 +64,6 @@ function DashboardInfo({userId, setLoading, draftsLength, publishedLength, bookm
           <p className="flex basis-1/4 text-white/50">books</p>
         </div>
 
-        {/* <div className="flex flex-col bg-[#2a2829] rounded-3xl hover:cursor-pointer p-8 hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] ss:p-4">
-          <p className="flex basis-1/4 font-bold text-xl text-white/50">Following</p>
-          <p className='flex basis-1/2 text-9xl halfxl:text-8xl sm:text-7xl ss:text-4xl font-extrabold bg-gradient-to-r from-white to-white/50 text-transparent bg-clip-text'>{0}</p>
-        </div> */}
     </div>
   )
 }
