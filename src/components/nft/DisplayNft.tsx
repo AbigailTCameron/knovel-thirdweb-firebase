@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NFTMedia, NFTName, NFTProvider } from 'thirdweb/react'
 
 type Props = {
@@ -7,16 +7,20 @@ type Props = {
 }
 
 function DisplayNft({nfts, nftContract}: Props) {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   useEffect(() => {
  
   }, [nfts, nftContract])
 
   return (
-    <div className="w-full h-full grid grid-cols-4 gap-4">
+    <div className="w-full h-full grid grid-cols-4">
       {nfts.map((nft, index) => (
          <NFTProvider key={index} tokenId={nft.id} contract={nftContract}>
-            <div className="flex flex-col">
+            <div 
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)} 
+              className="flex w-full h-fit p-2 flex-col border-2 border-gray-600/50 hover:shadow-lg hover:shadow-gray-800/50">
                 <NFTMedia
                   className="h-fit w-full rounded-md"
                   controls={false}
@@ -27,7 +31,9 @@ function DisplayNft({nfts, nftContract}: Props) {
                     nft.metadata.image,
                   }}
                 />
-                <NFTName className="px-2 font-bold text-white" />
+                {isHovered && (
+                    <NFTName autoCapitalize="words" className="px-2 text-lg font-semibold text-white uppercase" />
+                )}
             </div>
 
          </NFTProvider>
