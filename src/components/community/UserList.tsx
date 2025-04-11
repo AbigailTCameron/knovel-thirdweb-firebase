@@ -41,14 +41,14 @@ function UserList({setSearchResults, userId}: Props) {
 
 
   return (
-    <div className="w-full h-full">
-         <div className="w-3/4 place-self-center flex my-2">
-            <div className="flex items-center w-full bg-[#1b1c1e] rounded-3xl p-0.5">
+    <div className="flex flex-col w-full h-full">
+         <div className="w-3/4 place-self-center self-center flex my-2">
+            <div className="flex items-center justify-center w-full bg-[#1b1c1e] rounded-3xl p-0.5">
                 <input 
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex justify-between py-3 px-3 bg-inherit w-full h-full text-white/70 rounded-3xl focus:outline-none" 
+                  className="flex py-3 px-3 bg-inherit w-full h-full text-white/70 rounded-3xl focus:outline-none" 
                   placeholder="Search username..."
                 />
             </div>

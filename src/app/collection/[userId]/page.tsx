@@ -6,6 +6,7 @@ import { getUserProfile } from '../../../../functions/explore/fetch';
 import ExploreHeader from '@/components/headers/ExploreHeader';
 import { useParams } from 'next/navigation';
 import CommunityHeader from '@/components/headers/CommunityHeader';
+import UserProf from '@/components/profile/UserProf';
 
 type Props = {}
 
@@ -17,21 +18,26 @@ function Collection({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [searchResults, setSearchResults] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => { 
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         getUserProfile(user.uid, setProfileUrl);
+         const data = await getUserProfile(user.uid, setProfileUrl);
+         if(data){
+          setName(data.name);
+          setUsername(data.username);
+         }      
        }else {
          setProfileUrl(''); 
        }
     })
-
     return () => unsubscribe(); 
   
- }, []);
+  }, []);
 
   return (
     <div className="flex sm:flex-col w-screen h-screen overflow-hidden sm:overflow-y-auto">
@@ -45,12 +51,15 @@ function Collection({}: Props) {
         </div>
 
         <div className="flex-grow h-full sm:w-full overflow-hidden sm:overflow-y-auto">
-          {/* <ProfileInfo
+          <UserProf 
              searchResults={searchResults}
              setSearchResults={setSearchResults}
              userId={currentUser || ''}
-             profileId={params.id}
-          /> */}
+             name={name}
+             username={username}
+             profileUrl={profileUrl}
+          />
+          
         </div>
 
     
