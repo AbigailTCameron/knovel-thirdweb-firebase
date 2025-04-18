@@ -10,6 +10,7 @@ import Genre from '@/components/explore/genre/Genre'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
 import Butterfly from '@/components/loading/Butterfly'
+import ClaimedNft from '@/components/explore/popup/ClaimedNfft'
 
 
 type Props = {}
@@ -23,6 +24,7 @@ function page({}: Props) {
   const [mintPopup, setMintPopup] = useState<boolean>(false);
   const [mintLoading, setMintLoading] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
+  const [claimed, setClaimed] = useState<boolean>(false);
 
 
   useEffect(() => { 
@@ -56,7 +58,7 @@ function page({}: Props) {
   const mint = async() => {
     if(currentUser){
       setMintLoading(true);
-      await mintNft(currentUser); 
+      await mintNft(currentUser, setClaimed); 
       setMintLoading(false);
 
     }
@@ -71,6 +73,16 @@ function page({}: Props) {
   if (loading) {
     return <SpinLoader />;
   }
+
+  useEffect(() => {
+    if (claimed) {
+      const timer = setTimeout(() => {
+        setClaimed(false);
+      }, 3000); // 3 seconds
+  
+      return () => clearTimeout(timer);
+    }
+  }, [claimed]);
 
   return (
     <div className="flex w-screen min-h-screen flex-col items-center">
@@ -109,6 +121,14 @@ function page({}: Props) {
             userBalance={userBalance}
           />
         )}
+
+        {claimed && (
+          <ClaimedNft 
+            onCancel={() => setClaimed(false)}
+          />
+        )}
+
+        
     </div>
   )
 }
