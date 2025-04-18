@@ -282,7 +282,7 @@ const smartContractConfig = async() => {
   return {contract, smartAccount}
 }
 
-export const mintNft = async (userId: string) => {
+export const mintNft = async (userId: string, setClaimed: Function) => {
 
   try {
       const {contract, smartAccount} = await smartContractConfig(); 
@@ -298,10 +298,15 @@ export const mintNft = async (userId: string) => {
         transaction,
         account: smartAccount,
       });
-
-      console.log(`Transaction successful with hash: ${transactionHash}`);
-  }catch(err){
-    console.error("Error trying to call public registry smart contract", err);
+      //console.log(`Transaction successful with hash: ${transactionHash}`);
+      return { success: true };
+  }catch(err: any){
+    console.error(err);
+    if (err.message && err.message.includes('DropClaimExceedLimit')) {
+      setClaimed(true);
+      return { success: false, error: 'You have already claimed this NFT.' };
+    }
+    return { success: false, error: 'An unexpected error occurred during minting.' };
   }
 
 }
