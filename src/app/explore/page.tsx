@@ -82,11 +82,11 @@ function page({}: Props) {
         </div>
 
         <div className="flex flex-col w-full" style={{ height: '75vh' }}>
-          {userBalance <= 0 && (
+          {/* {userBalance <= 0 && (
             <div onClick={() => setMintPopup(true)} className="flex items-center h-[40px] bg-[#5D3FD3] w-full text-center hover:cursor-pointer">
               <p className="w-full text-lg font-bold text-white text-center"> Claim your golden badge now!</p>
             </div>
-          )}
+          )} */}
         
           <TrendingCarousel 
             setMintPopup={setMintPopup}
