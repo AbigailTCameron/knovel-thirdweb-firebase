@@ -291,7 +291,7 @@ export const mintNft = async (userId: string, setClaimed: Function) => {
         contract,
         to: userId,
         tokenId: BigInt(0),
-        quantity: BigInt(1)
+        quantity: BigInt(1),
       });
 
       const { transactionHash } = await sendTransaction({
@@ -299,6 +299,7 @@ export const mintNft = async (userId: string, setClaimed: Function) => {
         account: smartAccount,
       });
       //console.log(`Transaction successful with hash: ${transactionHash}`);
+
       return { success: true };
   }catch(err: any){
     console.error(err);
