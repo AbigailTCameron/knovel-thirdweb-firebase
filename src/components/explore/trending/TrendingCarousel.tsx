@@ -13,8 +13,14 @@ function TrendingCarousel({setMintPopup}: Props) {
   const [currentPage, setCurrentPage] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState('left'); 
 
+  // const pages = [
+  //   // <FeaturedNft setMintPopup={setMintPopup} key="nft" />,
+  //   <FeaturedBook key="book" />,
+  //   <FeaturedAuthor key="author" />,
+  //   <Contest key="contest"/>
+  // ];
+
   const pages = [
-    <FeaturedNft setMintPopup={setMintPopup} key="nft" />,
     <FeaturedBook key="book" />,
     <FeaturedAuthor key="author" />,
     <Contest key="contest"/>
@@ -49,13 +55,13 @@ function TrendingCarousel({setMintPopup}: Props) {
         </div>
 
         <div className="flex w-full justify-center space-x-2 text-white z-10 absolute bottom-10">
-          <p onClick={() => setCurrentPage(0)} className={`hover:cursor-pointer ${currentPage === 0 ? 'font-extrabold' : 'font-light'}`}>Limited Offer</p>
+          {/* <p onClick={() => setCurrentPage(0)} className={`hover:cursor-pointer ${currentPage === 0 ? 'font-extrabold' : 'font-light'}`}>Limited Offer</p>
+          <p>•</p> */}
+          <p onClick={() => setCurrentPage(0)} className={`hover:cursor-pointer ${currentPage === 0 ? 'font-extrabold' : 'font-light'}`}>Featured Book</p>
           <p>•</p>
-          <p onClick={() => setCurrentPage(1)} className={`hover:cursor-pointer ${currentPage === 1 ? 'font-extrabold' : 'font-light'}`}>Featured Book</p>
+          <p onClick={() => setCurrentPage(1)} className={`hover:cursor-pointer ${currentPage === 1 ? 'font-extrabold' : 'font-light'}`}>Featured Author</p>
           <p>•</p>
-          <p onClick={() => setCurrentPage(2)} className={`hover:cursor-pointer ${currentPage === 2 ? 'font-extrabold' : 'font-light'}`}>Featured Author</p>
-          <p>•</p>
-          <p onClick={() => setCurrentPage(3)} className={`hover:cursor-pointer ${currentPage === 3 ? 'font-extrabold' : 'font-light'}`}>Contest</p>
+          <p onClick={() => setCurrentPage(2)} className={`hover:cursor-pointer ${currentPage === 2 ? 'font-extrabold' : 'font-light'}`}>Contest</p>
         </div>
     </div>
   )
