@@ -49,12 +49,6 @@ function page({}: Props) {
   }, [currentUser]);
 
 
-  if(loading){
-    return (
-      <SpinLoader />
-    )
-  }
-
   const mint = async() => {
     if(currentUser){
       setMintLoading(true);
@@ -62,16 +56,6 @@ function page({}: Props) {
       setMintLoading(false);
 
     }
-  }
-
-  if(mintLoading){
-    return (
-      <Butterfly />
-    )
-  }
-
-  if (loading) {
-    return <SpinLoader />;
   }
 
   useEffect(() => {
@@ -83,6 +67,9 @@ function page({}: Props) {
       return () => clearTimeout(timer);
     }
   }, [claimed]);
+
+  if (loading) return <SpinLoader />;
+  if (mintLoading) return <Butterfly />;
 
   return (
     <div className="flex w-screen min-h-screen flex-col items-center">
