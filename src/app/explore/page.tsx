@@ -11,6 +11,9 @@ import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
 import Butterfly from '@/components/loading/Butterfly'
 import ClaimedNft from '@/components/explore/popup/ClaimedNfft'
+import { ConnectButton, useActiveAccount } from 'thirdweb/react'
+import { client } from '@/lib/client'
+import { defineChain } from 'thirdweb'
 
 
 type Props = {}
@@ -18,6 +21,7 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function page({}: Props) {
+  const account = useActiveAccount();
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
@@ -26,6 +30,9 @@ function page({}: Props) {
   const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
 
+  const camp = defineChain({
+    id: 123420001114,
+  });
 
   useEffect(() => { 
      // Listen for authentication state changes
@@ -48,13 +55,11 @@ function page({}: Props) {
     }
   }, [currentUser]);
 
-
   const mint = async() => {
-    if(currentUser){
+    if(currentUser && account){
       setMintLoading(true);
-      await mintNft(currentUser, setClaimed); 
+      await mintNft(currentUser, setClaimed, account); 
       setMintLoading(false);
-
     }
   }
 
@@ -74,6 +79,25 @@ function page({}: Props) {
   return (
     <div className="flex w-screen min-h-screen flex-col items-center">
         <div className="sticky top-0 w-full z-50">
+          <div className="hidden">
+                <ConnectButton
+                  client={client}
+                  chain={camp}
+                  detailsButton={{
+                    style: {
+                      display: "none",
+                      background: "transparent", // Transparent to allow the gradient effect
+                      color: "white",
+                      border: "none", // Remove any default border
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      zIndex: "10", // Ensure the text is above the gradient
+                    }
+                  }}
+              
+                />
+          </div>
+
           <ExploreHeader 
             userId={currentUser}
             profileUrl={profileUrl}
@@ -82,11 +106,11 @@ function page({}: Props) {
         </div>
 
         <div className="flex flex-col w-full" style={{ height: '75vh' }}>
-          {/* {userBalance <= 0 && (
+          {userBalance <= 0 && (
             <div onClick={() => setMintPopup(true)} className="flex items-center h-[40px] bg-[#5D3FD3] w-full text-center hover:cursor-pointer">
               <p className="w-full text-lg font-bold text-white text-center"> Claim your golden badge now!</p>
             </div>
-          )} */}
+          )}
         
           <TrendingCarousel 
             setMintPopup={setMintPopup}
