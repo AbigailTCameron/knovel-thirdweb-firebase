@@ -19,6 +19,7 @@ import { client, personalAccount } from "@/lib/client";
 import { Notification } from "../..";
 import { getContract, sendTransaction } from "thirdweb";
 import { balanceOf, claimTo } from "thirdweb/extensions/erc1155";
+import { useActiveAccount } from "thirdweb/react";
 
 const { db } = initializeFirebaseClient();
 
@@ -286,9 +287,15 @@ export const mintNft = async (userId: string, setClaimed: Function) => {
 
   try {
       const {contract, smartAccount} = await smartContractConfig(); 
+      const account = useActiveAccount();
+
+      console.log("the account being passed is", account);
+
+
+      console.log("the user id is", userId)
 
       const transaction = claimTo({
-        contract,
+        contract: contract,
         to: userId,
         tokenId: BigInt(0),
         quantity: BigInt(1),
@@ -296,7 +303,7 @@ export const mintNft = async (userId: string, setClaimed: Function) => {
 
       const { transactionHash } = await sendTransaction({
         transaction,
-        account: smartAccount,
+        account: account,
       });
       //console.log(`Transaction successful with hash: ${transactionHash}`);
 
