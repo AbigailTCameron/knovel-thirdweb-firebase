@@ -13,12 +13,13 @@ import {
   updateDoc,
   where
 } from "firebase/firestore";
-import { smartWallet } from "thirdweb/wallets";
+import { Account, smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
 import { client, personalAccount } from "@/lib/client";
 import { Notification } from "../..";
 import { getContract, sendTransaction } from "thirdweb";
 import { balanceOf, claimTo } from "thirdweb/extensions/erc1155";
+import { useActiveAccount } from "thirdweb/react";
 
 const { db } = initializeFirebaseClient();
 
@@ -259,7 +260,7 @@ export const deleteNotif = async (commentId: string) => {
 }
 
 
-const smartContractConfig = async() => {
+const smartContractConfig = async(account: Account) => {
   // Configure the smart wallet
   const wallet = smartWallet({
     chain: defineChain(123420001114),
@@ -269,7 +270,7 @@ const smartContractConfig = async() => {
   // Connect the smart wallet
   const smartAccount = await wallet.connect({
     client,
-    personalAccount,
+    personalAccount: account,
   });
 
   // connect to your contract
@@ -282,13 +283,13 @@ const smartContractConfig = async() => {
   return {contract, smartAccount}
 }
 
-export const mintNft = async (userId: string, setClaimed: Function) => {
+export const mintNft = async (userId: string, setClaimed: Function, account: Account) => {
 
   try {
-      const {contract, smartAccount} = await smartContractConfig(); 
+      const {contract, smartAccount} = await smartContractConfig(account); 
 
       const transaction = claimTo({
-        contract,
+        contract: contract,
         to: userId,
         tokenId: BigInt(0),
         quantity: BigInt(1),
@@ -316,13 +317,19 @@ export const mintNft = async (userId: string, setClaimed: Function) => {
 export const fetchUserNftBalance = async (userId: string, setUserBalance: Function) => {
   if (userId) {
     try {
-      const {contract, } = await smartContractConfig(); 
+      // connect to your contract
+      const contract = getContract({
+        client,
+        chain: defineChain(123420001114),
+        address: "0x9c327f77070124C072eC3f2456DD42838fECDE33",
+      });
 
       const balance = await balanceOf({
         contract,
         owner: userId,
         tokenId: BigInt(0), // Replace 0 with your actual tokenId
       });
+
       setUserBalance(Number(balance));
       //console.log("The balance is", Number(balance));
     } catch (error) {
