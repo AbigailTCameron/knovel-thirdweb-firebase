@@ -52,14 +52,7 @@ function AccountDropdown({handleDashboardClick, handleSettingsClick, handleClick
               
             },
             isLoggedIn: async () => {
-              const result = await isLoggedIn();
-                if(!result){
-                  await logout();
-                  await firebaseLogout(router); 
-                  return false;
-                }
-              console.log("the result being returned is", result)
-              return result;
+              return await isLoggedIn();
             },
             doLogout: async () => {
               await logout();

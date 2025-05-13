@@ -54,11 +54,18 @@ function page({}: Props) {
    
   }, []);
 
+
   useEffect(() => {
     if (currentUser) {
       fetchUserNftBalance(currentUser, setUserBalance);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if(!account){
+      logoutPerm();
+    }
+  }, [account])
 
   const mint = async() => {
     if(currentUser && account){
@@ -68,6 +75,10 @@ function page({}: Props) {
     }
   }
 
+  const logoutPerm = async() => {
+    await logout();
+    await firebaseLogout(router); 
+  }
   useEffect(() => {
     if (claimed) {
       const timer = setTimeout(() => {
@@ -99,34 +110,6 @@ function page({}: Props) {
                       zIndex: "10", // Ensure the text is above the gradient
                     }
                   }}
-                    auth={{
-                      getLoginPayload: async ({ address }) => {
-                        return generatePayload({ address })
-                      },
-                      doLogin: async (params) => {
-                        const result = await login(params); 
-                        if(result && result.token) {
-                          const {token} = result;
-                          firebaseAuthClient(token, router);
-                        }
-                        
-                      },
-                      isLoggedIn: async () => {
-                        const result = await isLoggedIn();
-                        if(!result){
-                          await logout();
-                          await firebaseLogout(router); 
-                          return false;
-                        }
-                        console.log("the result being returned is", result)
-                        return result;
-                      },
-                      doLogout: async () => {
-                        await logout();
-                        await firebaseLogout(router); 
-                      },
-                    }}
-              
                 />
           </div>
 

@@ -3,7 +3,7 @@ import { ConnectButton } from "thirdweb/react";
 
 import { client } from "@/lib/client";
 import { generatePayload, isLoggedIn, login, logout } from "./actions/login";
-import { firebaseAuthClient, firebaseLogout } from "./actions/firebaseauth";
+import { firebaseAuthClient } from "./actions/firebaseauth";
 import { useRouter } from "next/navigation";
 import LandingHeader from "@/components/headers/LandingHeader";
 import HeroSection from "@/components/home/HeroSection";
@@ -93,8 +93,6 @@ export default function Home() {
                   },
                   doLogout: async () => {
                     await logout();
-                    await firebaseLogout(router); 
-                    
                   },
                 }}
               />
