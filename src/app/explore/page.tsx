@@ -14,6 +14,9 @@ import ClaimedNft from '@/components/explore/popup/ClaimedNfft'
 import { ConnectButton, useActiveAccount } from 'thirdweb/react'
 import { client } from '@/lib/client'
 import { defineChain } from 'thirdweb'
+import { generatePayload, isLoggedIn, login, logout } from '../actions/login'
+import { firebaseAuthClient, firebaseLogout } from '../actions/firebaseauth'
+import { useRouter } from 'next/navigation'
 
 
 type Props = {}
@@ -21,6 +24,8 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function page({}: Props) {
+    const router = useRouter(); 
+  
   const account = useActiveAccount();
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -94,6 +99,33 @@ function page({}: Props) {
                       zIndex: "10", // Ensure the text is above the gradient
                     }
                   }}
+                    auth={{
+                      getLoginPayload: async ({ address }) => {
+                        return generatePayload({ address })
+                      },
+                      doLogin: async (params) => {
+                        const result = await login(params); 
+                        if(result && result.token) {
+                          const {token} = result;
+                          firebaseAuthClient(token, router);
+                        }
+                        
+                      },
+                      isLoggedIn: async () => {
+                        const result = await isLoggedIn();
+                        if(!result){
+                          await logout();
+                          await firebaseLogout(router); 
+                          return false;
+                        }
+                        console.log("the result being returned is", result)
+                        return result;
+                      },
+                      doLogout: async () => {
+                        await logout();
+                        await firebaseLogout(router); 
+                      },
+                    }}
               
                 />
           </div>

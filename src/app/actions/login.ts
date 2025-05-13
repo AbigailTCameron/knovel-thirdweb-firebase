@@ -54,6 +54,7 @@ export async function login(payload: VerifyLoginPayloadParams) {
 
 
 export async function isLoggedIn() {
+
   const jwt = (await cookies()).get("jwt");
   if (!jwt?.value) {
     return false;
