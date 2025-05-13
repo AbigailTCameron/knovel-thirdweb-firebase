@@ -4,7 +4,7 @@ import { ConnectButton } from 'thirdweb/react';
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
 import { defineChain } from 'thirdweb/chains';
 import { useRouter } from 'next/navigation';
-import { firebaseAuthClient } from '@/app/actions/firebaseauth';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import { client } from '@/lib/client';
 
 
@@ -83,6 +83,8 @@ function HeroSection({}) {
                 },
                 doLogout: async () => {
                   await logout();
+                  await firebaseLogout(router); 
+                  
                 },
               }}
             />
