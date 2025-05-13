@@ -62,6 +62,7 @@ export async function isLoggedIn() {
   const authResult = await thirdwebAuth.verifyJWT({ jwt: jwt.value });
 
   if (!authResult.valid) {
+    await logout();
     return false;
   }
 
