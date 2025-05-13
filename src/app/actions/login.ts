@@ -54,7 +54,6 @@ export async function login(payload: VerifyLoginPayloadParams) {
 
 
 export async function isLoggedIn() {
-
   const jwt = (await cookies()).get("jwt");
   if (!jwt?.value) {
     return false;
@@ -63,7 +62,6 @@ export async function isLoggedIn() {
   const authResult = await thirdwebAuth.verifyJWT({ jwt: jwt.value });
 
   if (!authResult.valid) {
-    await logout();
     return false;
   }
 
