@@ -9,7 +9,7 @@ type ButtonProps = {
 
 function FlowButton({title, buttonRadius, buttonWidth}: ButtonProps) {
   return (
-    <div className={`relative ${buttonWidth} text-center ${buttonRadius} px-10 py-4 bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white`}>
+    <div className={`relative ${buttonWidth} text-center ${buttonRadius} px-10 py-4 sm:py-1 sm:text-sm bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white`}>
       <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine">
       </div>
       <p>{title}</p>
