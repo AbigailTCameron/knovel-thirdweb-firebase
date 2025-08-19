@@ -3,15 +3,13 @@ import React from 'react';
 type PageProps = {
   setCurrentPage: (page: number) => void;
   currentPage: number;
-  setLastVisibleDoc : Function;
 }
 
-function TrendingHeader({setCurrentPage, currentPage, setLastVisibleDoc}: PageProps) {
+function TrendingHeader({setCurrentPage, currentPage}: PageProps) {
 
   const handleClick = (page: number) => (event: React.MouseEvent) => {
     event.preventDefault(); 
     setCurrentPage(page);  
-    setLastVisibleDoc(null);
   };
 
   return (
