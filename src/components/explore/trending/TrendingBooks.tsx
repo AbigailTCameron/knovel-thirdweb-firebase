@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation';
 import StarRating from '../../StarRating';
 import TrendBookImage from './TrendBookImage';
@@ -16,8 +16,6 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
   const handleBookClick = (bookId: string) => {
     router.push(`/book/${bookId}`);
   };
-
-
 
   return (
     <div className='flex flex-col w-full h-fit space-y-2'>

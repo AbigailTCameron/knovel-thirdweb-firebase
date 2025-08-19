@@ -6,9 +6,12 @@ type StarRatingProps = {
 };
 
 function StarRating({rating}: StarRatingProps) {
-  const fullStars = Math.floor(rating); // Number of full stars
-  const hasHalfStar = rating - fullStars >= 0.5; // Check if there's a half star
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // Number of empty stars
+  // ✅ Ensure rating is always between 0 and 5
+  const safeRating = Math.max(0, Math.min(5, Number(rating) || 0));
+
+  const fullStars = Math.floor(safeRating);
+  const hasHalfStar = safeRating - fullStars >= 0.5;
+  const emptyStars = Math.max(0, 5 - fullStars - (hasHalfStar ? 1 : 0));
 
   return (
     <div className="flex items-center text-base">

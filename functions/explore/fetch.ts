@@ -39,22 +39,17 @@ export const getUserProfile = async (userId: string, setProfileUrl: Function) =>
     }
 }
 
-export const fetchBooks = async ( lastVisibleDoc: any, setBooks: Function) => {
+export const fetchBooks = async (setBooks: Function) => {
   try {
       const booksCollection = collection(db, "books");
 
-      // Create the query
-      let booksQuery = query(booksCollection, orderBy("created_at", "desc"), limit(20));
-    
-      // If there's a lastVisibleDoc, start after it (for pagination)
-      if (lastVisibleDoc) {
-        booksQuery = query(
-          booksCollection, 
-          orderBy("created_at", "desc"), 
-          startAfter(lastVisibleDoc), 
-          limit(20)
-        );
-      }
+
+    // Query: get the 20 newest by created_at
+    const booksQuery = query(
+      booksCollection,
+      orderBy("created_at", "desc"),
+      limit(20)
+    );
 
       const querySnapshot = await getDocs(booksQuery);
 
@@ -63,12 +58,8 @@ export const fetchBooks = async ( lastVisibleDoc: any, setBooks: Function) => {
         id: doc.id,
         ...doc.data(),
       }));
-
       // Set books and last document
       setBooks(books); // Append new books
-
-      return querySnapshot.docs[querySnapshot.docs.length - 1] || null; 
-
   }catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
@@ -79,23 +70,12 @@ export const fetchBooks = async ( lastVisibleDoc: any, setBooks: Function) => {
 
 }
 
-export const fetchTopRated = async (lastVisibleDoc: any, setBooks: Function) => {
+export const fetchTopRated = async (setBooks: Function) => {
   try{
     const booksCollection = collection(db, "books");
 
     // Create the query
-    let booksQuery = query(booksCollection, orderBy("rating", "desc"), limit(20));
-
-    // If there's a lastVisibleDoc, start after it (for pagination)
-    if (lastVisibleDoc) {
-      booksQuery = query(
-        booksCollection, 
-        orderBy("rating", "desc"), 
-        startAfter(lastVisibleDoc), 
-        limit(20)
-      );
-    }
-
+    const booksQuery = query(booksCollection, orderBy("rating", "desc"), limit(20));
 
     const querySnapshot = await getDocs(booksQuery);
 
@@ -107,9 +87,6 @@ export const fetchTopRated = async (lastVisibleDoc: any, setBooks: Function) => 
 
     // Set books and last document
     setBooks(books); // Append new books
-
-    return querySnapshot.docs[querySnapshot.docs.length - 1] || null; 
-
 
   }catch (error) {
     if (error instanceof Error) {

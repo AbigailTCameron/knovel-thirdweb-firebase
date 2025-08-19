@@ -8,9 +8,8 @@ import { fetchBooks, fetchTopRated } from '../../../../functions/explore/fetch';
 type Props = {}
 
 function Trending({}: Props) {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0); // 0 = Newest, 1 = Top Rated
   const [books, setBooks] = useState<Book[]>([]);
-  const [lastVisibleDoc, setLastVisibleDoc] = useState<any>(null); // Track last document
 
   const [currentPagination, setCurrentPagination] = useState(0);
   const booksPerPage = 5;
@@ -18,13 +17,13 @@ function Trending({}: Props) {
 
   const handlePreviousPage = () => {
     if (currentPagination > 0) {
-      setCurrentPagination(currentPagination - 1);
+      setCurrentPagination((prev) => prev - 1);
     }
   };
 
   const handleNextPage = () => {
     if ((currentPagination + 1) * booksPerPage < books.length) {
-      setCurrentPagination(currentPagination + 1);
+      setCurrentPagination((prev) => prev + 1);
     }
   };
 
@@ -32,29 +31,28 @@ function Trending({}: Props) {
   useEffect(() => {
     const fetchData = async () => {
       if(currentPage == 0){
-          const initialDoc = await fetchBooks(lastVisibleDoc, setBooks);
-          setLastVisibleDoc(initialDoc); // Initialize the last visible document
+          await fetchBooks(setBooks);
       }else if(currentPage == 1) {
-          const initialDoc = await fetchTopRated(lastVisibleDoc, setBooks);
-          setLastVisibleDoc(initialDoc); // Initialize the last visible document
+          await fetchTopRated(setBooks);
       }
+      setCurrentPagination(0); // 🔑 reset to first page when category changes
     }
-
     fetchData();
-
   }, [currentPage])
+  
 
   const displayedBooks = books.slice(
     currentPagination * booksPerPage,
     (currentPagination + 1) * booksPerPage
   );
 
+
   return (
     <div className='text-white text-5xl w-full h-full space-y-4'>
         <TrendingHeader 
           setCurrentPage={setCurrentPage}
           currentPage={currentPage}
-          setLastVisibleDoc={setLastVisibleDoc}
+
         />
 
         <div className="w-full flex-shrink-0 h-full">
