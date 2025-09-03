@@ -8,11 +8,12 @@ const {auth, db} = initializeFirebaseClient();
 
 export const firebaseAuthClient = (token: string, router: any) => {
   signInWithCustomToken(auth, token)
-  .then((userCredential) => {
+  .then(async(userCredential) => {
 
     const user = userCredential.user;
 
     const userRef = doc(db, "users", user.uid!);
+
     getDoc(userRef).then((doc) => {
        if(!doc.exists()){
         setDoc(userRef, {
@@ -28,11 +29,14 @@ export const firebaseAuthClient = (token: string, router: any) => {
           drafts:[]}, 
           {merge: true}
         );
+
+        router.push('/newuser');
+       }else {
+        router.push('/explore');
        }
     }) 
 
     
-    router.push('/explore');
   })
   .catch((error) => {
     const errorMessage = error.message;
