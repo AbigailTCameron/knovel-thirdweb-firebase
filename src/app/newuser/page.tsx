@@ -7,6 +7,7 @@ import Username from '@/components/new/Username';
 import React, { useState } from 'react'
 import { newUpload } from '../../../functions/new/fetch';
 import Genres from '@/components/new/Genres';
+import { genres } from '../../../bookGenres';
 
 type Props = {}
 
@@ -16,8 +17,10 @@ function NewUser({}: Props) {
   const [username, setUsername] = useState<string>('');
   const [bio, setBio] = useState<string>('');
   const [profileUrl, setProfileUrl] = useState<string>(''); 
-  const [filename, setFilename] = useState<string>('');
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   
+  
+  const [filename, setFilename] = useState<string>('');
   
 
   const getFormData = () => ({
@@ -31,7 +34,7 @@ function NewUser({}: Props) {
     fullname: "",
     username: "",
     bio: "",
-    profileUrl: ""
+    profileUrl: "", 
   });
 
   const updateForm = (field: string, value: string) => {
@@ -51,7 +54,6 @@ function NewUser({}: Props) {
   };
 
   const finishLoading = async () => {
-
     // // photo part 
     // urlToFile(profileUrl).then(async(file) => {
     //   const fileExt = file.name.split('.').pop()
@@ -99,6 +101,8 @@ function NewUser({}: Props) {
             <Genres 
               screen={screen}
               finishLoading={finishLoading}
+              selectedGenres={selectedGenres}
+              setSelectedGenres={setSelectedGenres}
             />
           )
         }
