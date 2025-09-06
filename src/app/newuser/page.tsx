@@ -5,6 +5,8 @@ import Info from '@/components/new/Info';
 import Name from '@/components/new/Name'
 import Username from '@/components/new/Username';
 import React, { useState } from 'react'
+import { newUpload } from '../../../functions/new/fetch';
+import Genres from '@/components/new/Genres';
 
 type Props = {}
 
@@ -13,11 +15,16 @@ function NewUser({}: Props) {
   const [fullname, setFullName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [bio, setBio] = useState<string>('');
+  const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [filename, setFilename] = useState<string>('');
+  
+  
 
   const getFormData = () => ({
     fullname,
     username,
-    bio
+    bio,
+    profileUrl
   });
 
   const [formData, setFormData] = useState({
@@ -33,6 +40,29 @@ function NewUser({}: Props) {
       [field]: value,
     }));
   };
+
+  const urlToFile = async (croppedImage: string) => {
+    const response = await fetch(croppedImage);
+    const blob = await response.blob();
+    
+    // Create a new File object
+    const file = new File([blob], "croppedImage.jpg", { type: blob.type });
+    return file;
+  };
+
+  const finishLoading = async () => {
+
+    // // photo part 
+    // urlToFile(profileUrl).then(async(file) => {
+    //   const fileExt = file.name.split('.').pop()
+
+    //   if(userId){
+    //     const filePath = `${userId}/${filename}.${fileExt}`
+    //     const newProfileUrl = await newUpload(filePath, file, userId);
+    //   }
+    // })
+  }
+
 
   return (
     <div className="relative flex w-screen h-screen flex-col items-center overflow-x-hidden">
@@ -57,8 +87,18 @@ function NewUser({}: Props) {
             username={username}
             setUsername={setUsername}
           />
-          ) :( 
+          ): screen === 2 ? ( 
             <Info 
+              screen={screen}
+              setScreen={setScreen}
+              profileUrl={profileUrl}
+              setProfileUrl={setProfileUrl}
+              setFilename={setFilename}
+            />
+          ) : (
+            <Genres 
+              screen={screen}
+              finishLoading={finishLoading}
             />
           )
         }

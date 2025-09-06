@@ -11,6 +11,8 @@ function Multidot({selected}: Props) {
       <Dot isSelected={selected == 0 ? true : false} />
       <Dot isSelected={selected == 1  ? true : false} />
       <Dot isSelected={selected == 2 ? true: false}/>
+      <Dot isSelected={selected == 3 ? true: false}/>
+
     </div>
   )
 }
