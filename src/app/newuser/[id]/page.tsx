@@ -7,14 +7,15 @@ import Username from '@/components/new/Username';
 import React, { useState } from 'react'
 import { newUpload } from '../../../../functions/new/fetch';
 import Genres from '@/components/new/Genres';
-import { genres } from '../../../../bookGenres';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 type Props = {}
 
 function NewUser({}: Props) {
   const params = useParams<{ id: string }>();
-  
+  const router = useRouter();
+
   const [screen, setScreen] = useState<number>(0);
   const [fullname, setFullName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -22,8 +23,9 @@ function NewUser({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   
-  
   const [filename, setFilename] = useState<string>('');
+
+  const [loading, setLoading] = useState<boolean>(false);
   
 
   const urlToFile = async (croppedImage: string) => {
@@ -36,16 +38,25 @@ function NewUser({}: Props) {
   };
 
   const finishLoading = async () => {
-    urlToFile(profileUrl).then(async(file) => {
-      const fileExt = file.name.split('.').pop()
+    try{
+      setLoading(true); // show loading screen
 
-      if(params.id){
-        const filePath = `${params.id}/${filename}.${fileExt}`
-        await newUpload(filePath, file, params.id, fullname, username, bio, selectedGenres);
-      }
-    })
+      urlToFile(profileUrl).then(async(file) => {
+        const fileExt = file.name.split('.').pop()
+  
+        if(params.id){
+          const filePath = `${params.id}/${filename}.${fileExt}`
+          await newUpload(filePath, file, params.id, fullname, username, bio, selectedGenres);
+        }
+      })
+      router.push('/explore'); // redirect when done
+
+    }catch(error){
+      console.error("Error in finishLoading:", error);
+      setLoading(false);
+    }
+  
   } 
-
 
   return (
     <div className="relative flex w-screen h-screen flex-col items-center overflow-x-hidden">
@@ -91,6 +102,15 @@ function NewUser({}: Props) {
         }
     
       </div>
+
+      {/* ✅ Overlay with blur effect */}
+        {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Saving your profile...</p>
+        </div>
+      )}
+      
     </div>
   )
 }

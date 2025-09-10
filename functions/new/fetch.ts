@@ -46,9 +46,6 @@ export const newUpload = async (filePath: string, file: File, userId: string, na
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, {name: normalizedName, username: normalizedUsername, bio: bio, profilePicture: downloadURL, profilePicturePath: filePath, genres: selectedGenres });
 
-      // console.log("Profile picture uploaded and profile updated successfully.");
-      // return downloadURL;
-
   }catch (error) {
     if (error instanceof Error) {
       console.error("Error uploading profile image:", error.message);

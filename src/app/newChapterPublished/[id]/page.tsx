@@ -31,12 +31,6 @@ function NewChapterPublished({}: Props) {
   
   }, []);
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
-
   return (
     <main className="flex flex-col w-screen h-screen items-center">
       <div  className="sticky top-0 w-full z-50">
@@ -51,6 +45,14 @@ function NewChapterPublished({}: Props) {
         userId={currentUser|| ''}
         id={params.id}
       />
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Searching...</p>
+        </div>
+      )}
   </main>
   )
 }
