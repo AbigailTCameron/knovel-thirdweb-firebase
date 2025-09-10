@@ -18,6 +18,11 @@ export const firebaseAuthClient = (token: string, router: any) => {
        if(!doc.exists()){
         setDoc(userRef, {
           createdAt: serverTimestamp(), 
+          profilePicture: "", 
+          name: "",
+          username: "", 
+          bio: "", 
+          genres:[],
           followers:[], 
           following:[], 
           bookmark:[], 
