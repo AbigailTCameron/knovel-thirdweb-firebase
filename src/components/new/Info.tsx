@@ -11,9 +11,11 @@ type Props = {
   profileUrl ?: string; 
   setProfileUrl: Function;
   setFilename: Function;
+  setBio: Function;
+  bio: string;
 }
 
-function Info({screen, profileUrl, setProfileUrl, setFilename, setScreen}: Props) {
+function Info({screen, profileUrl, setProfileUrl, setFilename, setScreen, setBio, bio}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageContainerRef = useRef(null);
   const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
@@ -22,9 +24,6 @@ function Info({screen, profileUrl, setProfileUrl, setFilename, setScreen}: Props
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   
-  
-  const [bio, setBio] = useState("");
-
   function readFile(file: File) {
     return new Promise((resolve) => {
       const reader = new FileReader()
@@ -124,14 +123,15 @@ function Info({screen, profileUrl, setProfileUrl, setFilename, setScreen}: Props
        <p className='text-white/50 self-start text-sm font-semibold'>BIO</p>
       
        <textarea 
-         id="bio" 
-         name="bio" 
-         placeholder={"enter short bio"} 
-         value={bio}
-         onChange={(e) => (
-           setBio(e.target.value)
-         )}
-         className="focus:outline-none bg-inherit bg-slate-800 w-full rounded-2xl p-2"
+          maxLength={150}
+          id="bio" 
+          name="bio" 
+          placeholder={"enter short bio (150 character limit)"} 
+          value={bio}
+          onChange={(e) => (
+            setBio(e.target.value)
+          )}
+         className="focus:outline-none bg-inherit resize-none bg-slate-800 w-full rounded-2xl p-2"
        />
 
        <div className='flex bg-[#262629] h-fit w-fit p-2 rounded-full hover:cursor-pointer'

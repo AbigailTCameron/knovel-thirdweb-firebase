@@ -11,6 +11,15 @@ type Props = {
 }
 
 function Name({screen, setScreen, fullname, setFullName}: Props) {
+
+    const handleCheckName = async() => {
+        if(fullname?.trim() !== ""){
+          setScreen((prev:number) => prev + 1)
+        }else{
+          alert("Please enter a display name before continuing.");
+        }
+    }
+  
   
   return (
     <div className="flex flex-col w-full h-full items-center justify-center text-white">
@@ -27,13 +36,7 @@ function Name({screen, setScreen, fullname, setFullName}: Props) {
           />
 
           <div 
-          onClick={() => {
-            if(fullname?.trim() !== ""){
-              setScreen((prev:number) => prev + 1)
-            }else{
-              alert("Please enter a display name before continuing.");
-            }
-          }}
+          onClick={handleCheckName}
           className={`flex h-fit w-fit p-2 bg-[#262629] rounded-full hover:cursor-pointer`}
           >
               <ArrowRight className="stroke-[#FFFFFF] size-6"/>

@@ -5,13 +5,16 @@ import Info from '@/components/new/Info';
 import Name from '@/components/new/Name'
 import Username from '@/components/new/Username';
 import React, { useState } from 'react'
-import { newUpload } from '../../../functions/new/fetch';
+import { newUpload } from '../../../../functions/new/fetch';
 import Genres from '@/components/new/Genres';
-import { genres } from '../../../bookGenres';
+import { genres } from '../../../../bookGenres';
+import { useParams } from 'next/navigation';
 
 type Props = {}
 
 function NewUser({}: Props) {
+  const params = useParams<{ id: string }>();
+  
   const [screen, setScreen] = useState<number>(0);
   const [fullname, setFullName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -23,27 +26,6 @@ function NewUser({}: Props) {
   const [filename, setFilename] = useState<string>('');
   
 
-  const getFormData = () => ({
-    fullname,
-    username,
-    bio,
-    profileUrl
-  });
-
-  const [formData, setFormData] = useState({
-    fullname: "",
-    username: "",
-    bio: "",
-    profileUrl: "", 
-  });
-
-  const updateForm = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
   const urlToFile = async (croppedImage: string) => {
     const response = await fetch(croppedImage);
     const blob = await response.blob();
@@ -54,16 +36,15 @@ function NewUser({}: Props) {
   };
 
   const finishLoading = async () => {
-    // // photo part 
-    // urlToFile(profileUrl).then(async(file) => {
-    //   const fileExt = file.name.split('.').pop()
+    urlToFile(profileUrl).then(async(file) => {
+      const fileExt = file.name.split('.').pop()
 
-    //   if(userId){
-    //     const filePath = `${userId}/${filename}.${fileExt}`
-    //     const newProfileUrl = await newUpload(filePath, file, userId);
-    //   }
-    // })
-  }
+      if(params.id){
+        const filePath = `${params.id}/${filename}.${fileExt}`
+        await newUpload(filePath, file, params.id, fullname, username, bio, selectedGenres);
+      }
+    })
+  } 
 
 
   return (
@@ -96,6 +77,8 @@ function NewUser({}: Props) {
               profileUrl={profileUrl}
               setProfileUrl={setProfileUrl}
               setFilename={setFilename}
+              bio={bio}
+              setBio={setBio}
             />
           ) : (
             <Genres 

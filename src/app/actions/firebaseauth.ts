@@ -18,19 +18,15 @@ export const firebaseAuthClient = (token: string, router: any) => {
        if(!doc.exists()){
         setDoc(userRef, {
           createdAt: serverTimestamp(), 
-          profilePicture: "", 
-          name: "", 
           followers:[], 
           following:[], 
-          genres:[],
-          username: "", 
           bookmark:[], 
           published:[], 
           drafts:[]}, 
           {merge: true}
         );
+        router.push(`/newuser/${user.uid}`);
 
-        router.push('/newuser');
        }else {
         router.push('/explore');
        }
