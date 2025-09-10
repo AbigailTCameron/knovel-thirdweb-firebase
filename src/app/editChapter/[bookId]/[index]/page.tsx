@@ -33,11 +33,6 @@ function EditChapter({}: Props) {
   
   }, []);
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
 
   return (
     <main className="flex flex-col w-screen h-screen items-center">
@@ -54,6 +49,13 @@ function EditChapter({}: Props) {
         index={parseInt(params.index)}
         userId={currentUser || ''}
       />
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
     </main>
   )
 }

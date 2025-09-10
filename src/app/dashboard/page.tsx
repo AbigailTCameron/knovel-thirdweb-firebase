@@ -39,11 +39,6 @@ function Dashboard() {
   
   }, []);
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">
@@ -75,6 +70,14 @@ function Dashboard() {
                 />
             </div>
         </div>
+
+        {/* ✅ Overlay with blur effect */}
+        {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Fetching...</p>
+        </div>
+      )}
     </main>
   )
 }

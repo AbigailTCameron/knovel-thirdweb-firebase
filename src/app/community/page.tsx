@@ -35,12 +35,6 @@ function Community({}: Props) {
   
  }, []);
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
-
   return (
     <div className="flex sm:flex-col w-screen h-screen overflow-hidden">
         <div className="w-1/12 sm:w-full h-full sm:h-fit sm:sticky sm:top-0 z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
@@ -61,6 +55,14 @@ function Community({}: Props) {
             setUserGenres={setGenreOptions}
           />
         </div>
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Fetching profile...</p>
+        </div>
+      )}
        
     </div>
   )

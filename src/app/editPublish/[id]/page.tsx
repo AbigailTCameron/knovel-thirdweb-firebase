@@ -87,13 +87,6 @@ function EditPublish({}: Props) {
     )
   }
 
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
-
-
 
   return (
     <main className="flex w-screen h-screen flex-col items-center">
@@ -155,6 +148,13 @@ function EditPublish({}: Props) {
 
 
       </div>
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
     </main>
   )
 }
