@@ -6,13 +6,14 @@ import ArrowRight from '../icons/ArrowRight';
 type Props = {
   finishLoading: any;
   screen ?: number;
+  selectedGenres: string[];
+  setSelectedGenres: any;
 }
 
-function Genres({finishLoading, screen}: Props) {
-    const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+function Genres({finishLoading, screen, selectedGenres, setSelectedGenres}: Props) {
   
   const toggleGenre = (genre: string) => {
-    setSelectedGenres((prev) =>
+    setSelectedGenres((prev: string[]) =>
       prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
     );
   };
