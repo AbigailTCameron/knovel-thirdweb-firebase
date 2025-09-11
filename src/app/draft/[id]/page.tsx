@@ -9,7 +9,6 @@ import { editDraftSynopsis, fetchChapterInfo } from '../../../../functions/draft
 import DraftSider from '@/components/draft/DraftSider';
 import DraftList from '@/components/draft/DraftList';
 import NewSynopsis from '@/components/draft/NewSynopsis';
-import Butterfly from '@/components/loading/Butterfly';
 import Publishing from '@/components/loading/Publishing';
 import SpinLoader from '@/components/loading/SpinLoader';
 
@@ -61,12 +60,6 @@ function Draft({}: Props) {
       await editDraftSynopsis(currentUser, params?.id, newSynopsis);
     }
     setSynopsis(false);
-  }
-
-  if(loading){
-    return(
-      <SpinLoader />
-    )
   }
 
   if(publishing){
@@ -135,6 +128,13 @@ function Draft({}: Props) {
             />
           )}
       </div>
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
     </main>
   )
 }

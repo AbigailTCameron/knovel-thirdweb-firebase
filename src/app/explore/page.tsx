@@ -89,7 +89,6 @@ function page({}: Props) {
     }
   }, [claimed]);
 
-  if (loading) return <SpinLoader />;
   if (mintLoading) return <Butterfly />;
 
   return (
@@ -153,6 +152,12 @@ function page({}: Props) {
             onCancel={() => setClaimed(false)}
           />
         )}
+
+        {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
 
         
     </div>
