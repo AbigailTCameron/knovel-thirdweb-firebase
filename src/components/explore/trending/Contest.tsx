@@ -1,7 +1,11 @@
 import React from 'react'
 
+type Props = {
+  screen : number;
+  setScreen ?: any;
+}
 
-function Contest() {
+function Contest({screen, setScreen}: Props) {
   return (
     <div className="flex py-4 items-center w-full h-full justify-center px-24 halfxl:px-10 space-x-24 ">
       <div className="flex w-full h-full items-center justify-center">

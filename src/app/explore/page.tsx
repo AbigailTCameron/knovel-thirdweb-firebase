@@ -119,7 +119,7 @@ function page({}: Props) {
             </div>
           )}
 
-          <div className='flex flex-col w-full sticky top-0'>
+          <div className='flex flex-col w-full sticky top-0 z-20'>
             <Top 
               profileUrl={profileUrl}
               setLoading={setLoading}

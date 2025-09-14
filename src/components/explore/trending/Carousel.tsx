@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import FeaturedNft from './FeaturedNft';
 import FeaturedBook from './FeaturedBook';
+import Contest from './Contest';
+import FeaturedAuthor from './FeaturedAuthor';
 
 type Props = {
   setMintPopup: Function;
@@ -26,8 +28,13 @@ function Carousel({setMintPopup}: Props) {
             key="book"
           />
 
-          ): screen === 2 ? ( 
-            <div></div>
+        ): screen === 2 ? ( 
+          <FeaturedAuthor 
+            key="author"
+            screen={screen} 
+            setScreen={setScreen}
+          />
+
           ) : (
             <div></div>
           )

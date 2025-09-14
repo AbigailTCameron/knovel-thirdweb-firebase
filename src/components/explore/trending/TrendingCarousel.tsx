@@ -13,23 +13,19 @@ function TrendingCarousel({setMintPopup}: Props) {
   const [currentPage, setCurrentPage] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState('left'); 
 
-  const pages = [
-    <FeaturedAuthor key="author" />,
-    <Contest key="contest"/>
-  ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSwipeDirection('left');
-      setCurrentPage((prevPage) => (prevPage + 1) % pages.length);
-    }, 8000); 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setSwipeDirection('left');
+  //     setCurrentPage((prevPage) => (prevPage + 1) % pages.length);
+  //   }, 8000); 
 
-    return () => clearInterval(interval); 
-  }, [])
+  //   return () => clearInterval(interval); 
+  // }, [])
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-        <div
+        {/* <div
           className={`absolute inset-0 flex transition-transform duration-1000 ease-in-out transform ${
             swipeDirection === 'left'
               ? '-translate-x-full'
@@ -54,7 +50,7 @@ function TrendingCarousel({setMintPopup}: Props) {
           <p onClick={() => setCurrentPage(2)} className={`hover:cursor-pointer ${currentPage === 2 ? 'font-extrabold' : 'font-light'}`}>Featured Author</p>
           <p>•</p>
           <p onClick={() => setCurrentPage(3)} className={`hover:cursor-pointer ${currentPage === 3 ? 'font-extrabold' : 'font-light'}`}>Contest</p>
-        </div>
+        </div> */}
     </div>
   )
 }
