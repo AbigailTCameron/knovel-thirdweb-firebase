@@ -29,12 +29,12 @@ function BooksByGenre({genre, title}: Props) {
 
 
   return (
-    <div className="flex flex-col text-white">
-        <p className="text-4xl lg:text-3xl font-extrabold">{title}</p>
+    <div className="w-full h-full flex flex-col text-white">
+        <p className="text-3xl font-extrabold">{title}</p>
   
-        <div className={`flex overflow-x-auto space-x-10 md:space-x-4 mt-8 lg:mt-4 custom-scrollbar`}>
+        <div className={`flex w-full overflow-x-auto space-x-10 md:space-x-4 mt-8 lg:mt-4 custom-scrollbar`}>
             {books.map((book) => (
-                <div key={book.id} className="group flex-shrink-0 flex h-[400px] md:h-full items-center hover:cursor-pointer" onClick={() => handleBookClick(book.id)} >
+                <div key={book.id} className="group flex-shrink-0 flex h-fit md:h-full items-center hover:cursor-pointer" onClick={() => handleBookClick(book.id)} >
                   
                   <div className="flex bg-black h-full rounded-xl space-x-4 pr-2 items-center">
                       <div className="w-fit h-fit rounded-xl group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF]">

@@ -99,7 +99,7 @@ function page({}: Props) {
   if (mintLoading) return <Butterfly />;
 
   return (
-    <div className="flex w-screen h-screen overflow-x-hidden">
+    <div className="flex w-screen h-screen overflow-x-hidden overflow-y-hidden">
     
       <div className='flex w-fit border-r-[0.5px] border-white/50'>
           <Sider 
@@ -133,9 +133,19 @@ function page({}: Props) {
                   />
               </div>
 
-              {/* <div className="flex w-full h-full mt-20 halfxl:mt-10 px-20 xl:px-10 sm:px-2">
+              {/* <div className="flex w-full h-full">
+                <Genre />
+              </div> */}
+{/* 
+              <div className="flex w-full h-full px-10 sm:px-2">
+                <Genre />
+              </div> */}
+
+              <div className="flex w-full h-full mt-10 halfxl:mt-10 px-10 sm:px-2">
                 <Trending />
               </div>
+
+              {/* 
 
               <div className="w-full h-full">
                 <Genre />

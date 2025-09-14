@@ -15,7 +15,7 @@ function Genre() {
   ];
 
   return (
-    <div className="w-full flex flex-col px-20 lg:px-12 sm:px-6 xs:px-2 py-32 md:py-16 space-y-24 lg:space-y-10 h-fit">
+    <div className="w-full h-full flex flex-col lg:px-12 sm:px-6 xs:px-2 py-32 md:py-16 space-y-20 lg:space-y-10">
         {genres.map((genre) => (
             <BooksByGenre key={genre.genre} title={genre.title} genre={genre.genre} />
         ))}

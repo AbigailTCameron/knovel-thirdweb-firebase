@@ -59,7 +59,7 @@ function Top({profileUrl, setLoading}: Props) {
 
 
   return (
-    <div className='relative flex w-full items-center p-1 z-10'>
+    <div className='relative flex w-full items-center px-4 py-1 z-10'>
          <div className="relative items-center basis-2/4">
             <form onSubmit={handleSearch} className="flex items-center w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
                 <div className="w-full flex bg-black rounded-3xl items-center p-1">

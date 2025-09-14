@@ -48,7 +48,7 @@ function Trending({}: Props) {
 
 
   return (
-    <div className='text-white text-5xl w-full h-full space-y-4'>
+    <div className='text-white w-full h-full space-y-4'>
         <TrendingHeader 
           setCurrentPage={setCurrentPage}
           currentPage={currentPage}
