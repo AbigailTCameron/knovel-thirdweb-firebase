@@ -9,8 +9,8 @@ function Dashboard({ className, onClick }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="109"
-      height="102"
+      width="55"
+      height="35"
       viewBox="0 0 109 102"
       fill="none"
       className={className}

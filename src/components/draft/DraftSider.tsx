@@ -18,6 +18,7 @@ type Props = {
   chapterCount ?: number | null;
   genres : string[];
   setLoading : Function;
+  setDeleting : Function;
   name : string;
   synopsis : string;
   chapters : any[]
@@ -25,7 +26,7 @@ type Props = {
   setPublishing: Function
 }
 
-function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath, setPublishing}: Props) {
+function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath, setPublishing, setDeleting}: Props) {
   const router = useRouter();
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [addGenre, setAddGenre] = useState<boolean>(false);
@@ -44,7 +45,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
 
   const handleConfirm = async() => {
     if(draftId){
-      setLoading(true);
+      setDeleting(true);
       router.push("/explore");
 
       const success = await deleteEntireDraft(userId, draftId, imagePath);

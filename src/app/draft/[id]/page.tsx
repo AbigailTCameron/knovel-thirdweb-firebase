@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import ExploreHeader from '@/components/headers/ExploreHeader';
 import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -11,6 +10,9 @@ import DraftList from '@/components/draft/DraftList';
 import NewSynopsis from '@/components/draft/NewSynopsis';
 import Publishing from '@/components/loading/Publishing';
 import SpinLoader from '@/components/loading/SpinLoader';
+import Sider from '@/components/headers/Sider';
+import UserList from '@/components/community/UserList';
+import Top from '@/components/headers/Top';
 
 
 type Props = {}
@@ -34,6 +36,10 @@ function Draft({}: Props) {
   const [authorName, setAuthorName] = useState<string>('');
   const [imagePath, setImagePath] = useState<string>('');
   const [publishing, setPublishing] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
+
+  
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -73,66 +79,94 @@ function Draft({}: Props) {
 
 
   return (
-    <main className="flex flex-col w-screen h-screen items-center">
-      <div  className="sticky top-0 w-full z-50">
-        <ExploreHeader 
-          userId={currentUser}
-          profileUrl={profileUrl} 
-          setLoading={setLoading}  
-        /> 
+    <main className="flex w-screen h-screen overflow-hidden">
+      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
+            setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
+          />
       </div>
 
-      <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
-          <div className="flex basis-1/4 bg-[#171717] rounded-xl w-full h-full text-white">
-            <DraftSider
-              draftId={params?.id}
-              chapterCount={chapterCount}
-              imageUrl={imageUrl}
-              title={title}
-              userId={currentUser || ''}
-              genres={genres || []}
+      <div className="flex flex-col w-full h-full relative">
+          {searchResults && (
+              <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
+                <UserList 
+                  setSearchResults={setSearchResults}
+                  userId={currentUser || ''}
+                />
+              </div>
+          )}
+
+          <div className='flex flex-col w-full'>
+            <Top 
+              profileUrl={profileUrl}
               setLoading={setLoading}
-              name={authorName}
-              synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
-              chapters={chapters}
-              imagePath={imagePath}
-              setPublishing={setPublishing}
             />
           </div>
 
-          <div className="flex flex-col basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
-              <div onClick={() => setSynopsis(true)} className="p-4 text-gray-500 hover:text-gray-600 hover:cursor-pointer">
-                {oldSynopsis ? (
-                  <p>{oldSynopsis}</p>
-                ) : (
-                  <p>+ click to add a synopsis</p>
-                )}
-              </div>
-              
-              {chapters.length !== 0 && (
-                <DraftList
+          <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
+              <div className="flex basis-1/4 bg-[#171717] rounded-xl w-full h-full text-white">
+                <DraftSider
+                  draftId={params?.id}
+                  chapterCount={chapterCount}
+                  imageUrl={imageUrl}
+                  title={title}
                   userId={currentUser || ''}
-                  chapters={chapters}
-                  draftId={params?.id} 
+                  genres={genres || []}
                   setLoading={setLoading}
+                  name={authorName}
+                  synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
+                  chapters={chapters}
+                  imagePath={imagePath}
+                  setPublishing={setPublishing}
+                  setDeleting={setDeleting}
+                />
+              </div>
+
+              <div className="flex flex-col basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
+                  <div onClick={() => setSynopsis(true)} className="p-4 text-gray-500 hover:text-gray-600 hover:cursor-pointer">
+                    {oldSynopsis ? (
+                      <p>{oldSynopsis}</p>
+                    ) : (
+                      <p>+ click to add a synopsis</p>
+                    )}
+                  </div>
+                  
+                  {chapters.length !== 0 && (
+                    <DraftList
+                      userId={currentUser || ''}
+                      chapters={chapters}
+                      draftId={params?.id} 
+                      setLoading={setLoading}
+                    />
+                  )}
+                
+              </div>
+
+              {synopsis && (
+                <NewSynopsis 
+                  onCancel={() => setSynopsis(false)}
+                  setNewSynopsis={setNewSynopsis}
+                  onConfirm={handleConfirm}
                 />
               )}
-             
           </div>
 
-          {synopsis && (
-            <NewSynopsis 
-              onCancel={() => setSynopsis(false)}
-              setNewSynopsis={setNewSynopsis}
-              onConfirm={handleConfirm}
-            />
-          )}
       </div>
+
 
       {/* ✅ Overlay with blur effect */}
       {loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
+        </div>
+      )}
+
+      {deleting && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Deleting draft...</p>
         </div>
       )}
     </main>

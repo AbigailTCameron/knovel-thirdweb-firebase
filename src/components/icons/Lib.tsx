@@ -4,12 +4,12 @@ type Props = {
   className?: string;
 };
 
-function NewPage({ className}: Props) {
+function Lib({className}: Props) {
   return (
     <svg
       width="40px"
-      height="40px"
       strokeWidth="1.4"
+      height="40px"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -17,25 +17,38 @@ function NewPage({ className}: Props) {
       className={className}
     >
       <path
-        d="M12 11H14.5H17"
+        d="M5 19.5V5C5 3.89543 5.89543 3 7 3H18.4C18.7314 3 19 3.26863 19 3.6V21"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M9 7L15 7"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M6.5 15L19 15"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M6.5 18L19 18"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M6.5 21L19 21"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M6.5 18C5.5 18 5 17.3284 5 16.5C5 15.6716 5.5 15 6.5 15"
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
-        d="M12 7H14.5H17"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-      <path
-        d="M8 15V3.6C8 3.26863 8.26863 3 8.6 3H20.4C20.7314 3 21 3.26863 21 3.6V17C21 19.2091 19.2091 21 17 21V21"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-      <path
-        d="M5 15H8H12.4C12.7314 15 13.0031 15.2668 13.0298 15.5971C13.1526 17.1147 13.7812 21 17 21H8H6C4.34315 21 3 19.6569 3 18V17C3 15.8954 3.89543 15 5 15Z"
+        d="M6.5 21C5.5 21 5 20.3284 5 19.5C5 18.6716 5.5 18 6.5 18"
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -44,4 +57,4 @@ function NewPage({ className}: Props) {
   );
 }
 
-export default NewPage;
+export default Lib;

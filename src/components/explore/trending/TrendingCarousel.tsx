@@ -14,7 +14,6 @@ function TrendingCarousel({setMintPopup}: Props) {
   const [swipeDirection, setSwipeDirection] = useState('left'); 
 
   const pages = [
-    <FeaturedNft setMintPopup={setMintPopup} key="nft" />,
     <FeaturedBook key="book" />,
     <FeaturedAuthor key="author" />,
     <Contest key="contest"/>

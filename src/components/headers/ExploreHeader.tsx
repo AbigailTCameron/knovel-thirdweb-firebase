@@ -97,7 +97,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
   return (
     <div className="relative flex z-40 w-full backdrop-blur-md text-white items-center font-mono text-sm py-2 px-6 md:p-4 sm:px-2 xs:px-1">
-        <div className="flex relative items-center basis-1/4 flex-grow hover:cursor-pointer">
+        {/* <div className="flex relative items-center basis-1/4 flex-grow hover:cursor-pointer">
 
             <img 
               onClick={handleExploreClick}
@@ -106,10 +106,10 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
               alt="knovel community"                
             />
 
-        </div>
+        </div> */}
 
 
-        <div className="relative items-center basis-2/4">
+        {/* <div className="relative items-center basis-2/4">
           <form onSubmit={handleSearch} className="flex items-center w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
               <div className="w-full flex bg-black rounded-3xl items-center p-1">
                   <SearchIcon className="size-5 md:size-4 sm:hidden"/>
@@ -133,7 +133,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
             </div>
           )}
 
-        </div>
+        </div> */}
       
         <div className="flex relative basis-1/4 items-center justify-between mx-4 halflg:mx-2">
             <div onClick={handleDashboardClick} className='flex xl:right-48 halfxl:hidden hover:cursor-pointer halflg:hidden'>

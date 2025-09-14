@@ -4,7 +4,7 @@ type Props = {
   className?: string;
 };
 
-function NewPage({ className}: Props) {
+function People({ className }: Props) {
   return (
     <svg
       width="40px"
@@ -17,25 +17,23 @@ function NewPage({ className}: Props) {
       className={className}
     >
       <path
-        d="M12 11H14.5H17"
+        d="M1 20V19C1 15.134 4.13401 12 8 12V12C11.866 12 15 15.134 15 19V20"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M13 14V14C13 11.2386 15.2386 9 18 9V9C20.7614 9 23 11.2386 23 14V14.5"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12Z"
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
-        d="M12 7H14.5H17"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-      <path
-        d="M8 15V3.6C8 3.26863 8.26863 3 8.6 3H20.4C20.7314 3 21 3.26863 21 3.6V17C21 19.2091 19.2091 21 17 21V21"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-      <path
-        d="M5 15H8H12.4C12.7314 15 13.0031 15.2668 13.0298 15.5971C13.1526 17.1147 13.7812 21 17 21H8H6C4.34315 21 3 19.6569 3 18V17C3 15.8954 3.89543 15 5 15Z"
+        d="M18 9C19.6569 9 21 7.65685 21 6C21 4.34315 19.6569 3 18 3C16.3431 3 15 4.34315 15 6C15 7.65685 16.3431 9 18 9Z"
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -44,4 +42,4 @@ function NewPage({ className}: Props) {
   );
 }
 
-export default NewPage;
+export default People;

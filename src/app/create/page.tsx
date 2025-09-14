@@ -1,11 +1,13 @@
 'use client'
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import TipTapCreate from '@/components/create/TipTapCreate';
-import UploadingDraft from '@/components/loading/UploadingDraft';
+import Sider from '@/components/headers/Sider';
+import UserList from '@/components/community/UserList';
+import Top from '@/components/headers/Top';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 
 type Props = {}
@@ -16,6 +18,8 @@ function Create({}: Props) {
   const [name, setName] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState<string>('');
+  const [searchResults, setSearchResults] = useState(false);
+  
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -35,33 +39,53 @@ function Create({}: Props) {
     return () => unsubscribe(); 
   }, []);
 
-  if(loading){
-    return(
-      <div className="w-screen h-screen">
-         <UploadingDraft />
-      </div>
-     
-    )
-  }
-
-
   return (
-    <main className="flex flex-col w-screen h-screen items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
+    <div className="flex w-screen h-screen overflow-hidden">
+
+      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
+            setLoading={setLoading}
             userId={currentUser}
-            profileUrl={profileUrl} 
+            setSearchResults={setSearchResults}
+          />
+      </div>
+
+      <div className="flex flex-col w-full h-full relative">
+
+          {searchResults && (
+            <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
+              <UserList 
+                setSearchResults={setSearchResults}
+                userId={currentUser || ''}
+              />
+            </div>
+          )}
+
+          <div className='flex flex-col w-full'>
+            <Top 
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
+          </div>
+
+          <TipTapCreate 
+            userId={currentUser}
+            username={username}
+            name={name}
             setLoading={setLoading}
           />
-        </div>
 
-        <TipTapCreate 
-          userId={currentUser}
-          username={username}
-          name={name}
-          setLoading={setLoading}
-        />
-    </main>
+
+      </div>
+
+       {/* ✅ Overlay with blur effect */}
+       {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Saving your draft...</p>
+        </div>
+      )}
+    </div>
   )
 }
 

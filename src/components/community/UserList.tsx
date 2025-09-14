@@ -41,9 +41,9 @@ function UserList({setSearchResults, userId}: Props) {
 
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full bg-[#131418]">
          <div className="w-3/4 place-self-center self-center flex my-2">
-            <div className="flex items-center justify-center w-full bg-[#1b1c1e] rounded-3xl p-0.5">
+            <div className="flex items-center justify-center w-full bg-slate-800 rounded-3xl p-0.5">
                 <input 
                   type="text"
                   value={searchQuery}

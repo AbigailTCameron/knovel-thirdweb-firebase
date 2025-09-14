@@ -17,6 +17,10 @@ import { defineChain } from 'thirdweb'
 import { generatePayload, isLoggedIn, login, logout } from '../actions/login'
 import { firebaseAuthClient, firebaseLogout } from '../actions/firebaseauth'
 import { useRouter } from 'next/navigation'
+import Sider from '@/components/headers/Sider'
+import Top from '@/components/headers/Top'
+import UserList from '@/components/community/UserList'
+import Carousel from '@/components/explore/trending/Carousel'
 
 
 type Props = {}
@@ -34,6 +38,8 @@ function page({}: Props) {
   const [mintLoading, setMintLoading] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState(false);
+  
 
   const camp = defineChain({
     id: 123420001114,
@@ -75,6 +81,7 @@ function page({}: Props) {
     }
   }
 
+
   const logoutPerm = async() => {
     await logout();
     await firebaseLogout(router); 
@@ -92,8 +99,56 @@ function page({}: Props) {
   if (mintLoading) return <Butterfly />;
 
   return (
-    <div className="flex w-screen min-h-screen flex-col items-center">
-        <div className="sticky top-0 w-full z-50">
+    <div className="flex w-screen h-screen overflow-x-hidden">
+    
+      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
+            setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
+          />
+      </div>
+    
+      <div className="flex flex-col w-full h-full relative">
+          {searchResults && (
+            <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
+              <UserList 
+                setSearchResults={setSearchResults}
+                userId={currentUser || ''}
+              />
+            </div>
+          )}
+
+          <div className='flex flex-col w-full sticky top-0'>
+            <Top 
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
+          </div>
+
+          <div className='overflow-y-scroll flex flex-col h-full px-1'>
+              <div className='m-2'>
+                  <Carousel 
+                    setMintPopup={setMintPopup}
+                  />
+              </div>
+
+              {/* <div className="flex w-full h-full mt-20 halfxl:mt-10 px-20 xl:px-10 sm:px-2">
+                <Trending />
+              </div>
+
+              <div className="w-full h-full">
+                <Genre />
+              </div> */}
+
+          </div>
+
+    
+
+      </div>
+
+     
+        {/* <div className="sticky top-0 w-full z-50">
           <div className="hidden">
                 <ConnectButton
                   client={client}
@@ -117,7 +172,8 @@ function page({}: Props) {
             profileUrl={profileUrl}
             setLoading={setLoading}
           />
-        </div>
+        </div> */}
+      {/* <div className='flex flex-col basis-10/12'>
 
         <div className="flex flex-col w-full" style={{ height: '75vh' }}>
           {userBalance <= 0 && (
@@ -131,13 +187,6 @@ function page({}: Props) {
           />
         </div>
 
-        <div className="flex w-full h-full mt-20 halfxl:mt-10 px-20 xl:px-10 sm:px-2">
-          <Trending />
-        </div>
-
-        <div className="w-full h-full">
-          <Genre />
-        </div>
 
         {mintPopup && (
           <NftMint 
@@ -158,6 +207,8 @@ function page({}: Props) {
           <SpinLoader />
         </div>
       )}
+
+      </div> */}
 
         
     </div>
