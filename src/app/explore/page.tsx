@@ -6,7 +6,6 @@ import { onAuthStateChanged } from 'firebase/auth'
 import ExploreHeader from '@/components/headers/ExploreHeader'
 import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
 import Trending from '@/components/explore/trending/Trending'
-import Genre from '@/components/explore/genre/Genre'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
 import Butterfly from '@/components/loading/Butterfly'
@@ -21,6 +20,7 @@ import Sider from '@/components/headers/Sider'
 import Top from '@/components/headers/Top'
 import UserList from '@/components/community/UserList'
 import Carousel from '@/components/explore/trending/Carousel'
+import Genre from '@/components/explore/genre/Genre'
 
 
 type Props = {}
@@ -99,7 +99,7 @@ function page({}: Props) {
   if (mintLoading) return <Butterfly />;
 
   return (
-    <div className="flex w-screen h-screen overflow-x-hidden overflow-y-hidden">
+    <div className="flex w-screen h-screen overflow-hidden">
     
       <div className='flex w-fit border-r-[0.5px] border-white/50'>
           <Sider 
@@ -109,15 +109,15 @@ function page({}: Props) {
           />
       </div>
     
-      <div className="flex flex-col w-full h-full relative">
-          {searchResults && (
+      <div className="flex flex-col w-full h-full overflow-y-scroll">
+          {/* {searchResults && (
             <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
               <UserList 
                 setSearchResults={setSearchResults}
                 userId={currentUser || ''}
               />
             </div>
-          )}
+          )} */}
 
           <div className='flex flex-col w-full sticky top-0 z-20'>
             <Top 
@@ -126,34 +126,24 @@ function page({}: Props) {
             />
           </div>
 
-          <div className='overflow-y-scroll flex flex-col h-full px-1'>
+          <div className='w-full flex flex-col px-4'>
               <div className='m-2'>
                   <Carousel 
                     setMintPopup={setMintPopup}
                   />
               </div>
 
-              {/* <div className="flex w-full h-full">
-                <Genre />
-              </div> */}
-{/* 
-              <div className="flex w-full h-full px-10 sm:px-2">
-                <Genre />
-              </div> */}
+              <div className="flex w-full halfxl:mt-10 sm:px-2">
+                 <Genre />
+              </div>
 
-              <div className="flex w-full h-full mt-10 halfxl:mt-10 px-10 sm:px-2">
+
+              <div className="flex w-full mt-10 halfxl:mt-10 sm:px-2">
                 <Trending />
               </div>
 
-              {/* 
-
-              <div className="w-full h-full">
-                <Genre />
-              </div> */}
 
           </div>
-
-    
 
       </div>
 
@@ -192,9 +182,6 @@ function page({}: Props) {
             </div>
           )}
         
-          <TrendingCarousel 
-            setMintPopup={setMintPopup}
-          />
         </div>
 
 
@@ -219,6 +206,19 @@ function page({}: Props) {
       )}
 
       </div> */}
+        {mintPopup && (
+          <NftMint 
+            onCancel={() => setMintPopup(false)}
+            onConfirm={mint}
+            userBalance={userBalance}
+          />
+        )}
+
+        {claimed && (
+          <ClaimedNft 
+            onCancel={() => setClaimed(false)}
+          />
+        )}
 
         
     </div>
