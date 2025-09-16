@@ -9,6 +9,8 @@ import BookInfo from '@/components/book/BookInfo';
 import SpinLoader from '@/components/loading/SpinLoader';
 import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
 
 const { auth } = initializeFirebaseClient();
 function Book() {
@@ -21,6 +23,7 @@ function Book() {
   const [userRating, setUserRating] = useState<number>(0); 
 
   const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -49,6 +52,7 @@ function Book() {
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
           />
         </div>
 
@@ -70,6 +74,19 @@ function Book() {
 
         </div>
 
+        {searchResults && (
+            <UserSearch 
+              setSearchResults={setSearchResults}
+              userId={currentUser || ''}
+            />
+          )}
+
+        {showNotifications && (
+          <Notifications 
+            setShowNotifications={setShowNotifications}
+            userId={currentUser}
+          />
+        )}
 
 
         {/* ✅ Overlay with blur effect */}

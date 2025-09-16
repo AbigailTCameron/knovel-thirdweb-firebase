@@ -7,6 +7,8 @@ import Bookmark from '@/components/readinglist/Bookmark'
 import SpinLoader from '@/components/loading/SpinLoader'
 import Sider from '@/components/headers/Sider'
 import Top from '@/components/headers/Top'
+import UserSearch from '@/components/explore/popup/UserSearch'
+import Notifications from '@/components/community/Notifications'
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -19,7 +21,7 @@ function Readinglist({}: Props) {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
-  
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -49,6 +51,7 @@ function Readinglist({}: Props) {
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
           />
       </div>
 
@@ -67,6 +70,20 @@ function Readinglist({}: Props) {
               />
           </div>
       </div>
+
+      {searchResults && (
+        <UserSearch 
+          setSearchResults={setSearchResults}
+          userId={currentUser || ''}
+        />
+      )}
+
+      {showNotifications && (
+        <Notifications 
+          setShowNotifications={setShowNotifications}
+          userId={currentUser}
+        />
+      )}
 
       {/* ✅ Overlay with blur effect */}
       {loading && (
