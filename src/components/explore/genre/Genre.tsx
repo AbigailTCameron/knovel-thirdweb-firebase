@@ -18,16 +18,9 @@ function Genre({}: Props) {
   
   return (
     <div className='flex flex-col w-full h-full space-y-16 lg:space-y-10 py-20 md:py-16'>
-
       {genres.map((genre) => (
         <GenreBooks key={genre.genre} title={genre.title} genre={genre.genre}/>
       ))}
-    
-    {/* <div className="w-full h-full flex flex-col lg:px-12 sm:px-6 xs:px-2 py-32 md:py-16 space-y-20 lg:space-y-10">
-        {genres.map((genre) => (
-            <BooksByGenre key={genre.genre} title={genre.title} genre={genre.genre} />
-        ))}
-    </div> */}
     </div>
   )
 }

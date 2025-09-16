@@ -7,8 +7,8 @@ type Props = {
 function Notifications({className}: Props) {
   return (
     <svg
-      width="40px"
-      height="40px"
+      width="30px"
+      height="30px"
       strokeWidth="1.4"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"

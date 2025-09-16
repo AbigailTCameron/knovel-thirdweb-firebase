@@ -104,53 +104,53 @@ function Sider({setLoading, userId, setSearchResults}: Props) {
 
       </div>
 
-      <div className='w-full bg-[#1e1f21] flex flex-col items-center my-6 rounded-xl text-sm'>
+      <div className='group w-full bg-[#1e1f21] flex flex-col items-center justify-center my-6 rounded-xl text-sm'>
 
-        <div onClick={handleHomeClick} className="flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black">
-          <HomeIcon className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Home</p>
+        <div onClick={handleHomeClick} className="flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black">
+          <HomeIcon className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Home</p>
         </div>
 
-        <div onClick={handleCollectiblesClick} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <Dashboard className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Collection</p>
+        <div onClick={handleCollectiblesClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <Dashboard className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Collection</p>
         </div>
 
-        <div onClick={handleCreateClick} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <Pencil className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Create</p>
+        <div onClick={handleCreateClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <Pencil className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Create</p>
         </div>
 
-        <div onClick={handleDraftsClick} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <NewPage className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Drafts</p>
+        <div onClick={handleDraftsClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <NewPage className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Drafts</p>
         </div>
 
-        <div onClick={handlePublishClick} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <Lib className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Published</p>
+        <div onClick={handlePublishClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <Lib className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Published</p>
         </div>
 
-        <div onClick={handleReadingClick} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <BookmarkIcon className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Saved</p>
+        <div onClick={handleReadingClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <BookmarkIcon className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Saved</p>
         </div>
 
-        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <People className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Users</p>
+        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <People className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Users</p>
         </div> 
 
 
-        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center hover:cursor-pointer hover:bg-black'>
-          <Notifications className='flex basis-1/5'/>
-          <p className='flex basis-4/5'>Notifications</p>
+        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+          <Notifications className='flex group-hover:basis-1/5'/>
+          <p className='hidden group-hover:block group-hover:basis-4/5'>Notifications</p>
         </div> 
 
 
         <div onClick={handleSettingsClick} className="flex space-x-2 absolute sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
             <SettingsIcon/>
-            <p className='flex basis-4/5'>Settings</p>
+            <p className='hidden group-hover:block group-hover:basis-4/5'>Settings</p>
         </div>
       </div>
 
