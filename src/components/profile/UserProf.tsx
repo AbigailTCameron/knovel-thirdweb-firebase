@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import UserList from '../community/UserList'
 import { fetchNft } from '../../../functions/nft/fetch';
 import Profile from '../icons/Profile';
 import DisplayNft from '../nft/DisplayNft';
@@ -36,14 +35,6 @@ function UserProf({searchResults, setSearchResults, userId, name, username, prof
 
   return (
     <div className="flex sm:flex-col w-full h-full relative">
-       {searchResults && (
-        <div className="absolute z-10 w-1/3 lg:w-1/2 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
-          <UserList 
-            setSearchResults={setSearchResults}
-            userId={userId}
-          />
-        </div>
-      )}
       <div className="flex w-full h-full flex-col px-10 py-6">
           <div className="flex items-center justify-between text-white w-full h-fit">
             <div className="flex items-center space-x-4">

@@ -2,13 +2,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import React from 'react'
 import SettingsIcon from '../icons/SettingsIcon';
 import HomeIcon from '../icons/HomeIcon';
-import WorldIcon from '../icons/WorldIcon';
 import Dashboard from '../icons/Dashboard';
 import SearchIcon from '../icons/SearchIcon';
 import People from '../icons/People';
-import Bookmark from '../icons/Bookmark';
-import BookmarkPage from '../icons/BookmarkPage';
-import Bookmark1 from '../icons/Bookmark1';
 import Pencil from '../icons/Pencil';
 import BookmarkIcon from '../icons/BookmarkIcon';
 import Lib from '../icons/Lib';
@@ -19,9 +15,10 @@ type Props = {
   setLoading: Function;
   userId ?: string;
   setSearchResults: Function;
+  setShowNotifications: Function;
 }
 
-function Sider({setLoading, userId, setSearchResults}: Props) {
+function Sider({setLoading, userId, setSearchResults, setShowNotifications}: Props) {
   const pathname = usePathname(); 
   const router = useRouter();
     
@@ -48,13 +45,6 @@ function Sider({setLoading, userId, setSearchResults}: Props) {
     }
   };
 
-
-  const handleClickCommunity = () => {
-    if(pathname !== '/community'){
-      setLoading(true); 
-      router.push('/community');
-    }
-  }
 
   const handleCreateClick = () => {
     if(pathname !== '/create'){
@@ -142,7 +132,7 @@ function Sider({setLoading, userId, setSearchResults}: Props) {
         </div> 
 
 
-        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
+        <div onClick={() => setShowNotifications(true)} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
           <Notifications className='flex group-hover:basis-1/5'/>
           <p className='hidden group-hover:block group-hover:basis-4/5'>Notifications</p>
         </div> 

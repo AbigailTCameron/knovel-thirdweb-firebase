@@ -1,15 +1,14 @@
 'use client'
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react'
-import DashboardSider from '@/components/dashboard/DashboardSider'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import PublishList from '@/components/publish/PublishList';
 import SpinLoader from '@/components/loading/SpinLoader';
 import Sider from '@/components/headers/Sider';
-import UserList from '@/components/community/UserList';
 import Top from '@/components/headers/Top';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
 
 
 type Props = {}
@@ -21,6 +20,7 @@ function Publish({}: Props) {
   const [username, setUsername] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
 
   useEffect(() => { 
@@ -48,19 +48,11 @@ function Publish({}: Props) {
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
           />
       </div>
 
       <div className="flex flex-col w-full h-full relative">
-          {searchResults && (
-            <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
-              <UserList 
-                setSearchResults={setSearchResults}
-                userId={currentUser || ''}
-              />
-            </div>
-          )}
-
               <div className='flex flex-col w-full'>
                 <Top 
                   profileUrl={profileUrl}
@@ -74,6 +66,21 @@ function Publish({}: Props) {
                 />
               </div>
       </div>
+
+      {searchResults && (
+        <UserSearch 
+          setSearchResults={setSearchResults}
+          userId={currentUser || ''}
+        />
+      )}
+
+      {showNotifications && (
+        <Notifications 
+          setShowNotifications={setShowNotifications}
+          userId={currentUser}
+        />
+      )}
+    
 
       {/* ✅ Overlay with blur effect */}
       {loading && (

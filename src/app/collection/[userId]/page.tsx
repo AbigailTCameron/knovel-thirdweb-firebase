@@ -7,6 +7,8 @@ import { useParams } from 'next/navigation';
 import UserProf from '@/components/profile/UserProf';
 import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
 
 type Props = {}
 
@@ -20,6 +22,7 @@ function Collection({}: Props) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
   
 
   useEffect(() => { 
@@ -47,6 +50,7 @@ function Collection({}: Props) {
               setLoading={setLoading}
               userId={currentUser}
               setSearchResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
             />
         </div>
 
@@ -59,19 +63,33 @@ function Collection({}: Props) {
             </div>
             <div className='w-full flex flex-col p-4'>
 
-                <UserProf 
+              <UserProf 
                 searchResults={searchResults}
                 setSearchResults={setSearchResults}
                 userId={currentUser || ''}
                 name={name}
                 username={username}
                 profileUrl={profileUrl}
-                />
+              />
 
 
             </div>
 
         </div>
+
+        {searchResults && (
+        <UserSearch 
+          setSearchResults={setSearchResults}
+          userId={currentUser || ''}
+        />
+      )}
+
+      {showNotifications && (
+        <Notifications 
+          setShowNotifications={setShowNotifications}
+          userId={currentUser}
+        />
+      )}
 
     </div>
   )

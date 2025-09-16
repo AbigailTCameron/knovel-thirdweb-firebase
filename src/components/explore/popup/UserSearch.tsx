@@ -40,7 +40,7 @@ function UserSearch({setSearchResults, userId}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/4 h-fit bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
+        <div className="relative flex flex-col w-1/4 h-fit max-h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
 
           <div className="w-full place-self-center self-center flex space-x-2">
               <div className="flex items-center justify-center w-full border border-[#272831] rounded-xl p-0.5">
@@ -60,9 +60,8 @@ function UserSearch({setSearchResults, userId}: Props) {
             </div>
 
        
-
             {usernameResults.length > 0 ? (
-              <div className="flex flex-col w-full mt-6 space-y-2">
+              <div className="flex flex-col w-full mt-6 space-y-2 overflow-y-scroll">
                 {usernameResults.map((user) => (
                   <div onClick={() => router.push(`/profile/${user.id}`)} key={user.id} className="flex text-white w-full items-center rounded-xl justify-center hover:cursor-pointer hover:bg-[#1b1c22] p-2">
                     <div className="w-full flex items-center justify-between">
@@ -118,8 +117,12 @@ function UserSearch({setSearchResults, userId}: Props) {
             
               </div>
             ) : (
-              <div className="w-full items-center justify-center text-[#eeeef0] text-center">
-                <p>No results found</p>
+              <div className="w-full items-center justify-center text-[#eeeef0] text-sm py-2 text-center">
+                {searchQuery == '' ? (
+                  <p>Search for user</p>
+                ) : (
+                  <p>No results found</p>
+                )}
               </div>
             )}
         </div>

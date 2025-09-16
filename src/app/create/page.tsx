@@ -5,9 +5,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import TipTapCreate from '@/components/create/TipTapCreate';
 import Sider from '@/components/headers/Sider';
-import UserList from '@/components/community/UserList';
 import Top from '@/components/headers/Top';
 import SpinLoader from '@/components/loading/SpinLoader';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
 
 
 type Props = {}
@@ -19,8 +20,9 @@ function Create({}: Props) {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [searchResults, setSearchResults] = useState(false);
-  
+  const [showNotifications, setShowNotifications] = useState(false);
 
+  
   useEffect(() => { 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
@@ -47,19 +49,11 @@ function Create({}: Props) {
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
           />
       </div>
 
       <div className="flex flex-col w-full h-full relative">
-
-          {searchResults && (
-            <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
-              <UserList 
-                setSearchResults={setSearchResults}
-                userId={currentUser || ''}
-              />
-            </div>
-          )}
 
           <div className='flex flex-col w-full'>
             <Top 
@@ -77,6 +71,20 @@ function Create({}: Props) {
 
 
       </div>
+
+        {searchResults && (
+          <UserSearch 
+            setSearchResults={setSearchResults}
+            userId={currentUser || ''}
+          />
+        )}
+
+        {showNotifications && (
+          <Notifications 
+            setShowNotifications={setShowNotifications}
+            userId={currentUser}
+          />
+        )}
 
        {/* ✅ Overlay with blur effect */}
        {loading && (

@@ -23,6 +23,7 @@ import UserSearch from '@/components/explore/popup/UserSearch'
 import Recommendations from '@/components/community/Recommendations'
 import { recommendedBooks } from '../../../functions/community/fetch'
 import Recommend from '@/components/community/Recommend'
+import Notifications from '@/components/community/Notifications'
 
 
 type Props = {}
@@ -41,6 +42,8 @@ function page({}: Props) {
   const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
 
   const [genreOptions, setGenreOptions] = useState([]); 
   
@@ -112,6 +115,7 @@ function page({}: Props) {
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
           />
 
       </div>
@@ -174,11 +178,7 @@ function page({}: Props) {
                 />
           </div>
 
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl}
-            setLoading={setLoading}
-          />
+    
         </div> */}
       {/* <div className='flex flex-col basis-10/12'>
 
@@ -221,12 +221,19 @@ function page({}: Props) {
           />
         )}
 
-      {mintLoading && (
-        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
-          <SpinLoader />
-          <p className="text-lg text-white font-semibold">Minting...</p>
-        </div>
-      )}
+        {mintLoading && (
+          <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+            <SpinLoader />
+            <p className="text-lg text-white font-semibold">Minting...</p>
+          </div>
+        )}
+
+        {showNotifications && (
+          <Notifications 
+            setShowNotifications={setShowNotifications}
+            userId={currentUser}
+          />
+        )}
         
     </div>
   )

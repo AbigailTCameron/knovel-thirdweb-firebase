@@ -136,10 +136,6 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
         </div>
       
         <div className="flex relative basis-1/4 items-center justify-between mx-4 halflg:mx-2">
-
-            <div onClick={handleClickCommunity} className='flex xl:right-20 halfxl:right-1/2 halflg:hidden hover:cursor-pointer'>
-              community
-            </div>
           
             <div ref={dropdownRef} className="hover:cursor-pointer halflg:absolute halflg:right-0">
               <UserProfileImage 
