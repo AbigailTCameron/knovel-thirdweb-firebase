@@ -7,6 +7,8 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { getUserProfile } from '../../../../functions/explore/fetch'
 import Bookmark from '@/components/readinglist/Bookmark'
 import SpinLoader from '@/components/loading/SpinLoader'
+import Sider from '@/components/headers/Sider'
+import Top from '@/components/headers/Top'
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -18,6 +20,8 @@ function Readinglist({}: Props) {
   const [bookmarks, setBookmarks] = useState<string[]>([]); 
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState(false);
+  
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -40,32 +44,31 @@ function Readinglist({}: Props) {
 
 
   return (
-    <main className="flex w-screen h-screen flex-col items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl}
+    <main className="flex w-screen h-screen overflow-hidden">
+
+      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
             setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
           />
-        </div>
+      </div>
 
-        <div className="flex w-full h-full md:flex-col items-center space-x-2 p-4 overflow-hidden">
-          <div className="flex basis-1/4 bg-[#171717] rounded-xl w-full h-full">
-            <DashboardSider 
-              userId={currentUser}
-              setLoading={setLoading}
-              profileUrl={profileUrl}
-              username={username}
-            />
+      <div className="flex flex-col w-full h-full overflow-y-scroll">
+          <div className='flex flex-col w-full sticky top-0 z-20'>
+              <Top 
+                profileUrl={profileUrl}
+                setLoading={setLoading}
+              />
           </div>
 
-          <div className="flex basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
+          <div className='w-full flex flex-col p-4'>
             <Bookmark
-              userId={currentUser}
-              bookmarks={bookmarks}
-            />
+                userId={currentUser}
+                bookmarks={bookmarks}
+              />
           </div>
-        </div>
+      </div>
 
       {/* ✅ Overlay with blur effect */}
       {loading && (
