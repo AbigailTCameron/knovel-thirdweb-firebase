@@ -96,7 +96,6 @@ function CommunityHeader({profileUrl, setLoading, userId, setSearchResults}: Pro
             </div>
 
             <Dashboard 
-              onClick={handleCommunityClick}
               className="size-8 hover:cursor-pointer hover:rounded-lg hover:border hover:border-white/50 p-1"
             />
         </div>
