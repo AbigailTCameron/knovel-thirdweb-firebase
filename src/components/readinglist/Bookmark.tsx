@@ -30,7 +30,7 @@ function Bookmark({userId, bookmarks}: Props) {
   return (
     <div className="grid grid-cols-6 gap-4 w-full h-full">
       {bookDetails.map((bookmark, index) => (
-        <div onClick={() => handleBookClick(bookmark.id)}  key={index} className="group relative col-span-1 hover:col-span-2 flex space-x-2 cursor-pointer">
+        <div onClick={() => handleBookClick(bookmark.id)}  key={index} className="group relative col-span-1 hover:col-span-2 transition-all duration-300 ease-in-out flex space-x-2 cursor-pointer">
 
               <div className=" w-[250px] h-[400px] sm:w-[180px] sm:h-[270px] flex-shrink-0">
                 <img 
@@ -40,7 +40,7 @@ function Bookmark({userId, bookmarks}: Props) {
                 />
               </div>
 
-              <div className="hidden group-hover:flex flex-col w-full text-white flex-1 space-y-2 max-h-[400px] sm:max-h-[270px]">
+              <div className="hidden group-hover:flex flex-col w-full px-2 text-white flex-1 space-y-2 max-h-[400px] sm:max-h-[270px]">
                 <p className="text-2xl sm:text-xl font-bold flex-shrink-0">{bookmark?.title}</p>
                 
                 <div className="flex flex-col">

@@ -8,7 +8,6 @@ import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
 import Trending from '@/components/explore/trending/Trending'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
-import Butterfly from '@/components/loading/Butterfly'
 import ClaimedNft from '@/components/explore/popup/ClaimedNfft'
 import { ConnectButton, useActiveAccount } from 'thirdweb/react'
 import { client } from '@/lib/client'
@@ -18,9 +17,12 @@ import { firebaseAuthClient, firebaseLogout } from '../actions/firebaseauth'
 import { useRouter } from 'next/navigation'
 import Sider from '@/components/headers/Sider'
 import Top from '@/components/headers/Top'
-import UserList from '@/components/community/UserList'
 import Carousel from '@/components/explore/trending/Carousel'
 import Genre from '@/components/explore/genre/Genre'
+import UserSearch from '@/components/explore/popup/UserSearch'
+import Recommendations from '@/components/community/Recommendations'
+import { recommendedBooks } from '../../../functions/community/fetch'
+import Recommend from '@/components/community/Recommend'
 
 
 type Props = {}
@@ -39,18 +41,23 @@ function page({}: Props) {
   const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
-  
 
+  const [genreOptions, setGenreOptions] = useState([]); 
+  
+  
   const camp = defineChain({
     id: 123420001114,
   });
 
   useEffect(() => { 
      // Listen for authentication state changes
-     const unsubscribe = onAuthStateChanged(auth, (user) => {
+     const unsubscribe = onAuthStateChanged(auth, async(user) => {
         setCurrentUser(user?.uid);
         if(user){
-          getUserProfile(user.uid, setProfileUrl);
+          const data = await getUserProfile(user.uid, setProfileUrl);
+          if(data?.genres){
+            setGenreOptions(data.genres);
+           }   
         }else {
           setProfileUrl(''); 
         }
@@ -86,6 +93,7 @@ function page({}: Props) {
     await logout();
     await firebaseLogout(router); 
   }
+
   useEffect(() => {
     if (claimed) {
       const timer = setTimeout(() => {
@@ -96,30 +104,21 @@ function page({}: Props) {
     }
   }, [claimed]);
 
-  if (mintLoading) return <Butterfly />;
-
   return (
     <div className="flex w-screen h-screen overflow-hidden">
     
-      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+      <div className='relative flex w-fit border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
             setSearchResults={setSearchResults}
           />
+
       </div>
     
       <div className="flex flex-col w-full h-full overflow-y-scroll">
-          {/* {searchResults && (
-            <div className="absolute z-50 w-1/3 sm:w-3/4 h-full bg-[#0b0b0b] shadow-lg left-0 rounded-r-md">
-              <UserList 
-                setSearchResults={setSearchResults}
-                userId={currentUser || ''}
-              />
-            </div>
-          )} */}
 
-          <div className='flex flex-col w-full sticky top-0 z-20'>
+          <div className='flex flex-col w-full sticky top-0 z-40'>
             <Top 
               profileUrl={profileUrl}
               setLoading={setLoading}
@@ -132,6 +131,14 @@ function page({}: Props) {
                     setMintPopup={setMintPopup}
                   />
               </div>
+
+              {genreOptions.length != 0 && (
+                  <div className="flex w-full mt-5 halfxl:mt-10 sm:px-2">
+                    <Recommend 
+                      userGenres={genreOptions}
+                    />
+                  </div>
+              )}
 
               <div className="flex w-full halfxl:mt-10 sm:px-2">
                  <Genre />
@@ -185,19 +192,6 @@ function page({}: Props) {
         </div>
 
 
-        {mintPopup && (
-          <NftMint 
-            onCancel={() => setMintPopup(false)}
-            onConfirm={mint}
-            userBalance={userBalance}
-          />
-        )}
-
-        {claimed && (
-          <ClaimedNft 
-            onCancel={() => setClaimed(false)}
-          />
-        )}
 
         {loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
@@ -214,12 +208,25 @@ function page({}: Props) {
           />
         )}
 
+        {searchResults && (
+            <UserSearch 
+              setSearchResults={setSearchResults}
+              userId={currentUser || ''}
+            />
+          )}
+
         {claimed && (
           <ClaimedNft 
             onCancel={() => setClaimed(false)}
           />
         )}
 
+      {mintLoading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Minting...</p>
+        </div>
+      )}
         
     </div>
   )

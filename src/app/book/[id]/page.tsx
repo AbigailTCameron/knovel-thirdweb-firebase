@@ -1,5 +1,5 @@
 'use client'
-import ExploreHeader from '@/components/headers/ExploreHeader'
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
@@ -7,6 +7,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../functions/explore/fetch';
 import BookInfo from '@/components/book/BookInfo';
 import SpinLoader from '@/components/loading/SpinLoader';
+import Sider from '@/components/headers/Sider';
+import Top from '@/components/headers/Top';
 
 const { auth } = initializeFirebaseClient();
 function Book() {
@@ -17,6 +19,8 @@ function Book() {
   const [bookmarks, setBookmarks] = useState<string[]>([]); 
   const [loading, setLoading] = useState(false);
   const [userRating, setUserRating] = useState<number>(0); 
+
+  const [searchResults, setSearchResults] = useState(false);
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -39,22 +43,34 @@ function Book() {
   }, []);
 
   return (
-    <main className="flex w-screen h-screen flex-col items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl} 
+    <main className="flex w-screen h-screen overflow-hidden">
+        <div className='flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
             setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
           />
         </div>
 
-        <BookInfo 
-          userId={currentUser}
-          id={params?.id}
-          bookmarks={bookmarks}
-          userRating={userRating}
-          setUserRating={setUserRating}
-        />    
+        <div className="flex flex-col w-full h-full overflow-y-scroll">
+          <div className='flex flex-col w-full sticky top-0 z-20'>
+              <Top 
+                profileUrl={profileUrl}
+                setLoading={setLoading}
+              />
+          </div>
+
+          <BookInfo 
+            userId={currentUser}
+            id={params?.id}
+            bookmarks={bookmarks}
+            userRating={userRating}
+            setUserRating={setUserRating}
+          />    
+
+        </div>
+
+
 
         {/* ✅ Overlay with blur effect */}
         {loading && (

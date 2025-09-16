@@ -1,7 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import ExploreHeader from '@/components/headers/ExploreHeader'
-import DashboardSider from '@/components/dashboard/DashboardSider'
 import initializeFirebaseClient from '@/lib/initFirebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import { getUserProfile } from '../../../../functions/explore/fetch'

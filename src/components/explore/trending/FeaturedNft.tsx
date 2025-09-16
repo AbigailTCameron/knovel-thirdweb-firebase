@@ -10,7 +10,7 @@ type Props = {
 
 function FeaturedNft({setMintPopup, screen, setScreen}: Props) {
   return (
-    <div className="flex flex-col rounded-2xl bg-gradient-to-b from-[#020618] via-[#30056b] to-[#020618] w-full h-full py-2 px-4 items-center justify-center text-white">
+    <div className="flex flex-col rounded-2xl bg-gradient-to-b from-[#020618] via-[#30056b] to-[#020618] w-full h-full py-2 items-center justify-center text-white">
 
       <div className='flex px-10 w-full h-full items-center'>
           <div className="flex flex-col basis-2/5 w-full items-center py-4 justify-center">

@@ -8,7 +8,7 @@ type Props = {
 
 function FeaturedAuthor({screen, setScreen}: Props) {
   return (
-    <div className="flex flex-col rounded-2xl w-full h-full py-2 px-4 items-center justify-center text-white">
+    <div className="flex flex-col rounded-2xl w-full h-full py-2 items-center justify-center text-white">
         <div className='flex w-full h-full items-center'>
 
           <div className="w-full flex basis-2/5 h-full items-center justify-center">

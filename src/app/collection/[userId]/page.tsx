@@ -3,10 +3,10 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react'
 import { getUserProfile } from '../../../../functions/explore/fetch';
-import ExploreHeader from '@/components/headers/ExploreHeader';
 import { useParams } from 'next/navigation';
-import CommunityHeader from '@/components/headers/CommunityHeader';
 import UserProf from '@/components/profile/UserProf';
+import Sider from '@/components/headers/Sider';
+import Top from '@/components/headers/Top';
 
 type Props = {}
 
@@ -20,6 +20,7 @@ function Collection({}: Props) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
+  
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -40,29 +41,37 @@ function Collection({}: Props) {
   }, []);
 
   return (
-    <div className="flex sm:flex-col w-screen h-screen overflow-hidden sm:overflow-y-auto">
-        <div className="w-1/12 sm:w-full sm:h-fit sm:sticky sm:top-0 h-full z-50 border-r-[0.5px] border-white/50 flex-shrink-0">
-          <CommunityHeader 
-            userId={currentUser}
-            profileUrl={profileUrl}
-            setLoading={setLoading}
-            setSearchResults={setSearchResults}
-          />
+    <div className="flex w-screen h-screen overflow-hidden">
+        <div className='flex w-fit border-r-[0.5px] border-white/50'>
+            <Sider 
+              setLoading={setLoading}
+              userId={currentUser}
+              setSearchResults={setSearchResults}
+            />
         </div>
 
-        <div className="flex-grow h-full sm:w-full overflow-hidden sm:overflow-y-auto">
-          <UserProf 
-             searchResults={searchResults}
-             setSearchResults={setSearchResults}
-             userId={currentUser || ''}
-             name={name}
-             username={username}
-             profileUrl={profileUrl}
-          />
-          
-        </div>
+        <div className="flex flex-col w-full h-full overflow-y-scroll">
+            <div className='flex flex-col w-full sticky top-0 z-20'>
+                <Top 
+                  profileUrl={profileUrl}
+                  setLoading={setLoading}
+                />
+            </div>
+            <div className='w-full flex flex-col p-4'>
 
-    
+                <UserProf 
+                searchResults={searchResults}
+                setSearchResults={setSearchResults}
+                userId={currentUser || ''}
+                name={name}
+                username={username}
+                profileUrl={profileUrl}
+                />
+
+
+            </div>
+
+        </div>
 
     </div>
   )

@@ -50,19 +50,6 @@ function UserProf({searchResults, setSearchResults, userId, name, username, prof
                 <p className="text-5xl font-semibold">{name}</p>
                 <p className="text-4xl font-light">{username}</p>
             </div>
-
-            <div className="w-[100px] h-[100px]">
-                {profileUrl ? (
-                    <img 
-                      className="rounded-full w-full h-full"
-                      src={profileUrl}
-                    />
-
-                ) : (
-                  <Profile className=' stroke-white'/>
-                )}
-
-            </div>
           
           </div>
 

@@ -32,7 +32,7 @@ function GenreBooks({title, genre}: Props) {
     <div className='text-white w-full h-full overflow-x-hidden'>
       <p className="text-3xl font-extrabold">{title}</p>
 
-      <div className={`flex w-full overflow-x-auto space-x-10 md:space-x-4 mt-8 lg:mt-4 custom-scrollbar`}>
+      <div className={`flex w-full overflow-x-auto space-x-10 md:space-x-4 mt-4 custom-scrollbar`}>
 
         {books.map((book) => (
           <div 

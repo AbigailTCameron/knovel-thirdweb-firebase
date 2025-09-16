@@ -29,7 +29,6 @@ function Feed({userGenres, userId, notifications, setNotifications}: Props) {
 
   useEffect(() => {
     loadFeed();
-
   }, [])
 
   return (

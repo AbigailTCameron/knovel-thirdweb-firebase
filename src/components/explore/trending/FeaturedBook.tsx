@@ -7,7 +7,7 @@ type Props = {
 }
 function FeaturedBook({screen, setScreen}: Props) {
   return (
-    <div className="flex flex-col w-full h-full py-4 px-4 items-center justify-center text-white">
+    <div className="flex flex-col w-full h-full py-4 items-center justify-center text-white">
       <div className="flex sm:flex-col sm:space-y-4 py-4 items-center w-full h-full justify-center px-10 halfxl:px-10 sm:px-4 space-x-20 halflg:space-x-12 sm:space-x-6 ">
 
           <div className="flex flex-col w-2/5 sm:w-full space-y-5 sm:space-y-3 text-white">
