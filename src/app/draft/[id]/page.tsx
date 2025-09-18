@@ -40,6 +40,7 @@ function Draft({}: Props) {
   const [searchResults, setSearchResults] = useState(false);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [created, setCreated] = useState();
   
 
   useEffect(() => { 
@@ -58,7 +59,7 @@ function Draft({}: Props) {
 
   useEffect(() => {
     if(params.id && currentUser){
-      fetchChapterInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath);
+      fetchChapterInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath, setCreated);
     }
   }, [params.id, genres, title, currentUser])
 
@@ -109,22 +110,34 @@ function Draft({}: Props) {
                   genres={genres || []}
                   setLoading={setLoading}
                   name={authorName}
-                  synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
+                  newSynopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
                   chapters={chapters}
                   imagePath={imagePath}
                   setPublishing={setPublishing}
                   setDeleting={setDeleting}
+                  created_at={created}
+                  setSynopsis={setSynopsis}
                 />
               </div>
 
-              <div className="flex flex-col basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
-                  <div onClick={() => setSynopsis(true)} className="p-4 text-gray-500 hover:text-gray-600 hover:cursor-pointer">
-                    {oldSynopsis ? (
-                      <p>{oldSynopsis}</p>
-                    ) : (
-                      <p>+ click to add a synopsis</p>
-                    )}
+              <div className="flex flex-col basis-3/4 rounded-xl w-full h-full overflow-y-scroll px-4">
+
+                  <div className='flex flex-col border-b  border-[#272831] space-y-2 py-2'>
+                      <div className="flex space-x-2 text-white">
+                          <p className="text-white font-semibold">Genres:</p>
+
+                          {genres?.map((genre: string, index: any) => (
+                            <div key={index} className="flex text-sm space-x-0.5 border-[0.5px] py-0.5 px-1 rounded-full font-light">
+                              <p>{genre}</p>
+                            </div>
+                          ))}
+                      </div>
+
+                      <p className="text-white text-sms overflow-hidden break-words text-ellipsis whitespace-normal text-wrap"> <span className="font-semibold text-base">Synopsis:</span> {oldSynopsis}</p>
+
                   </div>
+
+              
                   
                   {chapters.length !== 0 && (
                     <DraftList

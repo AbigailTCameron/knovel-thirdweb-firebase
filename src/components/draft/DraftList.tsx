@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { DraftChapters } from '../../..';
 import { updateCompletedChapter } from '../../../functions/drafts/fetch';
+import { formatDate } from '../../../tools/formatDate';
 
 type Props = {
   chapters: DraftChapters[];
@@ -37,12 +38,12 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
   };
 
   return (
-    <div className="relative h-full w-full flex flex-col">
+    <div className="grid grid-cols-2 gap-4 h-fit w-full py-4">
       {chapters.length == 0 ? (
          <p className="text-gray-400">No chapters available.</p>
       ): (
         chapters.map((chapter, index) => (
-           <div onClick={() => handleBookClick(index)}  key={index} className="p-4 hover:cursor-pointer hover:bg-[#171717] rounded-xl">
+           <div onClick={() => handleBookClick(index)}  key={index} className="p-4 hover:cursor-pointer hover:bg-[#1b1c22] rounded-xl">
               {/* <div className="text-slate-500 font-light text-xs">
                 {new Date(chapter.createdAt).toLocaleDateString('en-US', {
                    year: 'numeric',
@@ -50,8 +51,9 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
                    day: 'numeric'
                 })}
               </div> */}
+              <p className="flex text-xs font-extralight text-slate-500">{formatDate(chapter?.createdAt)}</p>
 
-              <div className="text-slate-500">
+              <div className="text-white">
                    <p>Chapter {index + 1}</p>   
               </div>
 
@@ -60,7 +62,6 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
               </div>
 
               <div className="flex text-slate-500 space-x-4 text-sm items-center">
-                {/* <p>0 Comments</p> */}
 
                 <div className="flex items-center space-x-2">
                   <p>Incomplete</p>

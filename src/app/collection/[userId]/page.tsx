@@ -3,25 +3,21 @@ import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react'
 import { getUserProfile } from '../../../../functions/explore/fetch';
-import { useParams } from 'next/navigation';
 import UserProf from '@/components/profile/UserProf';
 import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
+import SpinLoader from '@/components/loading/SpinLoader';
 
 type Props = {}
 
 const { auth } = initializeFirebaseClient();
 function Collection({}: Props) {
-  const params = useParams<{ id: string }>();
-
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [searchResults, setSearchResults] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   
 
@@ -30,11 +26,7 @@ function Collection({}: Props) {
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-         const data = await getUserProfile(user.uid, setProfileUrl);
-         if(data){
-          setName(data.name);
-          setUsername(data.username);
-         }      
+         await getUserProfile(user.uid, setProfileUrl);   
        }else {
          setProfileUrl(''); 
        }
@@ -62,17 +54,9 @@ function Collection({}: Props) {
                 />
             </div>
             <div className='w-full flex flex-col p-4'>
-
               <UserProf 
-                searchResults={searchResults}
-                setSearchResults={setSearchResults}
                 userId={currentUser || ''}
-                name={name}
-                username={username}
-                profileUrl={profileUrl}
               />
-
-
             </div>
 
         </div>
@@ -89,6 +73,13 @@ function Collection({}: Props) {
           setShowNotifications={setShowNotifications}
           userId={currentUser}
         />
+      )}
+
+      {/* ✅ Overlay with blur effect */}
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
       )}
 
     </div>

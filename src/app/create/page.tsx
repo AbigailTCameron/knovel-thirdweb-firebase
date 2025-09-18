@@ -18,6 +18,7 @@ function Create({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [name, setName] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [loadSave, setLoadingSave] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -66,7 +67,7 @@ function Create({}: Props) {
             userId={currentUser}
             username={username}
             name={name}
-            setLoading={setLoading}
+            setLoading={setLoadingSave}
           />
 
 
@@ -87,10 +88,17 @@ function Create({}: Props) {
         )}
 
        {/* ✅ Overlay with blur effect */}
-       {loading && (
+       {loadSave && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
           <p className="text-lg text-white font-semibold">Saving your draft...</p>
+        </div>
+      )}
+
+        {/* ✅ Overlay with blur effect */}
+        {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
         </div>
       )}
     </div>

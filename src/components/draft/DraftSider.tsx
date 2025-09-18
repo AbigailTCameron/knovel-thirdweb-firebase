@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import ImageUploader2 from './ImageUploader2';
-import BookIcon from '../icons/BookIcon';
-import NewPage from '../icons/NewPage';
 import TrashIcon from '../icons/TrashIcon';
 import { deleteEntireDraft, editDraftTitle, removeDraftGenre, updateDraftGenre, uploadEpub } from '../../../functions/drafts/fetch';
-import NewGenre from './NewGenre';
 import ConfirmDeleteDraft from './ConfirmDelete';
 import EditTitlePopup from './EditTitlePopup';
 import PublishPopup from './PublishPopup';
+import { formatDate } from '../../../tools/formatDate';
+import Calendar from '../icons/Calendar';
+import Finger from '../icons/Finger';
+import GenrePopup from './GenrePopup';
 
 type Props = {
   imageUrl : string;
@@ -20,20 +21,22 @@ type Props = {
   setLoading : Function;
   setDeleting : Function;
   name : string;
-  synopsis : string;
+  newSynopsis : string;
   chapters : any[]
   imagePath: string;
-  setPublishing: Function
+  setPublishing: Function;
+  created_at: any;
+  setSynopsis: Function;
 }
 
-function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, synopsis, chapters, imagePath, setPublishing, setDeleting}: Props) {
+function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, newSynopsis, chapters, imagePath, setPublishing, setDeleting, created_at, setSynopsis}: Props) {
   const router = useRouter();
   const [editTitle, setEditTitle] = useState<boolean>(false);
-  const [addGenre, setAddGenre] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [genre, setGenre] = useState<string>('');
   const [newTitle, setNewTitle] = useState<string>('');
   const [publishPopup, setPublishPopup] = useState(false); 
+  const [genrePopup, setGenrePopup] = useState(false);
 
   const handleRemoveGenre = async(selectedGenre:string) => {
     removeDraftGenre(userId, draftId, selectedGenre);
@@ -59,7 +62,6 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
   const handleGenreConfirm = async() => {
     if(genre){
       updateDraftGenre(userId, draftId, genre.trim());
-      setAddGenre(false); 
     }
   }
 
@@ -83,7 +85,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
     }
 
     setPublishing(true);
-    await uploadEpub(userId, genres, chapters, title, name, synopsis, imagePath, draftId, imageUrl).then(success => {
+    await uploadEpub(userId, genres, chapters, title, name, newSynopsis, imagePath, draftId, imageUrl).then(success => {
       if(success){
         router.push("/explore");
       }else{
@@ -100,7 +102,7 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
 
   return (
     <div className="relative h-full w-full flex flex-col">
-        <div className="flex flex-col">
+        <div className="flex flex-col px-4">
             <ImageUploader2 
               bookUrl={imageUrl}
               userId={userId}
@@ -112,57 +114,50 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
               <p>{title}</p>
             </div>
 
-            <div className="flex-col w-full text-[#a5a5a5] text-sm items-center px-4 lg:px-2 py-6 lg:py-4 md:py-1">
-                <p className="text-xs text-center mb-2">BOOK STATS</p>
-
-                <div className="flex w-full space-x-10 text-sm items-center">
-                    <div className="flex space-x-2 items-center">
-                      <BookIcon className="stroke-[#a5a5a5]"/>
-                      <p>Chapters</p>
-                    </div>
-                  
-                    <div className="flex items-center bg-[#a5a5a5] rounded-2xl px-3 py-1 text-white">
-                      <p>{chapterCount}</p>
-                    </div>
-
+            <div className='flex space-x-2 my-3'>
+                <div className='flex items-center justify-center border space-x-1 border-[#272831] rounded-lg px-2 py-2 text-sm'>
+                    <Calendar className='size-6'/>
+                    <p className="">{formatDate(created_at)}</p>
                 </div>
-    
-
+                <div className='flex items-center justify-center border border-[#272831] rounded-lg px-2 py-2 text-sm'>
+                 <p className="">Chapters {chapterCount}</p>
+                </div>
             </div>
 
-            <div onClick={handleNewChapter} className="flex text-[#a5a5a5] text-sm items-center space-x-2 px-4 lg:px-2 hover:cursor-pointer">
-              <NewPage className="stroke-[#a5a5a5]"/>
-              <p>new chapter</p>
-            </div> 
-        </div>
- 
-        <div onClick={() => setAddGenre(true)} className="flex text-gray-500 hover:text-gray-600 hover:cursor-pointer px-4 lg:px-2 self-center mt-4">
-          <p>+ click to add genre</p>
-        </div>
-
-        <div className="flex-grow overflow-y-auto md:h-[50px] px-4 lg:px-2 py-2">
-          {genres?.map((genre, index) => (
-            <div onClick={() => handleRemoveGenre(genre)} key={index} className="hover:cursor-pointer">
-              {genre}
+            <div onClick={handleNewChapter} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                    <p>Add New Chapter</p>
             </div>
-          ))}
+
+            <div onClick={() => setSynopsis(true)} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                    <p>Add/Update Synopsis</p>
+            </div>
+
+            <div onClick={() => setGenrePopup(true)} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                    <p>Add/Update Genres</p>
+            </div>
+
         </div>
 
-        <div className="flex-shrink-0 md:flex md:p-1 md:justify-center md:items-center md:mt-2 p-4 lg:p-2 mb-2 w-full">
-          <div onClick={() => setPublishPopup(true)} className="hover:cursor-pointer bg-indigo-600 text-center p-3 lg:p-2 md:w-1/2 rounded-xl font-semibold text-lg lg:text-base text-white">
-            <p>publish</p>
+        <div className="absolute bottom-0 flex-shrink-0 md:flex md:p-1 md:justify-center md:items-center md:mt-2 p-4 lg:p-2 mb-2 w-full border-t border-[#272831]">
+          <div onClick={() => setPublishPopup(true)} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg text-center w-full py-3 font-semibold">
+            <Finger className='size-7 group-hover:stroke-[#5D3FD3]'/>
+            <p>Publish</p>
           </div>
 
-          <div onClick={handleDelete} className="flex items-center w-full md:w-1/2 justify-center mt-4 md:mt-0 space-x-2 text-red-600 hover:cursor-pointer hover:underline">
-            <TrashIcon />
-            <p>delete</p>
+          <div onClick={handleDelete} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg text-center w-full py-3 font-semibold">
+            <TrashIcon className='size-7 group-hover:stroke-red-600'/>
+            <p>Delete</p>
           </div>
+
         </div>
 
-        {addGenre && (
-          <NewGenre 
+
+        {genrePopup && (
+          <GenrePopup 
+            onCancel={() => setGenrePopup(false)}
+            genres={genres}
             setGenre={setGenre}
-            onCancel={() => setAddGenre(false)}
+            handleRemoveGenre={handleRemoveGenre}
             onConfirm={handleGenreConfirm}
           />
         )}

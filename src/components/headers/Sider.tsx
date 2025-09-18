@@ -3,7 +3,6 @@ import React from 'react'
 import SettingsIcon from '../icons/SettingsIcon';
 import HomeIcon from '../icons/HomeIcon';
 import Dashboard from '../icons/Dashboard';
-import SearchIcon from '../icons/SearchIcon';
 import People from '../icons/People';
 import Pencil from '../icons/Pencil';
 import BookmarkIcon from '../icons/BookmarkIcon';

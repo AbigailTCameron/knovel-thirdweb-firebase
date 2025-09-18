@@ -34,7 +34,7 @@ function Bookmark({userId, bookmarks}: Props) {
 
               <div className=" w-[250px] h-[400px] sm:w-[180px] sm:h-[270px] flex-shrink-0">
                 <img 
-                  className="z-10 p-0.5 w-full h-full bg-white group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-3xl object-cover" 
+                  className="z-10 p-0.5 w-full h-full group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-3xl object-cover" 
                   src={bookmark.book_image} 
                   alt={bookmark.title}
                 />
