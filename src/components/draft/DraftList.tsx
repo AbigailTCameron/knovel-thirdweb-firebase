@@ -51,7 +51,6 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
                    day: 'numeric'
                 })}
               </div> */}
-              <p className="flex text-xs font-extralight text-slate-500">{formatDate(chapter?.createdAt)}</p>
 
               <div className="text-white">
                    <p>Chapter {index + 1}</p>   
