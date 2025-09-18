@@ -9,6 +9,7 @@ import Sider from '@/components/headers/Sider'
 import Top from '@/components/headers/Top'
 import UserSearch from '@/components/explore/popup/UserSearch'
 import Notifications from '@/components/community/Notifications'
+import SettingsPopup from '@/components/explore/popup/SettingsPopup'
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -22,6 +23,10 @@ function Readinglist({}: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -32,6 +37,8 @@ function Readinglist({}: Props) {
         if(data){
          setUsername(data.username);
          setBookmarks(data.bookmark);
+         setFilePath(data.profilePicturePath);
+         setName(data.name)
         }      
        }else {
          setProfileUrl(''); 
@@ -52,6 +59,7 @@ function Readinglist({}: Props) {
             userId={currentUser}
             setSearchResults={setSearchResults}
             setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
       </div>
 
@@ -84,6 +92,20 @@ function Readinglist({}: Props) {
           userId={currentUser}
         />
       )}
+
+      {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
+
 
       {/* ✅ Overlay with blur effect */}
       {loading && (

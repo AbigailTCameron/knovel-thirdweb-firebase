@@ -9,6 +9,7 @@ import Top from '@/components/headers/Top';
 import SpinLoader from '@/components/loading/SpinLoader';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 
 
 type Props = {}
@@ -22,6 +23,8 @@ function Create({}: Props) {
   const [username, setUsername] = useState<string>('');
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
 
   
   useEffect(() => { 
@@ -33,6 +36,7 @@ function Create({}: Props) {
          if(data){
           setName(data.name); 
           setUsername(data.username);
+          setFilePath(data.profilePicturePath);
          }
          
        }else {
@@ -51,6 +55,7 @@ function Create({}: Props) {
             userId={currentUser}
             setSearchResults={setSearchResults}
             setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
       </div>
 
@@ -86,6 +91,19 @@ function Create({}: Props) {
             userId={currentUser}
           />
         )}
+
+      {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
 
        {/* ✅ Overlay with blur effect */}
        {loadSave && (

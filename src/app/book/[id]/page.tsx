@@ -11,6 +11,7 @@ import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 
 const { auth } = initializeFirebaseClient();
 function Book() {
@@ -25,6 +26,11 @@ function Book() {
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+
   useEffect(() => { 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
@@ -36,7 +42,12 @@ function Book() {
           const rated = data?.rated || [];
           const userRating = rated.find((rating: { bookId: string; rating: number }) => rating.bookId === params.id)?.rating;
           setUserRating(userRating ?? 0);
-         }      
+         }   
+         if(data){
+          setFilePath(data.profilePicturePath);
+          setUsername(data.username);
+          setName(data.name);
+         }   
        }else {
          setProfileUrl(''); 
        }
@@ -53,6 +64,7 @@ function Book() {
             userId={currentUser}
             setSearchResults={setSearchResults}
             setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
         </div>
 
@@ -88,6 +100,18 @@ function Book() {
           />
         )}
 
+      {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
 
         {/* ✅ Overlay with blur effect */}
         {loading && (

@@ -15,9 +15,10 @@ type Props = {
   userId ?: string;
   setSearchResults: Function;
   setShowNotifications: Function;
+  setSettingsPopup: Function;
 }
 
-function Sider({setLoading, userId, setSearchResults, setShowNotifications}: Props) {
+function Sider({setLoading, userId, setSearchResults, setShowNotifications, setSettingsPopup}: Props) {
   const pathname = usePathname(); 
   const router = useRouter();
     
@@ -137,7 +138,7 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications}: Pro
         </div> 
 
 
-        <div onClick={handleSettingsClick} className="flex items-center space-x-2 absolute sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
+        <div onClick={() => setSettingsPopup(true)} className="flex items-center space-x-2 absolute sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
             <SettingsIcon/>
             <p className='hidden group-hover:block group-hover:basis-4/5'>Settings</p>
         </div>

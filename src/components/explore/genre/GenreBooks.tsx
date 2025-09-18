@@ -30,7 +30,7 @@ function GenreBooks({title, genre}: Props) {
 
   return (
     <div className='text-white w-full h-full overflow-x-hidden'>
-      <p className="text-3xl font-extrabold">{title}</p>
+      <p className="text-2xl font-extrabold">{title}</p>
 
       <div className={`flex w-full overflow-x-auto space-x-10 md:space-x-4 mt-4 custom-scrollbar`}>
 
@@ -47,7 +47,7 @@ function GenreBooks({title, genre}: Props) {
                   />
               </div>
 
-              <div className='hidden group-hover:block w-[300px] space-y-2'>
+              <div className='hidden group-hover:block w-[400px] space-y-2'>
                   <p className='text-3xl md:text-2xl sm:text-xl font-bold'>{book.title}</p>
 
                   <div className="flex items-center space-x-1">

@@ -9,6 +9,7 @@ import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 
 
 type Props = {}
@@ -21,6 +22,9 @@ function Publish({}: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
 
 
   useEffect(() => { 
@@ -31,6 +35,8 @@ function Publish({}: Props) {
           const data = await getUserProfile(user.uid, setProfileUrl);    
           if(data){
             setUsername(data.username);
+            setFilePath(data.profilePicturePath);
+            setName(data.name);
           }
        }else {
          setProfileUrl(''); 
@@ -49,6 +55,7 @@ function Publish({}: Props) {
             userId={currentUser}
             setSearchResults={setSearchResults}
             setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
       </div>
 
@@ -73,6 +80,20 @@ function Publish({}: Props) {
           userId={currentUser || ''}
         />
       )}
+
+    {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
+
 
       {showNotifications && (
         <Notifications 

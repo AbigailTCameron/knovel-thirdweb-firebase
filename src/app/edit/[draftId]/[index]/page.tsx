@@ -10,6 +10,7 @@ import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 
 
 type Props = {}
@@ -23,6 +24,11 @@ function Edit({}: Props) {
   const [uploading, setUploading] = useState(false);
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   
 
   useEffect(() => { 
@@ -30,7 +36,12 @@ function Edit({}: Props) {
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
        setCurrentUser(user?.uid);
        if(user){
-          await getUserProfile(user.uid, setProfileUrl);    
+          const data = await getUserProfile(user.uid, setProfileUrl);    
+          if(data){
+            setFilePath(data.profilePicturePath);
+            setUsername(data.username);
+            setName(data.name);
+          }
        }else {
          setProfileUrl(''); 
        }
@@ -48,6 +59,7 @@ function Edit({}: Props) {
             userId={currentUser}
             setSearchResults={setSearchResults}
             setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
       </div>
 
@@ -80,7 +92,20 @@ function Edit({}: Props) {
           userId={currentUser}
         />
       )}
-    
+
+      {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
+
 
       {/* ✅ Overlay with blur effect */}
          {loading || uploading && (
