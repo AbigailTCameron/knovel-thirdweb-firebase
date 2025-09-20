@@ -51,7 +51,7 @@ function Top({profileUrl, setLoading}: Props) {
 
   return (
     <div className='flex w-full justify-between items-center backdrop-blur-md px-4 py-2 z-10'>
-         <div className="relative items-center basis-2/4">
+         <div className="relative items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
             <form onSubmit={handleSearch} className="flex items-center bg-[#272831] w-full rounded-3xl p-0.5">
                 <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
                     <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
@@ -77,7 +77,7 @@ function Top({profileUrl, setLoading}: Props) {
 
         </div>
 
-        <div ref={dropdownRef} className="flex border border-[#272831] rounded-xl px-2 items-center hover:cursor-pointer">
+        <div ref={dropdownRef} className="flex md:hidden border border-[#272831] rounded-xl px-2 items-center hover:cursor-pointer">
 
             <ConnectButton
               client={client}

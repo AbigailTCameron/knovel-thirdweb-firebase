@@ -27,7 +27,7 @@ function SettingsPopup({setSettingsPopup, profileUrl, userId, setProfileUrl, old
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/4 h-fit max-h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
+        <div className="relative flex flex-col w-1/3 xl:w-1/2 sm:w-3/4 h-fit max-h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
 
             <div className='flex justify-between'>
                 <p className="text-xl font-bold mb-2">Profile Information:</p>

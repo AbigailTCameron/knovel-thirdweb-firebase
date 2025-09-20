@@ -19,6 +19,7 @@ import UserSearch from '@/components/explore/popup/UserSearch'
 import Recommend from '@/components/community/Recommend'
 import Notifications from '@/components/community/Notifications'
 import SettingsPopup from '@/components/explore/popup/SettingsPopup'
+import MediumHeader from '@/components/headers/MediumHeader'
 
 
 type Props = {}
@@ -75,11 +76,11 @@ function page({}: Props) {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    if(!account){
-      logoutPerm();
-    }
-  }, [account])
+  // useEffect(() => {
+  //   if(!account){
+  //     logoutPerm();
+  //   }
+  // }, [account])
 
   const mint = async() => {
     if(currentUser && account){
@@ -90,10 +91,10 @@ function page({}: Props) {
   }
 
 
-  const logoutPerm = async() => {
-    await logout();
-    await firebaseLogout(router); 
-  }
+  // const logoutPerm = async() => {
+  //   await logout();
+  //   await firebaseLogout(router); 
+  // }
 
   useEffect(() => {
     if (claimed) {
@@ -108,7 +109,7 @@ function page({}: Props) {
   return (
     <div className="flex w-screen h-screen overflow-hidden">
     
-      <div className='relative flex w-fit border-r-[0.5px] border-white/50'>
+      <div className='relative md:hidden flex w-fit border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -121,11 +122,22 @@ function page({}: Props) {
     
       <div className="flex flex-col w-full h-full overflow-y-scroll">
 
-          <div className='flex flex-col w-full sticky top-0 z-40'>
+          <div className='md:hidden flex flex-col w-full sticky top-0 z-40'>
             <Top 
               profileUrl={profileUrl}
               setLoading={setLoading}
             />
+          </div>
+
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
+
           </div>
 
           <div className='w-full flex flex-col px-4'>
@@ -143,7 +155,7 @@ function page({}: Props) {
                   </div>
               )}
 
-              <div className="flex w-full halfxl:mt-10 sm:px-2">
+              <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
                  <Genre />
               </div>
 

@@ -12,7 +12,7 @@ function Carousel({setMintPopup}: Props) {
   const [screen, setScreen] = useState<number>(0);
   
   return (
-    <div className='w-full p-1 rounded-xl h-full' style={{ height: '50vh' }}>
+    <div className='w-full p-1 rounded-xl h-[50vh] lg:h-[35vh]'>
       <div className='flex w-full h-full items-center justify-center'>
         {screen == 0 ? (
           <FeaturedNft

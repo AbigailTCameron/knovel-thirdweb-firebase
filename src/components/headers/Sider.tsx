@@ -21,20 +21,11 @@ type Props = {
 function Sider({setLoading, userId, setSearchResults, setShowNotifications, setSettingsPopup}: Props) {
   const pathname = usePathname(); 
   const router = useRouter();
-    
-
 
   const handleExploreClick = () => {
     if(pathname !== '/explore'){
       setLoading(true); 
       router.push('/explore');
-    }
-  };
-
-  const handleSettingsClick = () => {
-    if(pathname !== '/settings'){
-      setLoading(true);
-      router.push('/settings');
     }
   };
 
