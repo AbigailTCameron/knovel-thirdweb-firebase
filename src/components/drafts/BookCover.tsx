@@ -7,7 +7,7 @@ type Props = {
 function BookCover({imageFile}: Props) {
 
   return (
-    <div className=" w-[200px] h-[320px] sm:w-[180px] sm:h-[270px] flex-shrink-0">
+    <div className=" w-[200px] h-[320px] lg:w-[180px] lg:h-[270px] ss:w-[100px] ss:h-[160px] flex-shrink-0">
 
         {imageFile ? (
             <img

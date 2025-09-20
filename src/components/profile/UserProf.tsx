@@ -29,7 +29,7 @@ function UserProf({userId}: Props) {
 
   return (
     <div className="flex sm:flex-col w-full h-full relative">
-      <div className="flex w-full h-full flex-col px-10 py-6">
+      <div className="flex w-full h-full flex-col px-10 lg:px-5 py-6">
 
           <div className="flex w-full h-full">
             <DisplayNft 

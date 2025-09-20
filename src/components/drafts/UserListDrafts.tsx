@@ -33,20 +33,20 @@ function UserListDrafts({userId, setLoading}: Props) {
             </div>            
           </div>
         )}
-        <div className="grid grid-cols-3 gap-4 w-full h-full">
+        <div className="grid grid-cols-3 xl:grid-cols-2 md:grid-cols-1 gap-4 w-full h-full">
               {drafts.map((draft, index) => (
                   <div 
                     onClick={() => (
                       setLoading(true),
                       router.push(`/draft/${draft.draftId}`
                     ))}  
-                    key={index} className="flex w-full h-fit space-x-4 hover:cursor-pointer border border-[#272831] rounded-xl"
+                    key={index} className="flex w-full h-[320px] lg:h-[270px] ss:h-[160px] space-x-4 hover:cursor-pointer border border-[#272831] rounded-xl overflow-y-hidden"
                   >  
                 
                         <BookCover imageFile={draft.book_image}/>
 
 
-                        <div className=" w-full text-white flex-1 py-3 space-y-3">
+                        <div className=" w-full text-white flex-1 py-3 lg:py-1 space-y-3 lg:space-y-1 overflow-y-scroll">
 
                           <div className='flex flex-col'>
                             <div className="flex w-full items-center space-x-2">
@@ -64,14 +64,14 @@ function UserListDrafts({userId, setLoading}: Props) {
                           </div>
                           
             
-                            <p className="text-white text-sms overflow-hidden break-words text-ellipsis whitespace-normal text-wrap"> <span className="font-semibold text-base">Synopsis:</span> {draft?.synopsis}</p>
+                            <p className="text-white text-sms overflow-hidden lg:line-clamp-2 break-words text-ellipsis whitespace-normal text-wrap"> <span className="font-semibold text-base lg:text-sm">Synopsis:</span> {draft?.synopsis}</p>
 
 
-                            <div className="flex space-x-2 text-white">
-                                <p className="text-white font-semibold">Genres:</p>
+                            <div className="flex flex-wrap space-x-2 text-white">
+                                <p className="text-white font-semibold halflg:text-sm">Genres:</p>
           
                                 {draft?.genres.map((genre: string, index: any) => (
-                                  <div key={index} className="flex text-sm space-x-0.5 border-[0.5px] p-0.5 rounded-full font-light">
+                                  <div key={index} className="flex text-sm halflg:text-xs space-x-0.5 border-[0.5px] p-0.5 rounded-full font-light break-words">
                                     <p>{genre}</p>
                                   </div>
                                 ))}
