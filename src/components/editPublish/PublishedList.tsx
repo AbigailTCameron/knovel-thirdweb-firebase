@@ -36,7 +36,7 @@ function PublishedList({chapters, bookId, userId}: Props) {
   }
 
   return (
-    <div className="relative h-full w-full flex flex-col">
+    <div className="grid grid-cols-2 gap-4 h-fit w-full py-4">
       {chapters.length == 0 ? (
         <p className="text-gray-400">No chapters available.</p>
       ): (
@@ -65,7 +65,7 @@ function PublishedList({chapters, bookId, userId}: Props) {
                 
 
                 {!chapter?.published && (
-                  <div className="flex items-center space-x-2">
+                  <div className="p-4 hover:cursor-pointer hover:bg-[#1b1c22] rounded-xl">
                    <p>Incomplete</p>
                    <div onClick={(event) => toggleComplete(index, event)} className={`${completionStates[index] ? 'bg-green-500 justify-end' : 'bg-white'} flex items-center border-1 border-white rounded-xl w-[60px] h-[22px]`}>
                      <div className={`flex ${completionStates[index] ? 'bg-white' : 'bg-green-500'}  w-[20px] h-[20px] rounded-xl ml-0.5 mr-0.5`}>

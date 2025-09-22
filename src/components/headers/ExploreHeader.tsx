@@ -77,7 +77,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
         </div>
 
 
-        <div className="relative w-1/2 items-center">
+        <div className="relative w-1/2 items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
           <form onSubmit={handleSearch} className="flex items-center w-full bg-[#272831] rounded-3xl p-0.5">
               <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
                   <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
@@ -103,7 +103,7 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
         </div>
       
-        <div className="flex border border-[#272831] rounded-xl px-2 items-center hover:cursor-pointer">
+        <div className="flex md:hidden border border-[#272831] rounded-xl px-2 items-center hover:cursor-pointer">
 
             <ConnectButton
               client={client}

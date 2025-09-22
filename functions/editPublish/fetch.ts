@@ -10,7 +10,7 @@ import {generateKeywords} from "../helper-utils";
 
 const { db } = initializeFirebaseClient();
 
-export const fetchPublishInfo = async(userId: string, bookId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, router:any, setImagePath: Function, setIpfsHash: Function, setBytesId: Function) => {
+export const fetchPublishInfo = async(userId: string, bookId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, router:any, setImagePath: Function, setIpfsHash: Function, setBytesId: Function, setCreated: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
       const draftRef = doc(db, 'published', userId, 'userDrafts', bookId);
@@ -32,7 +32,7 @@ export const fetchPublishInfo = async(userId: string, bookId: string, setChapter
       setImagePath(draftSnap.data().bookPath);
       setIpfsHash(draftSnap.data().hash);
       setBytesId(draftSnap.data().bytesId);
-
+      setCreated(draftSnap.data().created_at);
   }catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching chapter info:", error.message);

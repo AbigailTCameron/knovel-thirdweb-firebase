@@ -10,6 +10,7 @@ import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
 import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 
 type Props = {}
@@ -49,7 +50,7 @@ function Publish({}: Props) {
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -60,14 +61,24 @@ function Publish({}: Props) {
       </div>
 
       <div className="flex flex-col w-full h-full relative">
-              <div className='flex flex-col w-full'>
+              <div className='flex flex-col md:hidden w-full'>
                 <Top 
                   profileUrl={profileUrl}
                   setLoading={setLoading}
                 />
               </div>
 
-              <div className="flex basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
+              <div className="hidden md:flex w-full sticky top-0 z-40">
+                <MediumHeader 
+                  setLoading={setLoading}
+                  userId={currentUser}
+                  setUserResults={setSearchResults}
+                  setShowNotifications={setShowNotifications}
+                  setSettingsPopup={setSettingsPopup}
+                />
+              </div>
+
+              <div className="flex rounded-xl w-full h-full overflow-y-scroll my-4">
                 <PublishList 
                     userId={currentUser || ''}
                 />

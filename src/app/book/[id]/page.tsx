@@ -12,6 +12,7 @@ import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
 import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 const { auth } = initializeFirebaseClient();
 function Book() {
@@ -58,7 +59,7 @@ function Book() {
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
-        <div className='flex w-fit border-r-[0.5px] border-white/50'>
+        <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -69,11 +70,21 @@ function Book() {
         </div>
 
         <div className="flex flex-col w-full h-full overflow-y-scroll">
-          <div className='flex flex-col w-full sticky top-0 z-20'>
+          <div className='flex flex-col w-full md:hidden sticky top-0 z-20'>
               <Top 
                 profileUrl={profileUrl}
                 setLoading={setLoading}
               />
+          </div>
+
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
           </div>
 
           <BookInfo 

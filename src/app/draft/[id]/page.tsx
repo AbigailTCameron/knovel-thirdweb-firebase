@@ -8,13 +8,13 @@ import { editDraftSynopsis, fetchChapterInfo } from '../../../../functions/draft
 import DraftSider from '@/components/draft/DraftSider';
 import DraftList from '@/components/draft/DraftList';
 import NewSynopsis from '@/components/draft/NewSynopsis';
-import Publishing from '@/components/loading/Publishing';
 import SpinLoader from '@/components/loading/SpinLoader';
 import Sider from '@/components/headers/Sider';
 import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
 import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 
 type Props = {}
@@ -80,19 +80,10 @@ function Draft({}: Props) {
     setSynopsis(false);
   }
 
-  if(publishing){
-    return(
-      <div className="w-screen h-screen">
-         <Publishing />
-      </div>
-     
-    )
-  }
-
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -103,15 +94,25 @@ function Draft({}: Props) {
       </div>
 
       <div className="flex flex-col w-full h-full relative">
-          <div className='flex flex-col w-full'>
+          <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
               setLoading={setLoading}
             />
           </div>
 
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
+          </div>
+
           <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
-              <div className="flex basis-1/4 bg-[#171717] rounded-xl w-full h-full text-white">
+              <div className="flex basis-1/4 halflg:basis-2/5 md:h-fit bg-[#171717] rounded-xl w-full h-full text-white">
                 <DraftSider
                   draftId={params?.id}
                   chapterCount={chapterCount}
@@ -131,7 +132,7 @@ function Draft({}: Props) {
                 />
               </div>
 
-              <div className="flex flex-col basis-3/4 rounded-xl w-full h-full overflow-y-scroll px-4">
+              <div className="flex flex-col basis-3/4 halflg:basis-3/5 md:grow rounded-xl w-full h-full overflow-y-scroll px-4">
 
                   <div className='flex flex-col border-b  border-[#272831] space-y-2 py-2'>
                       <div className="flex space-x-2 text-white">
@@ -206,6 +207,14 @@ function Draft({}: Props) {
       {loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
+        </div>
+      )}
+
+      {/* ✅ Overlay with blur effect */}
+      {publishing && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Publishing...</p>
         </div>
       )}
 

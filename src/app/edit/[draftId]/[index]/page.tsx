@@ -11,6 +11,7 @@ import Top from '@/components/headers/Top';
 import UserSearch from '@/components/explore/popup/UserSearch';
 import Notifications from '@/components/community/Notifications';
 import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 
 type Props = {}
@@ -53,7 +54,7 @@ function Edit({}: Props) {
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit border-r-[0.5px] border-white/50'>
+      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -64,12 +65,24 @@ function Edit({}: Props) {
       </div>
 
       <div className="flex flex-col w-full h-full relative">
-          <div className='flex flex-col w-full'>
+          <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
               setLoading={setLoading}
             />
           </div>
+
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
+
+          </div>
+
 
           <TipTapEdit 
             draftId={params.draftId}

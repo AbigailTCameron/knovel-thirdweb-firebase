@@ -81,7 +81,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
                   await incrementBookViews(id);
                   router.push(`/read/${id}`)
                   }} 
-                  className="w-1/2 halflg:w-[200px] xsymd:w-[120px]">
+                  className="w-1/2 halflg:w-[200px] xsymd:w-[120px] sm:w-fit">
                   <FlowButton 
                     title='Read'
                     buttonWidth='w-full'
@@ -106,7 +106,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
             <div className="flex text-5xl space-x-2 mt-2">
                 {[1, 2, 3, 4, 5].map((value) => (
                       <FaStar key={value} 
-                        className={`text-5xl ${
+                        className={`text-5xl sm:size-8 ${
                           (hoverRating || userRating) >= value ? 'text-yellow-500' : 'text-gray-400'
                         } hover:text-yellow-500`}
                           onMouseEnter={() => setHoverRating(value)}
