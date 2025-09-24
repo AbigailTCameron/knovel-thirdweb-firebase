@@ -39,7 +39,7 @@ function Notifications({setShowNotifications, userId}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/3 halflg:w-2/3 ss:w-3/4 h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 ss:p-2 sm:text-sm overflow-hidden">
+        <div className="relative flex flex-col w-1/3 halflg:w-2/3 ss:w-3/4 max-h-[75vh] bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 ss:p-2 sm:text-sm overflow-hidden">
 
             <div className='flex justify-between'>
                 <p className="text-xl font-bold mb-2">Notifications:</p>
@@ -52,11 +52,11 @@ function Notifications({setShowNotifications, userId}: Props) {
          
 
             {notifications.length == 0 ? (
-              <div className="flex w-full h-full items-center justify-center">
+              <div className="flex flex-1 w-full items-center justify-center">
                 <p>You have no new notifications</p>
               </div>
             ) : (
-                <div className="flex flex-col space-y-5 overflow-y-scroll">
+                <div className="flex-1 flex-col w-full space-y-5 overflow-y-auto">
                   {notifications.map((notification) => (
                     <div onClick={() => router.push(`/read/${notification.bookId}`)} key={notification.id} className="flex space-x-3 w-full hover:cursor-pointer items-center">
                           <div className="relative w-fit h-fit flex flex-col">

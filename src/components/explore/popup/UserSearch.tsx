@@ -40,7 +40,7 @@ function UserSearch({setSearchResults, userId}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/3 xl:w-1/2 sm:w-2/3 ss:w-3/4 h-fit max-h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
+        <div className="relative flex flex-col w-1/3 xl:w-1/2 sm:w-2/3 ss:w-3/4 max-h-[75vh] bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm overflow-hidden">
 
           <div className="w-full place-self-center self-center flex space-x-2">
               <div className="flex items-center justify-center w-full border border-[#272831] rounded-xl p-0.5">
@@ -61,7 +61,7 @@ function UserSearch({setSearchResults, userId}: Props) {
 
        
             {usernameResults.length > 0 ? (
-              <div className="flex flex-col w-full mt-6 space-y-2 overflow-y-scroll">
+              <div className="flex-1 flex-col w-full mt-6 space-y-2 overflow-y-auto">
                 {usernameResults.map((user) => (
                   <div key={user.id} className="flex text-white w-full items-center rounded-xl justify-center hover:bg-[#1b1c22] p-2">
                     <div className="w-full flex items-center justify-between">
