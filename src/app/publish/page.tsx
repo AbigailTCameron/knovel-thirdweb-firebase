@@ -1,12 +1,16 @@
 'use client'
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react'
-import DashboardSider from '@/components/dashboard/DashboardSider'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import PublishList from '@/components/publish/PublishList';
 import SpinLoader from '@/components/loading/SpinLoader';
+import Sider from '@/components/headers/Sider';
+import Top from '@/components/headers/Top';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 
 type Props = {}
@@ -17,6 +21,11 @@ function Publish({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
 
 
   useEffect(() => { 
@@ -27,6 +36,8 @@ function Publish({}: Props) {
           const data = await getUserProfile(user.uid, setProfileUrl);    
           if(data){
             setUsername(data.username);
+            setFilePath(data.profilePicturePath);
+            setName(data.name);
           }
        }else {
          setProfileUrl(''); 
@@ -38,31 +49,70 @@ function Publish({}: Props) {
 
 
   return (
-    <main className="flex w-screen h-screen flex-col items-center">
-      <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl} 
+    <main className="flex w-screen h-screen overflow-hidden">
+      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+          <Sider 
             setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
           />
       </div>
 
-      <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
-          <div className="flex basis-1/4 bg-[#171717] rounded-xl w-full h-full">
-              <DashboardSider 
-                  userId={currentUser}
-                  setLoading={setLoading}
+      <div className="flex flex-col w-full h-full relative">
+              <div className='flex flex-col md:hidden w-full'>
+                <Top 
                   profileUrl={profileUrl}
-                  username={username}
-              />
-          </div>
+                  setLoading={setLoading}
+                />
+              </div>
 
-          <div className="flex basis-3/4 rounded-xl w-full h-full overflow-y-scroll">
-            <PublishList 
-                userId={currentUser || ''}
-            />
-          </div>
+              <div className="hidden md:flex w-full sticky top-0 z-40">
+                <MediumHeader 
+                  setLoading={setLoading}
+                  userId={currentUser}
+                  setUserResults={setSearchResults}
+                  setShowNotifications={setShowNotifications}
+                  setSettingsPopup={setSettingsPopup}
+                />
+              </div>
+
+              <div className="flex rounded-xl w-full h-full overflow-y-scroll my-4">
+                <PublishList 
+                    userId={currentUser || ''}
+                />
+              </div>
       </div>
+
+      {searchResults && (
+        <UserSearch 
+          setSearchResults={setSearchResults}
+          userId={currentUser || ''}
+        />
+      )}
+
+    {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
+        />
+      )}
+
+
+      {showNotifications && (
+        <Notifications 
+          setShowNotifications={setShowNotifications}
+          userId={currentUser}
+        />
+      )}
+    
 
       {/* ✅ Overlay with blur effect */}
       {loading && (

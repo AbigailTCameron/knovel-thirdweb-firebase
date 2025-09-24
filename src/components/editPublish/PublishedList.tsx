@@ -36,12 +36,12 @@ function PublishedList({chapters, bookId, userId}: Props) {
   }
 
   return (
-    <div className="relative h-full w-full flex flex-col">
+    <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 h-fit w-full py-4">
       {chapters.length == 0 ? (
         <p className="text-gray-400">No chapters available.</p>
       ): (
         chapters.map((chapter, index) => (
-          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#171717]'} rounded-xl`}>
+          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#171717]'} rounded-xl hover:cursor-not-allowed`}>
               {/* <div className="text-slate-500 font-light text-xs">
                 {new Date(chapter.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -63,7 +63,6 @@ function PublishedList({chapters, bookId, userId}: Props) {
                   <p>Published</p>
                 )}
                 
-
                 {!chapter?.published && (
                   <div className="flex items-center space-x-2">
                    <p>Incomplete</p>

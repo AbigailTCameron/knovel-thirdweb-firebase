@@ -25,8 +25,8 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
             className="flex items-center justify-center w-full space-x-3 hover:cursor-pointer hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-full p-0.5"
             onClick={() => handleBookClick(book.id)} 
           >
-            <div className="flex justify-center xs:justify-start rounded-full w-full bg-[#101014] items-center px-8 py-4">
-              <div className="flex basis-3/12 space-x-3">
+            <div className="flex justify-center xs:justify-start rounded-full w-full bg-[#101014] items-center px-8 py-2">
+              <div className="flex basis-3/12 space-x-3 ">
                   <p className="text-xl font-bold self-center"> {currentPagination * booksPerPage + index + 1}.</p>
 
                     <TrendBookImage 
@@ -35,7 +35,7 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
                
   
                   <div className="flex-col w-[250px] lg:w-[150px]">
-                    <p className="text-lg halfxl:text-base sm:text-sm xs:text-base font-semibold line-clamp-3">{book.title}</p>
+                    <p className="text-base halfxl:text-base sm:text-sm xs:text-base font-bold line-clamp-3">{book.title}</p>
 
                     <div className="flex space-x-1">
                           <p className="text-sm halfxl:text-xs">{book.author}</p>
@@ -63,7 +63,7 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
                 {book?.genres?.map((genre, index) => (
                     <div 
                       key={index} 
-                      className="text-white text-sm border-[0.5px] p-1 rounded-full"
+                      className="text-white border-[0.5px] p-0.5 rounded-full"
                     >
                         <p className="text-xs">{genre}</p>
                     </div>

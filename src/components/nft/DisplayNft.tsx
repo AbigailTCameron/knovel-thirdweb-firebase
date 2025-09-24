@@ -14,7 +14,7 @@ function DisplayNft({nfts, nftContract}: Props) {
   }, [nfts, nftContract])
 
   return (
-    <div className="w-full h-full grid grid-cols-4">
+    <div className="w-full h-full grid grid-cols-5 lg:grid-cols-4 md:grid-cols-3">
       {nfts.map((nft, index) => (
          <NFTProvider key={index} tokenId={nft.id} contract={nftContract}>
             <div 
@@ -32,7 +32,7 @@ function DisplayNft({nfts, nftContract}: Props) {
                   }}
                 />
                 {isHovered && (
-                    <NFTName autoCapitalize="words" className="px-2 text-lg font-semibold text-white uppercase" />
+                    <NFTName autoCapitalize="words" className="px-2 font-semibold text-white" />
                 )}
             </div>
 

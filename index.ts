@@ -15,6 +15,7 @@ export interface Book {
   views: number;
   price: number;
   currency: string;
+  chapters: string[];
 }
 
 export interface BookMetadata {

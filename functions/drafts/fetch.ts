@@ -75,7 +75,7 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
 
 
 
-export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function) => {
+export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function, setCreated: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
       const draftRef = doc(db, 'drafts', userId, 'userDrafts', draftId);
@@ -95,7 +95,8 @@ export const fetchChapterInfo = async(userId: string, draftId: string, setChapte
       setImageUrl(draftSnap.data().book_image); 
       setAuthorName(draftSnap.data().author);
       setChapterCount(draftSnap.data().draft_chapters ? draftSnap.data().draft_chapters.length : 0); 
-      setImagePath(draftSnap.data().bookPath)
+      setImagePath(draftSnap.data().bookPath);
+      setCreated(draftSnap.data().created_at);
 
   }catch (error) {
     if (error instanceof Error) {

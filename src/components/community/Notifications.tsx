@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { deleteNotif, fetchNotifications } from '../../../functions/explore/fetch';
+import XMark from '../icons/XMark';
 import { Notification } from '../../..';
+import { deleteNotif, fetchNotifications } from '../../../functions/explore/fetch';
 import { useRouter } from 'next/navigation';
 
+
 type Props = {
-  userId: string;
-  notifications: any[];
-  setNotifications: Function;
+  setShowNotifications: Function;
+  userId?: string;
+
+
 }
 
-function Notifications({userId, notifications, setNotifications}: Props) {
-  const router = useRouter();
+function Notifications({setShowNotifications, userId}: Props) {
+    const router = useRouter();
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const loadNotifications = async () => {
+    if(userId){
+        await fetchNotifications(userId, setNotifications);
+    }
+  };
 
   const deleteNotification = async(id: string) => {
     const { success } = await deleteNotif(id);
@@ -21,58 +31,71 @@ function Notifications({userId, notifications, setNotifications}: Props) {
       alert('Failed to delete notification. Please try again.');
     }
   }
+  
 
+  useEffect(() => {
+    loadNotifications();
+  }, [userId]);
 
   return (
-    <div className="flex flex-col w-full text-white space-y-2">
-      <p className="text-xl font-bold mb-2">Notifications:</p>
+    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
+        <div className="relative flex flex-col w-1/3 halflg:w-2/3 ss:w-3/4 max-h-[75vh] bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 ss:p-2 sm:text-sm overflow-hidden">
 
-      {notifications.length == 0 ? (
-        <div className="flex w-full h-full items-center justify-center">
-          <p>You have no new notifications</p>
-        </div>
-      ) : (
-          <div className="flex flex-col space-y-4">
-            {notifications.map((notification) => (
-              <div onClick={() => router.push(`/read/${notification.bookId}`)} key={notification.id} className="flex space-x-3 w-full hover:cursor-pointer items-center">
-                    <div className="relative w-fit h-fit flex flex-col">
-                      <div className="w-[100px] h-[100px] rounded-full">
-                        {notification.commenterProfile ? (
-                          <img 
-                            className="rounded-full w-full h-full"
-                            src={notification.commenterProfile}
-                          />
-                        ): (
-                          <div></div>
-                        )}
-                      </div>  
+            <div className='flex justify-between'>
+                <p className="text-xl font-bold mb-2">Notifications:</p>
 
-                      <div className="absolute right-0 bottom-0 border-2 border-white rounded-md">
-                        <img 
-                          className='w-[40px] h-[64px] rounded-md'
-                          src={notification.bookImage}
-                        />
-                      </div>
-                    </div>
+                <XMark 
+                  onClick={() => setShowNotifications(false)}
+                  className="hover:cursor-pointer hover:bg-[#1b1c22] hover:rounded-lg stroke-[#7c7a85] size-6"
+                />
+            </div>
+         
 
-                    <div className="flex flex-col text-lg font-semibold">
-                      <p>{notification.message}</p>
-
-                      <p onClick={(e) => {
-                         e.stopPropagation();
-                        deleteNotification(notification.id)
-                        }} 
-                        className="hover:cursor-pointer hover:underline text-sm font-normal hover:text-red-600">delete</p>
-                    </div>
-
+            {notifications.length == 0 ? (
+              <div className="flex flex-1 w-full items-center justify-center">
+                <p>You have no new notifications</p>
               </div>
-            ))}
-          </div> 
-      )}
+            ) : (
+                <div className="flex-1 flex-col w-full space-y-5 overflow-y-auto">
+                  {notifications.map((notification) => (
+                    <div onClick={() => router.push(`/read/${notification.bookId}`)} key={notification.id} className="flex space-x-3 w-full hover:cursor-pointer items-center">
+                          <div className="relative w-fit h-fit flex flex-col">
+                            <div className="w-[70px] h-[70px] ss:w-[50px] ss:h-[50px] rounded-full">
+                              {notification.commenterProfile ? (
+                                <img 
+                                  className="rounded-full w-full h-full"
+                                  src={notification.commenterProfile}
+                                />
+                              ): (
+                                <div></div>
+                              )}
+                            </div>  
+
+                            <div className="absolute right-0 -bottom-2 border-2 border-white rounded-md">
+                              <img 
+                                className='w-[30px] h-[48px] ss:w-[20px] ss:h-[32px] rounded-md'
+                                src={notification.bookImage}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col text-sm ss:text-xs font-semibold">
+                            <p className='line-clamp-2 whitespace-normal text-wrap'>{notification.message}</p>
+
+                            <p onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification.id)
+                              }} 
+                              className="hover:cursor-pointer hover:underline text-xs font-normal hover:text-red-600">delete</p>
+                          </div>
+
+                    </div>
+                  ))}
+                </div> 
+            )}
 
   
-     
-
+        </div>
     </div>
   )
 }

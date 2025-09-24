@@ -1,11 +1,14 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SearchIcon from '../icons/SearchIcon';
-import UserProfileImage from './UserProfileImage';
-import AccountDropdown from '../explore/AccountDropdown';
 import { fetchSearchResults } from '../../../functions/explore/fetch';
 import SearchResults from '../search/SearchResults';
+import { ConnectButton } from 'thirdweb/react';
+import { client } from '@/lib/client';
+import { defineChain } from 'thirdweb'
+import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 
 
 type Props = {
@@ -17,12 +20,13 @@ type Props = {
 function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [dropdown, setDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
+  const camp = defineChain({
+    id: 123420001114,
+  });
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,40 +36,12 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setDropdown(false);
-    }
-  };
-
   const handleExploreClick = () => {
     if(pathname !== '/explore'){
       setLoading(true); 
       router.push('/explore');
     }
   };
-
-
-  const handleDashboardClick = () => {
-    if(pathname !== '/dashboard'){
-      setLoading(true); 
-      router.push('/dashboard');
-    }
-  };
-
-  const handleSettingsClick = () => {
-    if(pathname !== '/settings'){
-      setLoading(true);
-      router.push('/settings');
-    }
-  };
-
-  const handleClickCommunity = () => {
-    if(pathname !== '/community'){
-      setLoading(true); 
-      router.push('/community');
-    }
-  }
 
   const quickSearch = async() => {
     await fetchSearchResults(searchQuery, setSearchResults);
@@ -86,43 +62,35 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
     router.prefetch('/community'); 
   }, [])
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-
 
   return (
-    <div className="relative flex z-40 w-full backdrop-blur-md text-white items-center font-mono text-sm py-2 px-6 md:p-4 sm:px-2 xs:px-1">
-        <div className="flex relative items-center basis-1/4 flex-grow hover:cursor-pointer">
+    <div className="relative flex justify-between z-40 w-full backdrop-blur-md text-white items-center font-mono text-sm py-2 px-6 md:p-4 sm:px-2 xs:px-1">
+        <div className="flex w-[60px] h-fit hover:cursor-pointer">
 
-            <img 
-              onClick={handleExploreClick}
-              className="w-1/6 lg:w-[90px] sm:w-[60px] h-full"
-              src="/knovel-logo-white.png"
-              alt="knovel community"                
-            />
+          <img 
+            onClick={handleExploreClick}
+            className="w-full h-full"
+            src="/knovel-logo-white.png"
+            alt="knovel community"                
+          />
 
         </div>
 
 
-        <div className="relative items-center basis-2/4">
-          <form onSubmit={handleSearch} className="flex items-center w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
-              <div className="w-full flex bg-black rounded-3xl items-center p-1">
-                  <SearchIcon className="size-5 md:size-4 sm:hidden"/>
+        <div className="relative w-1/2 items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
+          <form onSubmit={handleSearch} className="flex items-center w-full bg-[#272831] rounded-3xl p-0.5">
+              <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
+                  <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
                   <input 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
+                    className="flex justify-between py-2 bg-[#272831] text-white px-3 w-full h-full rounded-3xl focus:outline-none"
                     placeholder="Search books by title, genres, author..."
                   />
 
-                  <button type="submit" className="py-3 bg-white text-black font-bold px-4 rounded-3xl">
-                    Search
+                  <button type="submit" className="py-2 text-black font-bold px-2 rounded-3xl border-l border-[#7c7a85]">
+                        <SearchIcon className="size-5 md:size-4 sm:hidden stroke-white"/>
                   </button>
               </div>
           </form>
@@ -135,32 +103,48 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
         </div>
       
-        <div className="flex relative basis-1/4 items-center justify-between mx-4 halflg:mx-2">
-            <div onClick={handleDashboardClick} className='flex xl:right-48 halfxl:hidden hover:cursor-pointer halflg:hidden'>
-              dashboard
-            </div>
+        <div className="flex md:hidden border border-[#272831] rounded-xl px-2 items-center hover:cursor-pointer">
 
-            <div onClick={handleClickCommunity} className='flex xl:right-20 halfxl:right-1/2 halflg:hidden hover:cursor-pointer'>
-              community
-            </div>
-          
-            <div ref={dropdownRef} className="hover:cursor-pointer halflg:absolute halflg:right-0">
-              <UserProfileImage 
-                profileUrl={profileUrl}
-                onClick={() => setDropdown((prev) => !prev)}
-              />
-          
-                {dropdown && (
-                  <div className="absolute min-w-64 right-0 mt-6 bg-[#1d242e] rounded-lg shadow-xl z-50">
-                    <AccountDropdown 
-                      handleDashboardClick={handleDashboardClick}
-                      handleSettingsClick={handleSettingsClick}
-                      handleClickCommunity={handleClickCommunity}
-                    />
-                  </div>
-                )}
-            </div>
-        
+            <ConnectButton
+              client={client}
+              chain={camp}
+              detailsButton={{
+                style: {
+                  background: "transparent", // Transparent to allow the gradient effect
+                  color: "white",
+                  border: "none", // Remove any default border
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  zIndex: "10", // Ensure the text is above the gradient
+                },
+                connectedAccountAvatarUrl:`${profileUrl}`,
+                showBalanceInFiat: "USD",
+              }}
+              detailsModal={{
+                connectedAccountAvatarUrl:`${profileUrl}`,
+                showBalanceInFiat: "USD"
+              }}
+              auth={{
+                getLoginPayload: async ({ address }) => {
+                  return generatePayload({ address })
+                },
+                doLogin: async (params) => {
+                  const result = await login(params); 
+                  if(result && result.token) {
+                    const {token} = result;
+                    firebaseAuthClient(token, router);
+                  }
+                  
+                },
+                isLoggedIn: async () => {
+                  return await isLoggedIn();
+                },
+                doLogout: async () => {
+                  await logout();
+                  await firebaseLogout(router); 
+                },
+              }}
+            />
         </div>
     </div>
   )

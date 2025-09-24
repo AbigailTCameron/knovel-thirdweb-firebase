@@ -63,19 +63,20 @@ function Search({}: Props) {
             </Link>
             
             <div className="relative w-1/2 items-center">
-                <form onSubmit={handleSearch} className="flex w-full bg-gradient-to-r from-[#6DDCFF] to-[#7F60F9] rounded-3xl p-0.5">
-                  <div className="w-full flex bg-black rounded-3xl items-center p-0.5 px-2">
-                      <SearchIcon className="size-5 md:size-4 sm:hidden"/>
+                <form onSubmit={handleSearch} className="flex w-full bg-[#272831] rounded-3xl p-0.5">
+                  <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
+                      <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
+
                       <input 
                         type="text"
                         value={newQuery}
                         onChange={(e) => setNewQuery(e.target.value)}
-                        className="flex justify-between py-3 px-3 bg-black w-full h-full rounded-3xl focus:outline-none" 
+                        className="flex justify-between py-2 bg-[#272831] px-3 w-full h-full rounded-3xl focus:outline-none" 
                         placeholder="Search books, authors and community"
                       />
 
-                      <button type="submit" className="p-2 bg-white text-black font-bold px-2 rounded-3xl">
-                        Search
+                      <button type="submit" className="py-2 text-black font-bold px-2 rounded-3xl border-l border-[#7c7a85]">
+                        <SearchIcon className="size-5 md:size-4 sm:hidden stroke-white"/>
                       </button>
                   </div>
                 </form>

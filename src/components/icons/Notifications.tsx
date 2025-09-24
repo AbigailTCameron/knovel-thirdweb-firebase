@@ -2,20 +2,19 @@ import React from "react";
 
 type Props = {
   className ?: string;
-  onClick ?: () => void;
 };
 
-function Notifications({className, onClick}: Props) {
+function Notifications({className}: Props) {
   return (
     <svg
-      width="40px"
-      height="40px"
+      width="30px"
+      height="30px"
       strokeWidth="1.4"
       viewBox="0 0 24 24"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="currentColor"
       className={className}
-      onClick={onClick}
     >
       <path
         d="M18.1336 11C18.7155 16.3755 21 18 21 18H3C3 18 6 15.8667 6 8.4C6 6.70261 6.63214 5.07475 7.75736 3.87452C8.88258 2.67428 10.4087 2 12 2C12.3373 2 12.6717 2.0303 13 2.08949"

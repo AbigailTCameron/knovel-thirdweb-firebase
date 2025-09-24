@@ -3,20 +3,23 @@ import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase'
 import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
 import { onAuthStateChanged } from 'firebase/auth'
-import ExploreHeader from '@/components/headers/ExploreHeader'
-import TrendingCarousel from '@/components/explore/trending/TrendingCarousel'
 import Trending from '@/components/explore/trending/Trending'
-import Genre from '@/components/explore/genre/Genre'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
-import Butterfly from '@/components/loading/Butterfly'
 import ClaimedNft from '@/components/explore/popup/ClaimedNfft'
-import { ConnectButton, useActiveAccount } from 'thirdweb/react'
-import { client } from '@/lib/client'
-import { defineChain } from 'thirdweb'
-import { generatePayload, isLoggedIn, login, logout } from '../actions/login'
-import { firebaseAuthClient, firebaseLogout } from '../actions/firebaseauth'
+import { useActiveAccount } from 'thirdweb/react'
+import { logout } from '../actions/login'
+import { firebaseLogout } from '../actions/firebaseauth'
 import { useRouter } from 'next/navigation'
+import Sider from '@/components/headers/Sider'
+import Top from '@/components/headers/Top'
+import Carousel from '@/components/explore/trending/Carousel'
+import Genre from '@/components/explore/genre/Genre'
+import UserSearch from '@/components/explore/popup/UserSearch'
+import Recommend from '@/components/community/Recommend'
+import Notifications from '@/components/community/Notifications'
+import SettingsPopup from '@/components/explore/popup/SettingsPopup'
+import MediumHeader from '@/components/headers/MediumHeader'
 
 
 type Props = {}
@@ -34,17 +37,29 @@ function page({}: Props) {
   const [mintLoading, setMintLoading] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  
 
-  const camp = defineChain({
-    id: 123420001114,
-  });
+  const [genreOptions, setGenreOptions] = useState([]); 
+  
 
   useEffect(() => { 
      // Listen for authentication state changes
-     const unsubscribe = onAuthStateChanged(auth, (user) => {
+     const unsubscribe = onAuthStateChanged(auth, async(user) => {
         setCurrentUser(user?.uid);
         if(user){
-          getUserProfile(user.uid, setProfileUrl);
+          const data = await getUserProfile(user.uid, setProfileUrl);
+          if(data?.genres){
+            setGenreOptions(data.genres);
+            setFilePath(data.profilePicturePath);
+            setUsername(data.username);
+            setName(data.name);
+           }   
         }else {
           setProfileUrl(''); 
         }
@@ -61,11 +76,11 @@ function page({}: Props) {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    if(!account){
-      logoutPerm();
-    }
-  }, [account])
+  // useEffect(() => {
+  //   if(!account){
+  //     logoutPerm();
+  //   }
+  // }, [account])
 
   const mint = async() => {
     if(currentUser && account){
@@ -75,10 +90,12 @@ function page({}: Props) {
     }
   }
 
-  const logoutPerm = async() => {
-    await logout();
-    await firebaseLogout(router); 
-  }
+
+  // const logoutPerm = async() => {
+  //   await logout();
+  //   await firebaseLogout(router); 
+  // }
+
   useEffect(() => {
     if (claimed) {
       const timer = setTimeout(() => {
@@ -89,56 +106,70 @@ function page({}: Props) {
     }
   }, [claimed]);
 
-  if (mintLoading) return <Butterfly />;
-
   return (
-    <div className="flex w-screen min-h-screen flex-col items-center">
-        <div className="sticky top-0 w-full z-50">
-          <div className="hidden">
-                <ConnectButton
-                  client={client}
-                  chain={camp}
-                  detailsButton={{
-                    style: {
-                      display: "none",
-                      background: "transparent", // Transparent to allow the gradient effect
-                      color: "white",
-                      border: "none", // Remove any default border
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      zIndex: "10", // Ensure the text is above the gradient
-                    }
-                  }}
-                />
+    <div className="flex w-screen h-screen overflow-hidden">
+    
+      <div className='relative md:hidden flex w-fit border-r-[0.5px] border-white/50'>
+          <Sider 
+            setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
+          />
+
+      </div>
+    
+      <div className="flex flex-col w-full h-full overflow-y-scroll">
+
+          <div className='md:hidden flex flex-col w-full sticky top-0 z-40'>
+            <Top 
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
           </div>
 
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl}
-            setLoading={setLoading}
-          />
-        </div>
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
 
-        <div className="flex flex-col w-full" style={{ height: '75vh' }}>
-          {userBalance <= 0 && (
-            <div onClick={() => setMintPopup(true)} className="flex items-center h-[40px] bg-[#5D3FD3] w-full text-center hover:cursor-pointer">
-              <p className="w-full text-lg font-bold text-white text-center"> Claim your golden badge now!</p>
-            </div>
-          )}
-        
-          <TrendingCarousel 
-            setMintPopup={setMintPopup}
-          />
-        </div>
+          </div>
 
-        <div className="flex w-full h-full mt-20 halfxl:mt-10 px-20 xl:px-10 sm:px-2">
-          <Trending />
-        </div>
+          <div className='w-full flex flex-col px-4'>
+              <div className='m-2'>
+                  <Carousel 
+                    setMintPopup={setMintPopup}
+                  />
+              </div>
 
-        <div className="w-full h-full">
-          <Genre />
-        </div>
+              {genreOptions.length != 0 && (
+                  <div className="flex w-full mt-5 halfxl:mt-10 sm:px-2">
+                    <Recommend 
+                      userGenres={genreOptions}
+                    />
+                  </div>
+              )}
 
+              <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
+                 <Genre />
+              </div>
+
+
+              <div className="flex w-full mt-10 halfxl:mt-10 sm:px-2">
+                <Trending />
+              </div>
+
+
+          </div>
+
+      </div>
+
+   
         {mintPopup && (
           <NftMint 
             onCancel={() => setMintPopup(false)}
@@ -147,18 +178,52 @@ function page({}: Props) {
           />
         )}
 
+      {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
+
+        {searchResults && (
+            <UserSearch 
+              setSearchResults={setSearchResults}
+              userId={currentUser || ''}
+            />
+          )}
+        
+        {settingsPopup && (
+            <SettingsPopup 
+                setSettingsPopup={setSettingsPopup}
+                userId={currentUser}
+                profileUrl={profileUrl}
+                setProfileUrl={setProfileUrl}
+                oldFilePath={filePath}
+                setOldFilePath={setFilePath}
+                name={name}
+                username={username}
+            />
+          )}
+
+
         {claimed && (
           <ClaimedNft 
             onCancel={() => setClaimed(false)}
           />
         )}
 
-        {loading && (
-        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
-          <SpinLoader />
-        </div>
-      )}
+        {mintLoading && (
+          <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+            <SpinLoader />
+            <p className="text-lg text-white font-semibold">Minting...</p>
+          </div>
+        )}
 
+        {showNotifications && (
+          <Notifications 
+            setShowNotifications={setShowNotifications}
+            userId={currentUser}
+          />
+        )}
         
     </div>
   )

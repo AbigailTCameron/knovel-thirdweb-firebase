@@ -2,43 +2,41 @@ import React from "react";
 
 type Props = {
   className?: string;
-  onClick?: () => void;
 };
 
-function NewPage({className, onClick}: Props) {
+function NewPage({ className}: Props) {
   return (
     <svg
-      width="24px"
-      height="24px"
+      width="30px"
+      height="30px"
+      strokeWidth="1.4"
       viewBox="0 0 24 24"
-      strokeWidth="1.5"
       fill="none"
-      stroke="currentColor"
       xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
       className={className}
-      onClick={onClick}
     >
       <path
-        d="M1.99219 19H4.99219M7.99219 19H4.99219M4.99219 19V16M4.99219 19V22"
-        strokeWidth="1.5"
+        d="M12 11H14.5H17"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
-        d="M7 2L16.5 2L21 6.5V19"
-        strokeWidth="1.5"
+        d="M12 7H14.5H17"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
-        d="M11 22H16.5C17.3284 22 18 21.3284 18 20.5V8.74853C18 8.5894 17.9368 8.43679 17.8243 8.32426L14.6757 5.17574C14.5632 5.06321 14.4106 5 14.2515 5H4.5C3.67157 5 3 5.67157 3 6.5V13"
-        strokeWidth="1.5"
+        d="M8 15V3.6C8 3.26863 8.26863 3 8.6 3H20.4C20.7314 3 21 3.26863 21 3.6V17C21 19.2091 19.2091 21 17 21V21"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
-        d="M14 5V8.4C14 8.73137 14.2686 9 14.6 9H18"
-        strokeWidth="1.5"
+        d="M5 15H8H12.4C12.7314 15 13.0031 15.2668 13.0298 15.5971C13.1526 17.1147 13.7812 21 17 21H8H6C4.34315 21 3 19.6569 3 18V17C3 15.8954 3.89543 15 5 15Z"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
