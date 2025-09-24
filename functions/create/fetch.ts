@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { arrayUnion, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const { db } = initializeFirebaseClient();
@@ -16,6 +16,7 @@ export const handleSubmitDraft = async (userId: string, name: string, title: str
         book_image: '',
         bookPath: '',
         synopsis: '',
+        created_at: serverTimestamp(),
         genres: [],
         draft_chapters: [
           {

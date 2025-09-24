@@ -77,12 +77,12 @@ function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
   };
 
   return (
-    <div className="flex flex-col self-center my-4 w-[250px] h-[375px] lg:h-fit">
+    <div className="flex flex-col self-center my-4 md:my-2 w-[250px] h-[375px] lg:h-fit">
       <input ref={fileInputRef} accept="image/*"  className="hidden" type="file" onChange={handleImageChange}/>
 
       <div 
         onClick={() => fileInputRef?.current?.click()} 
-        className="flex items-center justify-center w-full h-full lg:w-[200px] lg:h-[320px] sm:w-[150px] sm:h-[240px] self-center rounded-xl hover:cursor-pointer hover:border-2 hover:border-white"
+        className="flex items-center justify-center w-full h-full lg:w-[200px] lg:h-[320px] halflg:w-[150px] halflg:h-[240px] md:w-[100px] md:h-[160px] tall:w-[90px] tall:h-[144px] self-center rounded-xl hover:cursor-pointer hover:border-2 hover:border-white"
         onMouseEnter={() =>  setIsHovered(true)}
         onMouseLeave={() =>  setIsHovered(false)}
       >

@@ -72,6 +72,8 @@ function Read({}: Props) {
           />
       </div>
 
+     
+
       <div className="flex w-full h-full overflow-x-hidden">
           <div className={`${showChat ? 'w-[49%] sm:hidden' : 'w-[100%]'} flex items-center justify-center h-full px-4 py-1`}>
             <Reader 

@@ -136,7 +136,7 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
   }, [content, titleContent, editor, titleEditor]);
 
   return (
-    <main className={`flex md:flex-col w-screen h-full items-center space-x-2 p-4 ${inter.className}`}> 
+    <main className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 ${inter.className}`}> 
       <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
 
         <div className="flex flex-col md:flex-row md:w-full ss:hidden">

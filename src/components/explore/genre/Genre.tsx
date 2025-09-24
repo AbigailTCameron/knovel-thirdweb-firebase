@@ -1,9 +1,10 @@
-'use client'
-import React, { useState } from 'react'
-import BooksByGenre from './BooksByGenre';
+import React from 'react'
+import GenreBooks from './GenreBooks';
 
+type Props = {}
 
-function Genre() {
+function Genre({}: Props) {
+
   const genres = [
     {genre: 'romance', title: 'Romance'},
     {genre: 'horror', title: 'Horror'},
@@ -14,11 +15,12 @@ function Genre() {
     {genre: 'marriage', title: 'Marriage'}
   ];
 
+  
   return (
-    <div className="w-full flex flex-col px-20 lg:px-12 sm:px-6 xs:px-2 py-32 md:py-16 space-y-24 lg:space-y-10 h-fit">
-        {genres.map((genre) => (
-            <BooksByGenre key={genre.genre} title={genre.title} genre={genre.genre} />
-        ))}
+    <div className='flex flex-col w-full h-full space-y-10 lg:space-y-10 py-20 halfxl:py-5 md:py-10'>
+      {genres.map((genre) => (
+        <GenreBooks key={genre.genre} title={genre.title} genre={genre.genre}/>
+      ))}
     </div>
   )
 }

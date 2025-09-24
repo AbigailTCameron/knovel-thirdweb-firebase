@@ -19,7 +19,7 @@ function UserListDrafts({userId, setLoading}: Props) {
     if(userId){
       fetchDraftInfo(userId, setDrafts); 
     }
-  }, [userId])
+  }, [userId, drafts])
 
   return (
     <div className="w-full h-full flex-col space-y-10 p-8 sm:p-2">
@@ -33,50 +33,58 @@ function UserListDrafts({userId, setLoading}: Props) {
             </div>            
           </div>
         )}
-   
-        {drafts.map((draft, index) => (
-          <div 
-            onClick={() => (
-              setLoading(true),
-              router.push(`/draft/${draft.draftId}`
-            ))}  
-            key={index} className="flex w-full h-fit space-x-4 hover:cursor-pointer"
-          >  
-        
-                <BookCover imageFile={draft.book_image}/>
+        <div className="grid grid-cols-3 xl:grid-cols-2 md:grid-cols-1 gap-4 w-full h-full">
+              {drafts.map((draft, index) => (
+                  <div 
+                    onClick={() => (
+                      setLoading(true),
+                      router.push(`/draft/${draft.draftId}`
+                    ))}  
+                    key={index} className="flex w-full h-[320px] lg:h-[270px] ss:h-[160px] space-x-4 hover:cursor-pointer border border-[#272831] rounded-xl overflow-y-hidden"
+                  >  
+                
+                        <BookCover imageFile={draft.book_image}/>
 
 
-                <div className=" w-full text-white flex-1 space-y-3">
-                    <p className="text-4xl sm:text-xl font-bold">{draft?.title}</p>
-                  
-                    <div className="flex items-center space-x-1">
-                        <p className='text-xl md:text-lg sm:text-sm font-bold'>{draft.author}</p>
+                        <div className=" w-full text-white flex-1 py-3 lg:py-1 space-y-3 lg:space-y-1 overflow-y-scroll">
 
-                    </div>
-
-                    <div className="flex space-x-1 text-sm font-extralight text-white mt-8">
-                      <p>written:</p>
-                      <p>{formatDate(draft.created_at)}</p>
-                    </div>
-
-                    <p className="font-light sm:text-xs">{draft?.synopsis}</p>
-{/* 
-                    <div className="flex space-x-2">
-                        <p>Genres:</p>
-  
-                        {draft?.genres.map((genre, index) => (
-                          <div key={index} className="flex space-x-1 font-light">
-                            <p>{genre}</p>
+                          <div className='flex flex-col'>
+                            <div className="flex w-full items-center space-x-2">
+                              <p className='flex text-sm font-extralight'>Draft {index + 1}: </p>
+                              <p className="text-2xl sm:text-xl font-bold flex-shrink-0">{draft?.title}</p>
+                            </div>
+                            <p className="flex text-xs font-extralight">{formatDate(draft.created_at)}</p>
                           </div>
-                        ))}
-                    </div> */}
 
-              
-                </div> 
-              
-          </div>
+                          <div className='flex items-center space-x-2 text-sm'>
+                            <p className='flex font-extralight'>Chapters: </p>
+                            <div className='flex items-center justify-center bg-[#a5a5a5] rounded-2xl px-2'>
+                                <p>{draft?.draft_chapters.length}</p>
+                            </div>
+                          </div>
+                          
+            
+                            <p className="text-white text-sms overflow-hidden lg:line-clamp-2 break-words text-ellipsis whitespace-normal text-wrap"> <span className="font-semibold text-base lg:text-sm">Synopsis:</span> {draft?.synopsis}</p>
+
+
+                            <div className="flex flex-wrap space-x-2 text-white">
+                                <p className="text-white font-semibold halflg:text-sm">Genres:</p>
           
-        ))}
+                                {draft?.genres.map((genre: string, index: any) => (
+                                  <div key={index} className="flex text-sm halflg:text-xs space-x-0.5 border-[0.5px] p-0.5 rounded-full font-light break-words">
+                                    <p>{genre}</p>
+                                  </div>
+                                ))}
+                            </div>
+
+                      
+                        </div> 
+                      
+                  </div>
+                  
+                ))}
+        </div>
+       
     </div>
   )
 }

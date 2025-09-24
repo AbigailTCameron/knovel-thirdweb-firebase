@@ -1,11 +1,16 @@
 'use client'
-import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import TipTapCreate from '@/components/create/TipTapCreate';
-import UploadingDraft from '@/components/loading/UploadingDraft';
+import Sider from '@/components/headers/Sider';
+import Top from '@/components/headers/Top';
+import SpinLoader from '@/components/loading/SpinLoader';
+import UserSearch from '@/components/explore/popup/UserSearch';
+import Notifications from '@/components/community/Notifications';
+import SettingsPopup from '@/components/explore/popup/SettingsPopup';
+import MediumHeader from '@/components/headers/MediumHeader';
 
 
 type Props = {}
@@ -15,8 +20,14 @@ function Create({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [name, setName] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
+  const [loadSave, setLoadingSave] = useState(false);
   const [username, setUsername] = useState<string>('');
+  const [searchResults, setSearchResults] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+  const [filePath, setFilePath] = useState<string>('');
 
+  
   useEffect(() => { 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
@@ -26,6 +37,7 @@ function Create({}: Props) {
          if(data){
           setName(data.name); 
           setUsername(data.username);
+          setFilePath(data.profilePicturePath);
          }
          
        }else {
@@ -35,33 +47,91 @@ function Create({}: Props) {
     return () => unsubscribe(); 
   }, []);
 
-  if(loading){
-    return(
-      <div className="w-screen h-screen">
-         <UploadingDraft />
-      </div>
-     
-    )
-  }
-
-
   return (
-    <main className="flex flex-col w-screen h-screen items-center">
-        <div  className="sticky top-0 w-full z-50">
-          <ExploreHeader 
-            userId={currentUser}
-            profileUrl={profileUrl} 
-            setLoading={setLoading}
-          />
-        </div>
+    <div className="flex w-screen h-screen overflow-hidden">
 
-        <TipTapCreate 
-          userId={currentUser}
-          username={username}
-          name={name}
-          setLoading={setLoading}
+      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+          <Sider 
+            setLoading={setLoading}
+            userId={currentUser}
+            setSearchResults={setSearchResults}
+            setShowNotifications={setShowNotifications}
+            setSettingsPopup={setSettingsPopup}
+          />
+      </div>
+
+      <div className="flex flex-col w-full h-full relative">
+
+          <div className='flex md:hidden flex-col w-full'>
+            <Top 
+              profileUrl={profileUrl}
+              setLoading={setLoading}
+            />
+          </div>
+
+          <div className="hidden md:flex w-full sticky top-0 z-40">
+            <MediumHeader 
+              setLoading={setLoading}
+              userId={currentUser}
+              setUserResults={setSearchResults}
+              setShowNotifications={setShowNotifications}
+              setSettingsPopup={setSettingsPopup}
+            />
+
+          </div>
+
+          <TipTapCreate 
+            userId={currentUser}
+            username={username}
+            name={name}
+            setLoading={setLoadingSave}
+          />
+
+
+      </div>
+
+        {searchResults && (
+          <UserSearch 
+            setSearchResults={setSearchResults}
+            userId={currentUser || ''}
+          />
+        )}
+
+        {showNotifications && (
+          <Notifications 
+            setShowNotifications={setShowNotifications}
+            userId={currentUser}
+          />
+        )}
+
+      {settingsPopup && (
+        <SettingsPopup 
+            setSettingsPopup={setSettingsPopup}
+            userId={currentUser}
+            profileUrl={profileUrl}
+            setProfileUrl={setProfileUrl}
+            oldFilePath={filePath}
+            setOldFilePath={setFilePath}
+            name={name}
+            username={username}
         />
-    </main>
+      )}
+
+       {/* ✅ Overlay with blur effect */}
+       {loadSave && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">Saving your draft...</p>
+        </div>
+      )}
+
+        {/* ✅ Overlay with blur effect */}
+        {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
+    </div>
   )
 }
 

@@ -118,7 +118,7 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
 
 
   return (
-    <main className="flex w-screen md:flex-col h-full items-center space-x-2 p-4"> 
+    <main className="flex w-full md:flex-col h-full items-center space-x-2 p-4"> 
       <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
 
         {/* <ImageUploader2 

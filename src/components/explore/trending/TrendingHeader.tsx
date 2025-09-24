@@ -13,7 +13,7 @@ function TrendingHeader({setCurrentPage, currentPage}: PageProps) {
   };
 
   return (
-    <div className="flex w-full text-2xl text-white space-x-8 halflg:text-xl sm:text-base">
+    <div className="flex w-full text-xl text-white space-x-8 halflg:text-xl sm:text-base">
      
         <p onClick={handleClick(0)} className={`hover:cursor-pointer ${currentPage === 0 ? 'font-extrabold' : 'font-light text-gray-400'}`}>Trending</p>
         <p onClick={handleClick(1)} className={`hover:cursor-pointer ${currentPage === 1 ? 'font-extrabold' : 'font-light text-gray-400'}`}>Top Rated</p>
