@@ -63,7 +63,7 @@ function UserSearch({setSearchResults, userId}: Props) {
             {usernameResults.length > 0 ? (
               <div className="flex flex-col w-full mt-6 space-y-2 overflow-y-scroll">
                 {usernameResults.map((user) => (
-                  <div onClick={() => router.push(`/profile/${user.id}`)} key={user.id} className="flex text-white w-full items-center rounded-xl justify-center hover:cursor-pointer hover:bg-[#1b1c22] p-2">
+                  <div key={user.id} className="flex text-white w-full items-center rounded-xl justify-center hover:bg-[#1b1c22] p-2">
                     <div className="w-full flex items-center justify-between">
 
                         <div className="flex space-x-4">

@@ -18,7 +18,9 @@ import Alignright from '../icons/Alignright';
 import BulletListButton from '../icons/BulletListButton';
 import OrderedListButton from '../icons/OrderListButton';
 import { handleUpdateAnotherPublishChapter } from '../../../functions/newChapter/fetch';
+import { Inter } from 'next/font/google';
 
+const inter = Inter({ subsets: ["latin"] });
 
 type Props = {
   userId : string;
@@ -117,7 +119,7 @@ function TipTapPub({ id, userId}: Props) {
 
 
   return (
-    <main className="flex w-screen md:flex-col h-full items-center space-x-2 p-4"> 
+    <main className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 ${inter.className}`}> 
       <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
 
           {/* <PublishUpload 

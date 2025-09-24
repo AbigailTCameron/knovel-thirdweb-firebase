@@ -16,7 +16,7 @@ function NftMint({onConfirm, onCancel, userBalance}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/5 sm:p-4 h-fit bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-8 sm:text-sm">
+        <div className="relative flex flex-col w-1/5 xl:w-1/4 lg:w-2/5 sm:w-3/5 sm:p-4 h-fit bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-8 sm:text-sm">
             <XMark 
               onClick={onCancel} 
               className="hover:cursor-pointer hover:bg-[#1b1c22] hover:rounded-lg stroke-[#7c7a85] absolute right-3 top-4 size-6"

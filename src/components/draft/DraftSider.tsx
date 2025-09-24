@@ -121,12 +121,12 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
               <Options className='stroke-white'/>
             </div>
 
-            <div className='flex space-x-2 my-3 md:absolute md:top-0 md:p-1 md:flex-col'>
-                <div className='flex items-center justify-center border space-x-1 border-[#272831] rounded-lg px-2 py-2 text-sm md:text-xs'>
+            <div className='flex space-x-2 sm:space-x-0 my-3 md:absolute md:top-0 md:p-1 md:flex-col'>
+                <div className='flex items-center justify-center border space-x-1 border-[#272831] rounded-lg px-2 py-2 text-sm md:text-xs sm:p-1 sm:w-fit ss:hidden'>
                     <Calendar className='size-6 md:size-4'/>
                     <p className="">{formatDate(created_at)}</p>
                 </div>
-                <div className='flex items-center justify-center border border-[#272831] rounded-lg px-2 py-2 text-sm md:text-xs'>
+                <div className='flex items-center justify-center border border-[#272831] rounded-lg px-2 py-2 text-sm md:text-xs sm:p-1 sm:w-fit'>
                  <p className="">Chapters {chapterCount}</p>
                 </div>
             </div>

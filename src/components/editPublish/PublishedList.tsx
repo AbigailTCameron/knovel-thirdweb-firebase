@@ -36,12 +36,12 @@ function PublishedList({chapters, bookId, userId}: Props) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 h-fit w-full py-4">
+    <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 h-fit w-full py-4">
       {chapters.length == 0 ? (
         <p className="text-gray-400">No chapters available.</p>
       ): (
         chapters.map((chapter, index) => (
-          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#171717]'} rounded-xl`}>
+          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#171717]'} rounded-xl hover:cursor-not-allowed`}>
               {/* <div className="text-slate-500 font-light text-xs">
                 {new Date(chapter.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -63,9 +63,8 @@ function PublishedList({chapters, bookId, userId}: Props) {
                   <p>Published</p>
                 )}
                 
-
                 {!chapter?.published && (
-                  <div className="p-4 hover:cursor-pointer hover:bg-[#1b1c22] rounded-xl">
+                  <div className="flex items-center space-x-2">
                    <p>Incomplete</p>
                    <div onClick={(event) => toggleComplete(index, event)} className={`${completionStates[index] ? 'bg-green-500 justify-end' : 'bg-white'} flex items-center border-1 border-white rounded-xl w-[60px] h-[22px]`}>
                      <div className={`flex ${completionStates[index] ? 'bg-white' : 'bg-green-500'}  w-[20px] h-[20px] rounded-xl ml-0.5 mr-0.5`}>
