@@ -39,7 +39,7 @@ function Notifications({setShowNotifications, userId}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
-        <div className="relative flex flex-col w-1/3 halflg:w-2/3 ss:w-3/4 h-fit max-h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 sm:text-sm">
+        <div className="relative flex flex-col w-1/3 halflg:w-2/3 ss:w-3/4 h-3/4 bg-[#131418] border border-[#272831] text-white rounded-xl shadow-lg py-4 px-4 ss:p-2 sm:text-sm overflow-hidden">
 
             <div className='flex justify-between'>
                 <p className="text-xl font-bold mb-2">Notifications:</p>
@@ -56,11 +56,11 @@ function Notifications({setShowNotifications, userId}: Props) {
                 <p>You have no new notifications</p>
               </div>
             ) : (
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col space-y-5 overflow-y-scroll">
                   {notifications.map((notification) => (
                     <div onClick={() => router.push(`/read/${notification.bookId}`)} key={notification.id} className="flex space-x-3 w-full hover:cursor-pointer items-center">
                           <div className="relative w-fit h-fit flex flex-col">
-                            <div className="w-[100px] h-[100px] rounded-full">
+                            <div className="w-[70px] h-[70px] ss:w-[50px] ss:h-[50px] rounded-full">
                               {notification.commenterProfile ? (
                                 <img 
                                   className="rounded-full w-full h-full"
@@ -71,22 +71,22 @@ function Notifications({setShowNotifications, userId}: Props) {
                               )}
                             </div>  
 
-                            <div className="absolute right-0 bottom-0 border-2 border-white rounded-md">
+                            <div className="absolute right-0 -bottom-2 border-2 border-white rounded-md">
                               <img 
-                                className='w-[40px] h-[64px] rounded-md'
+                                className='w-[30px] h-[48px] ss:w-[20px] ss:h-[32px] rounded-md'
                                 src={notification.bookImage}
                               />
                             </div>
                           </div>
 
-                          <div className="flex flex-col text-lg font-semibold">
-                            <p>{notification.message}</p>
+                          <div className="flex flex-col text-sm ss:text-xs font-semibold">
+                            <p className='line-clamp-2 whitespace-normal text-wrap'>{notification.message}</p>
 
                             <p onClick={(e) => {
                               e.stopPropagation();
                               deleteNotification(notification.id)
                               }} 
-                              className="hover:cursor-pointer hover:underline text-sm font-normal hover:text-red-600">delete</p>
+                              className="hover:cursor-pointer hover:underline text-xs font-normal hover:text-red-600">delete</p>
                           </div>
 
                     </div>
