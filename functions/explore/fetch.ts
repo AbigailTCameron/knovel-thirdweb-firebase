@@ -101,7 +101,7 @@ export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
   try {
     const booksCollection = collection(db, "books");
 
-    const booksQuery = query(booksCollection, where("genres", "array-contains", genre));
+    const booksQuery = query(booksCollection, where("genres", "array-contains", genre), limit(20));
 
     const querySnapshot = await getDocs(booksQuery);
 

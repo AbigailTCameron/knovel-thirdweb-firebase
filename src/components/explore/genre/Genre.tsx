@@ -6,13 +6,16 @@ type Props = {}
 function Genre({}: Props) {
 
   const genres = [
+    {genre: 'philosophy', title: 'Philosophy'},
     {genre: 'romance', title: 'Romance'},
     {genre: 'horror', title: 'Horror'},
     {genre: 'adventure', title: 'Adventure'},
+    {genre: 'history', title: 'History'},
     {genre: 'classics', title: 'Classics'},
     {genre: '19th century', title: '19th Century'},
     {genre: 'mystery', title: 'Mystery'},
-    {genre: 'marriage', title: 'Marriage'}
+    {genre: 'children', title: 'Children'},
+    {genre: 'politics', title: 'Politics/Political Science'}
   ];
 
   

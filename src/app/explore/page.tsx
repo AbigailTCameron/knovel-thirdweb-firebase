@@ -155,13 +155,13 @@ function page({}: Props) {
                   </div>
               )}
 
-              <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
-                 <Genre />
+              <div className="flex w-full mt-20 halfxl:mt-10 sm:px-2">
+                <Trending />
               </div>
 
 
-              <div className="flex w-full mt-10 halfxl:mt-10 sm:px-2">
-                <Trending />
+              <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
+                 <Genre />
               </div>
 
 
