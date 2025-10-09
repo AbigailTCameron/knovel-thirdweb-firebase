@@ -12,7 +12,27 @@ function Trending({}: Props) {
   const [books, setBooks] = useState<Book[]>([]);
 
   const [currentPagination, setCurrentPagination] = useState(0);
-  const booksPerPage = 5;
+  const [booksPerPage, setBooksPerPage] = useState(10); // default
+
+  
+  // ✅ Adjust booksPerPage based on screen width
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 640) { // Tailwind 'sm' breakpoint (640px)
+        setBooksPerPage(5);
+      } else {
+        setBooksPerPage(10);
+      }
+    };
+
+    // Initial check
+    handleResize();
+    // Listen for resize
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
 
   const handlePreviousPage = () => {
