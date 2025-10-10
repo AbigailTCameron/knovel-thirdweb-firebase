@@ -40,7 +40,7 @@ function GenreBooks({title, genre}: Props) {
             onClick={() => handleBookClick(book.id)}
             className="group flex-shrink-0 flex h-fit md:h-full items-center hover:cursor-pointer"  
           >
-            <div className="flex bg-black h-full rounded-xl space-x-4 halflg:space-x-2 pr-2 items-center">
+            <div className="flex bg-black h-full rounded-xl space-x-4 halflg:space-x-2 items-center">
               <div className="w-fit h-fit rounded-xl group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF]">
                   <GenreImage 
                     imageFile={book.book_image}
