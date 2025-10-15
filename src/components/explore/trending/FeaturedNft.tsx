@@ -3,12 +3,10 @@ import Multirect from '@/components/design/Multirect';
 import React from 'react'
 
 type Props = {
-  screen : number;
-  setScreen ?: any;
   setMintPopup: Function;
 }
 
-function FeaturedNft({setMintPopup, screen, setScreen}: Props) {
+function FeaturedNft({setMintPopup}: Props) {
   return (
     <div className="flex flex-col rounded-2xl bg-gradient-to-b from-[#020618] via-[#30056b] to-[#020618] w-full h-full py-2 items-center justify-center text-white">
 
@@ -44,12 +42,6 @@ function FeaturedNft({setMintPopup, screen, setScreen}: Props) {
               </div>
           </div>
       </div>
-
-      <Multirect 
-        setScreen={setScreen}
-        selected={screen}
-      />
-         
     </div>
   )
 }

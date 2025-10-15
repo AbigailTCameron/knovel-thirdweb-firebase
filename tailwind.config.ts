@@ -103,6 +103,8 @@ const config: Config = {
       backgroundImage: {
         'hero-pattern': "url('/bg.png')",
         'tech-bg': "url('/tech.png')",
+        'halloween': "url('/halloween.png')",
+        'author': "url('/authorbg.png')"
       },
       keyframes: {
         shine: {
@@ -153,7 +155,7 @@ const config: Config = {
         blink: {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0' },
-        },
+        }
       },
       animation: {
         shine: 'shine 3s linear infinite',

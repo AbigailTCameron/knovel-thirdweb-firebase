@@ -18,8 +18,8 @@ export const fetchUsernameResults = async(queryText: string, setResults: Functio
     );
   
     const querySnapshot = await getDocs(usersQuery);
-
     const loggedInUserRef = doc(db, "users", userId);
+
     const loggedInUserSnapshot = await getDoc(loggedInUserRef);
 
     // Get the "following" array of the logged-in user
