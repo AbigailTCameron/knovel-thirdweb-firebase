@@ -144,6 +144,7 @@ function page({}: Props) {
               <div className='m-2'>
                   <Carousel 
                     setMintPopup={setMintPopup}
+                    userId={currentUser || ''}
                   />
               </div>
 

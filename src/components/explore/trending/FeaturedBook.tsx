@@ -2,10 +2,9 @@ import Multirect from '@/components/design/Multirect';
 import React from 'react'
 
 type Props = {
-  screen : number;
-  setScreen ?: any;
+
 }
-function FeaturedBook({screen, setScreen}: Props) {
+function FeaturedBook({}: Props) {
   return (
     <div className="flex flex-col w-full h-full py-4 items-center justify-center text-white">
       <div className="flex sm:flex-col sm:space-y-4 py-4 items-center w-full h-full justify-center px-10 halfxl:px-10 sm:px-4 space-x-20 halflg:space-x-12 sm:space-x-6 ">
@@ -27,11 +26,6 @@ function FeaturedBook({screen, setScreen}: Props) {
           </div>
 
       </div>
-
-      <Multirect 
-        setScreen={setScreen}
-        selected={screen}
-      />
     </div>
   )
 }
