@@ -16,7 +16,7 @@ function Carousel({setMintPopup, userId}: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       setSwipeDirection('left');
-      setScreen((prevPage) => (prevPage + 1) % 3);
+      setScreen((prevPage) => (prevPage + 1) % 2);
     }, 10000); 
 
     return () => clearInterval(interval); 
@@ -29,14 +29,7 @@ function Carousel({setMintPopup, userId}: Props) {
           <FeaturedCollection
             key="collection"
           />
-        ) : screen === 1 ? (
-
-          <FeaturedNft
-            setMintPopup={setMintPopup} 
-            key="nft"
-          />
-
-        ): (
+        ) :(
             <FeaturedAuthor 
             key="author"
             userId={userId}
