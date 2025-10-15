@@ -150,6 +150,35 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
   }
 }
 
+export const fetchThemeResults = async(themes: string[], setResults: Function) => {
+  try {
+    const booksCollection = collection(db, "books");
+
+    // Create a query for matching titles (case-sensitive)
+    const booksQuery = query(
+        booksCollection, 
+            where("genres", "array-contains-any", themes),
+    );
+  
+    const querySnapshot = await getDocs(booksQuery);
+
+    const results = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setResults(results);
+  }catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching books:", error.message);
+    } else {
+      console.error("Error fetching books:", String(error));
+    }
+  }
+}
+
+
+
 export const fetchNotifications = async (userId: string, setNotifications: Function) => {
   try {
     const notificationsRef = collection(db, "notifications");
