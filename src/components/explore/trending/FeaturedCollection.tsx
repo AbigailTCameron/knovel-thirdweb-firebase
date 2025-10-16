@@ -19,31 +19,31 @@ function FeaturedCollection({}: Props) {
     
       <div className="flex space-x-3 xs:space-x-1 z-10">
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] md:hidden h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] md:hidden h-full'
             src="/turn.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] xs:hidden h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] xs:hidden h-full'
             src="/sleepy.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/vampyre.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/raven.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/frakenstein.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/carmilla.png"
           />
           <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] sm:hidden h-fit'
+            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] sm:hidden h-full'
             src="/strange.png"
           />
       </div>
