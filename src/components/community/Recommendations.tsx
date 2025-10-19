@@ -21,6 +21,8 @@ function Recommendations({results, loadMore}: Props) {
     }
   };
 
+  const handleMouseEnter = (id: string) => router.prefetch(`/book/${id}`);
+
   return (
     <div className="flex flex-col w-full overflow-hidden text-white space-y-2">
         {results.length == 0 ? (
@@ -35,7 +37,12 @@ function Recommendations({results, loadMore}: Props) {
             className="flex w-full h-full space-x-4 halfxl:space-x-6 overflow-x-auto custom-scrollbar">
           
               {results.map((book) => (
-                <div onClick={() => router.push(`/book/${book.id}`)} key={book.id} className="flex w-full flex-col text-white hover:cursor-pointer">
+                <div 
+                  onMouseEnter={() => handleMouseEnter(book.id)}
+                  onClick={() => router.push(`/book/${book.id}`)} 
+                  key={book.id} 
+                  className="flex w-full flex-col text-white hover:cursor-pointer"
+                >
                   
                     <div className="flex w-[300px] halfxl:w-[200px] md:w-[150px] h-[240px] halfxl:h-[160px] md:h-[120px] rounded-md">
                         {book.authorProfile && (

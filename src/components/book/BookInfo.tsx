@@ -19,9 +19,11 @@ type Props = {
   bookmarks : string[];
   userRating : number;
   setUserRating: Function;
+  onLoadingChange?: (loading: boolean) => void; // NEW
+  onReady?: () => void;                         // NEW
 }
 
-function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
+function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingChange, onReady}: Props) {
   const router = useRouter();
 
   const [book, setBook] = useState<Book>();
@@ -54,11 +56,19 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
   }
 
   useEffect(() => {
-    if(id){
-      fetchBookmark(bookmarks, id, setBookmark); 
-      fetchBookData(id, router, setBook);
-    }
-  }, [id, bookmarks])
+    const run = async () => {
+      if (!id) return;
+      onLoadingChange?.(true);
+      try {
+        fetchBookmark(bookmarks, id, setBookmark);
+        await fetchBookData(id, router, (data: Book) => setBook(data));
+      } finally {
+        onLoadingChange?.(false);
+        onReady?.(); // signal that the book is ready to render
+      }
+    };
+    run();
+  }, [id, bookmarks]);
 
 
   if(error){
@@ -77,7 +87,9 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating}: Props) {
             </div>
 
             <div className="flex w-full items-center justify-center space-x-4">
-                <div onClick={async() => {
+              <div 
+                onMouseEnter={() => router.prefetch(`/read/${id}`)}
+                onClick={async() => {
                   await incrementBookViews(id);
                   router.push(`/read/${id}`)
                   }} 

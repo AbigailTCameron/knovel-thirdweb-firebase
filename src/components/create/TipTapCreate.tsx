@@ -38,6 +38,8 @@ function TipTapCreate({userId, name, setLoading, username}: Props) {
   const [titleContent, setTitleContent] = useState<string>(''); 
   const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
 
+  const [saving, setSaving] = useState(false); // 👈 local guard to disable button
+
  
   useEffect(() => {
     const handleBeforeUnload = (e: any) => {
@@ -71,15 +73,30 @@ function TipTapCreate({userId, name, setLoading, username}: Props) {
   };
 
   const handleConfirm = async() => {
-    if(title.trim()){
-      if(userId){
-        setHasUnsavedChanges(false); 
-        setLoading(true);
-        const draftId = await handleSubmitDraft(userId, name, title, titleContent, content);
-        router.push(`/draft/${draftId}`); 
+    if (!title.trim() || !userId) return;
 
+    // prevent double click
+    if (saving) return;
+
+    setHasUnsavedChanges(false);
+    setSaving(true);
+    setLoading(true); // 🔥 show overlay in parent
+
+    try {
+      const draftId = await handleSubmitDraft(userId, name, title, titleContent, content);
+
+      if (!draftId) {
+        return;
       }
 
+      // optional: prefetch for snappier transition
+      router.prefetch(`/draft/${draftId}`);
+      // navigate to draft
+      await router.push(`/draft/${draftId}`);
+    }finally {
+      setLoading(false); // ✅ always hide overlay
+      setSaving(false);
+      setShowConfirm(false);
     }
   }
 
@@ -215,7 +232,7 @@ function TipTapCreate({userId, name, setLoading, username}: Props) {
 
             </div>
           
-            <div className="absolute bottom-0 w-full md:flex md:relative md:items-center md:justify-center">
+            <div className="absolute bottom-0 w-full px-4 md:px-4 flex flex-col md:relative md:items-stretch">
 
                 <div className="text-slate-400 text-sm p-4">
                   <p> {editor?.storage.characterCount.characters()} characters </p>
@@ -223,9 +240,9 @@ function TipTapCreate({userId, name, setLoading, username}: Props) {
                 </div>
           
 
-                <div onClick={handleBeforeConfirm} className="hover:cursor-pointer bg-indigo-600 p-4 md:p-2 mb-4 md:mb-0 md:w-1/3 rounded-2xl mx-4 font-semibold text-xl md:text-lg text-center">
+                <button disabled={saving} onClick={handleBeforeConfirm} className="hover:cursor-pointer bg-indigo-600 p-4 md:p-2 mb-4 md:mb-0 md:w-1/3 rounded-2xl mx-4 font-semibold text-xl md:text-lg text-center">
                     <p>Save</p>
-                </div>
+                </button>
           
             </div>
 

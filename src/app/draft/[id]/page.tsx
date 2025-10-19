@@ -46,6 +46,7 @@ function Draft({}: Props) {
   const [filePath, setFilePath] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+  const [booting, setBooting] = useState<boolean>(true);      // ⬅️ NEW
 
   
   useEffect(() => { 
@@ -68,16 +69,56 @@ function Draft({}: Props) {
   }, []);
 
   useEffect(() => {
-    if(params.id && currentUser){
-      fetchChapterInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setAuthorName, router, setImagePath, setCreated);
-    }
-  }, [params.id, genres, title, currentUser])
+    if (!params.id || !currentUser || deleting) return;
+
+    let alive = true;
+    setBooting(true);
+
+    (async() => {
+      try{
+          await fetchChapterInfo(
+            currentUser,
+            params.id,
+            setChapterCount,
+            setChapters,
+            setImageUrl,
+            setTitle,
+            setBookGenres,
+            setOldSynopsis,
+            setAuthorName,
+            router,
+            setImagePath,
+            setCreated
+          );
+      } finally {
+        if (alive) setBooting(false);
+      }
+    })();
+
+    return () => { alive = false; };
+  }, [params.id, currentUser, deleting])
 
   const handleConfirm = async () => {
-    if(currentUser){
-      await editDraftSynopsis(currentUser, params?.id, newSynopsis);
+    if (!currentUser || !params?.id) return;
+
+    const prev = oldSynopsis;       
+    const next = newSynopsis.trim();
+
+    // show the new text immediately everywhere
+    setOldSynopsis(next);
+    setLoading(true);
+
+    try{
+      await editDraftSynopsis(currentUser, params.id, next);
+      setNewSynopsis(''); 
+    }catch(e){
+      setOldSynopsis(prev);
+      console.error(e);
+      alert('Failed to update synopsis');
+    }finally {
+      setLoading(false);
+      setSynopsis(false);          
     }
-    setSynopsis(false);
   }
 
 
@@ -120,7 +161,10 @@ function Draft({}: Props) {
                   title={title}
                   userId={currentUser || ''}
                   genres={genres || []}
+                  setGenres={setBookGenres}  
                   setLoading={setLoading}
+                  setImageUrl={setImageUrl}          
+                  setImagePath={setImagePath} 
                   name={authorName}
                   newSynopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
                   chapters={chapters}
@@ -129,6 +173,7 @@ function Draft({}: Props) {
                   setDeleting={setDeleting}
                   created_at={created}
                   setSynopsis={setSynopsis}
+                  setTitle={setTitle}             // 👈 NEW: lift title updates to the page
                 />
               </div>
 
@@ -164,8 +209,9 @@ function Draft({}: Props) {
 
               {synopsis && (
                 <NewSynopsis 
+                  value={newSynopsis === '' ? oldSynopsis : newSynopsis}
+                  setValue={setNewSynopsis}
                   onCancel={() => setSynopsis(false)}
-                  setNewSynopsis={setNewSynopsis}
                   onConfirm={handleConfirm}
                 />
               )}
@@ -202,26 +248,14 @@ function Draft({}: Props) {
         />
       )}
 
+   
 
-      {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {/* One unified overlay */}
+      {(booting || loading || publishing || deleting) && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
-        </div>
-      )}
-
-      {/* ✅ Overlay with blur effect */}
-      {publishing && (
-        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
-          <SpinLoader />
-          <p className="text-lg text-white font-semibold">Publishing...</p>
-        </div>
-      )}
-
-      {deleting && (
-        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
-          <SpinLoader />
-          <p className="text-lg text-white font-semibold">Deleting draft...</p>
+          {publishing && <p className="text-lg text-white font-semibold mt-2">Publishing...</p>}
+          {deleting && <p className="text-lg text-white font-semibold mt-2">Deleting draft...</p>}
         </div>
       )}
     </main>

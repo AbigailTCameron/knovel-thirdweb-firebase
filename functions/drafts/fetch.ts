@@ -62,7 +62,7 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
       await updateDoc(draftRef, { book_image: downloadURL, bookPath: filePath });
 
       console.log("Draft image successfully reuploaded.");
-      return downloadURL;
+      return { downloadURL, filePath };
 
   }catch (error) {
     if (error instanceof Error) {

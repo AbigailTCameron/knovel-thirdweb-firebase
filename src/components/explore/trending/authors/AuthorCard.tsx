@@ -82,8 +82,8 @@ function AuthorCard({className, username, author, userId, tags, imgSrc}: Props) 
                   </p>
 
                   <div className="flex space-x-2 font-semibold lg:hidden">
-                    {tags.map((tag) => (
-                      <div className="bg-black/50 backdrop-blur-md rounded-full px-2 halfxl:px-1 py-1">
+                    {tags.map((tag, index) => (
+                      <div key={index+1} className="bg-black/50 backdrop-blur-md rounded-full px-2 halfxl:px-1 py-1">
                           <p className="font-white halfxl:text-sm">{tag}</p>
                       </div>
                     ))}

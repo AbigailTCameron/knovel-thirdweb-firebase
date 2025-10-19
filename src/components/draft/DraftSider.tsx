@@ -20,7 +20,8 @@ type Props = {
   title : string;
   chapterCount ?: number | null;
   genres : string[];
-  setLoading : Function;
+  setGenres: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+  setLoading: (b: boolean) => void;
   setDeleting : Function;
   name : string;
   newSynopsis : string;
@@ -29,20 +30,37 @@ type Props = {
   setPublishing: Function;
   created_at: any;
   setSynopsis: Function;
+  setImageUrl: (url: string) => void;          
+  setImagePath: (p: string) => void;  
+  setTitle: (t: string) => void;     
 }
 
-function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, setLoading, name, newSynopsis, chapters, imagePath, setPublishing, setDeleting, created_at, setSynopsis}: Props) {
+function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title, setTitle, chapterCount, genres, setGenres, setLoading, name, newSynopsis, chapters, imagePath, setPublishing, setDeleting, created_at, setSynopsis}: Props) {
   const router = useRouter();
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [genre, setGenre] = useState<string>('');
-  const [newTitle, setNewTitle] = useState<string>('');
+  const [newTitle, setNewTitle] = useState(title);          // 👈 init with current title
   const [publishPopup, setPublishPopup] = useState(false); 
   const [genrePopup, setGenrePopup] = useState(false);
   const [options, showOptions] = useState(false);
 
+  useEffect(() => { setNewTitle(title); }, [title]);        // 👈 keep in sync
+
+
   const handleRemoveGenre = async(selectedGenre:string) => {
-    removeDraftGenre(userId, draftId, selectedGenre);
+    setGenres(prev => (prev ?? []).filter(x => x !== selectedGenre));
+
+    try{
+      await removeDraftGenre(userId, draftId, selectedGenre);
+    }catch(e){
+      setGenres(prev => {
+        const arr = prev ?? [];
+        return arr.includes(selectedGenre) ? arr : [...arr, selectedGenre];
+      });
+      console.error(e);
+      alert('Failed to remove genre');
+    }
   }
 
   const handleDelete = () => {
@@ -50,29 +68,66 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
   }
 
   const handleConfirm = async() => {
-    if(draftId){
-      setDeleting(true);
-      router.push("/explore");
+    if (!draftId) return;
 
+    try{
+      setDeleting(true);                   // show overlay on parent
       const success = await deleteEntireDraft(userId, draftId, imagePath);
-      if(!success){
-        console.log('could not delete draft')
-      }
 
+      if (success) {
+        // ✅ navigate AFTER delete completes
+        router.replace('/explore');
+      } else {
+        alert('Could not delete draft.');
+        setDeleting(false);
+      }
+    }catch(e){
+      console.error(e);
+      alert('An error occurred deleting the draft.');
+      setDeleting(false);
     }
   }
 
   const handleGenreConfirm = async() => {
-    if(genre){
-      updateDraftGenre(userId, draftId, genre.trim());
+    if (!genre.trim()) return;
+    const g = genre.trim();
+
+    setGenres(prev => {
+      const arr = prev ?? [];
+      return arr.includes(g) ? arr : [...arr, g];
+    });
+
+    try{
+      await updateDraftGenre(userId, draftId, g);
+    }catch(e){
+      setGenres(prev => (prev ?? []).filter(x => x !== g));
+      console.error(e);
+      alert('Failed to add genre');
     }
   }
 
   const handleConfirmTitle = async() => {
-    if(newTitle.trim() != title){
-      await editDraftTitle(userId, draftId, newTitle);
+    const next = newTitle.trim();
+    if (!next || next === title) {                   
+      setEditTitle(false);
+      return;
     }
-    setEditTitle(false);
+
+    const prev = title;
+    setTitle(next);                                       
+    setLoading(true); 
+
+    try{
+      await editDraftTitle(userId, draftId, next);
+    }catch(e){
+      setTitle(prev);                                    
+      console.error(e);
+      alert('Failed to update title');
+    }finally {
+      setLoading(false);
+      setEditTitle(false);
+    }
+
   }
 
   const handleNewChapter = () => {
@@ -111,6 +166,11 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
               userId={userId}
               draftId={draftId}
               oldFilePath={imagePath}
+              onUploadingChange={setLoading}                           // show overlay while uploading
+              onUploaded={(url, path) => {                            // update parent immediately
+                setImageUrl(url);
+                setImagePath(path);
+              }}
             />
 
             <div onClick={() => setEditTitle(true)} className="text-white font-bold text-4xl lg:text-2xl md:text-lg tall:text-base text-center hover:cursor-pointer hover:text-gray-500">
@@ -191,8 +251,12 @@ function DraftSider({imageUrl, userId, draftId, title, chapterCount, genres, set
 
         {editTitle && (
           <EditTitlePopup 
-            onCancel={() => setEditTitle(false)}
-            setTitle={setNewTitle}
+            value={newTitle}
+            setValue={setNewTitle} 
+            onCancel={() => {
+              setNewTitle(title);               // reset to current on cancel
+              setEditTitle(false);
+            }} 
             onConfirm={handleConfirmTitle}
             
           />
