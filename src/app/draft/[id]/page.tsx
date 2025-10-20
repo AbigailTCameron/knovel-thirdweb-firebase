@@ -202,6 +202,8 @@ function Draft({}: Props) {
                       chapters={chapters}
                       draftId={params?.id} 
                       setLoading={setLoading}
+                      setChapters={setChapters}     
+                      setChapterCount={setChapterCount}
                     />
                   )}
                 

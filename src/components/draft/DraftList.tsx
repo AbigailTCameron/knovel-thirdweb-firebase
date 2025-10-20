@@ -1,17 +1,20 @@
 import { useRouter } from 'next/navigation';
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { DraftChapters } from '../../..';
-import { updateCompletedChapter } from '../../../functions/drafts/fetch';
+import { deleteDraftChapter, updateCompletedChapter } from '../../../functions/drafts/fetch';
 import { formatDate } from '../../../tools/formatDate';
+import DeleteChapter from './DeleteChapter';
 
 type Props = {
   chapters: DraftChapters[];
   draftId ?: string;
   setLoading : Function;
-  userId: string
+  userId: string;
+  setChapters: React.Dispatch<React.SetStateAction<DraftChapters[]>>;
+  setChapterCount?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-function DraftList({chapters, draftId, setLoading, userId}: Props) {
+function DraftList({chapters, draftId, setLoading, userId, setChapters, setChapterCount}: Props) {
   const router = useRouter();
   const [completionStates, setCompletionStates] = useState<boolean[]>(
     chapters.map((chapter) => chapter.completed) // Initialize with the completed status of each chapter
@@ -19,9 +22,16 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
 
   const [navigatingIndex, setNavigatingIndex] = useState<number | null>(null);
   const baseHref = useMemo(() => draftId ? `/edit/${draftId}` : '', [draftId]);
+  const [pendingDelete, setPendingDelete] = useState<null | { index: number; title: string }>(null);
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
+  
 
+  useEffect(() => {
+    setCompletionStates(chapters.map((c) => c.completed));
+  }, [chapters]);
 
   const handleBookClick = async(index: number) => {
+    if (pendingDelete) return;
     if (!draftId) return;
     if (navigatingIndex !== null) return; // prevent double-click spam
 
@@ -60,6 +70,38 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
     }
   };
 
+  const handleDeleteChapter = async (index: number) => {
+    if (!draftId) return;
+    if (deletingIndex !== null || navigatingIndex !== null) return;
+
+    // optimistic update
+    setDeletingIndex(index);
+    setLoading(true);
+
+    // keep a snapshot for rollback
+    const prevChapters = chapters;
+
+    // update parent chapters immediately
+    setChapters((prev) => prev.filter((_, i) => i !== index));
+    setCompletionStates((prev) => prev.filter((_, i) => i !== index));
+    setChapterCount?.((prev) => (prev == null ? prev : Math.max(0, prev - 1)));
+
+    try {
+      await deleteDraftChapter(userId, draftId, index);
+    } catch (e) {
+      // rollback on error
+      setChapters(prevChapters);
+      setCompletionStates(prevChapters.map((c) => Boolean(c.completed)));
+      setChapterCount?.((prev) => (prev == null ? prev : prev + 1));
+      console.error(e);
+      alert('Failed to delete chapter');
+    } finally {
+      setDeletingIndex(null);
+      setLoading(false);
+      setPendingDelete(null); // close popup
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 h-fit w-full py-4">
       {chapters.length == 0 ? (
@@ -91,7 +133,7 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
                     <p>{chapter.title}</p>   
                 </div>
 
-                <div className="flex text-slate-500 space-x-4 text-sm items-center">
+                <div className="flex justify-between text-slate-500 space-x-4 text-sm items-center">
 
                   <div className="flex items-center space-x-2">
                     <p>Incomplete</p>
@@ -101,9 +143,25 @@ function DraftList({chapters, draftId, setLoading, userId}: Props) {
                     </div>
                     <p>Complete</p>
                   </div>
+
+                  <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { 
+                    e.stopPropagation();
+                    setPendingDelete({ index, title: chapter.title });
+                  }} 
+                  className={`hover:text-red-600 hover:underline`}>
+                      <p>delete</p>
+                  </div>
               
                 
                 </div>
+
+              {pendingDelete && (
+                <DeleteChapter 
+                  onConfirm={() => handleDeleteChapter(pendingDelete.index)}
+                  onCancel={() => setPendingDelete(null)}
+                  chapterTitle={pendingDelete.title}
+                />
+              )}
 
             </div>
           )

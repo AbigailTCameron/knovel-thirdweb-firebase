@@ -253,12 +253,30 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
 
   }catch (error) {
     if (error instanceof Error) {
-      console.error("Error deleting drafr:", error.message);
+      console.error("Error deleting draft:", error.message);
       return false;
     } else {
       console.error("Error deleting draft:", String(error));
       return false;
     }
+  }
+}
+
+export const deleteDraftChapter = async(userId: string, draftId: string, index: number) => {
+  try{
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
+    const snap = await getDoc(draftRef);
+    if (!snap.exists()) throw new Error("Draft not found");
+
+    const data = snap.data();
+    const chapters: any[] = data?.draft_chapters ?? [];
+
+    // remove the chapter at index
+    const next = chapters.filter((_, i) => i !== index);
+    await updateDoc(draftRef, { draft_chapters: next });
+  }catch (error) {
+   
+    console.error("Error deleting chapter:", error);
   }
 }
 
