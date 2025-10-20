@@ -2,7 +2,7 @@
 
 import ExploreHeader from '@/components/headers/ExploreHeader'
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { fetchThemeResults, getUserProfile } from '../../../functions/explore/fetch';
 import SpinLoader from '@/components/loading/SpinLoader';
@@ -30,32 +30,50 @@ function Special({}: Props) {
 
   const [results, setResults] = useState<Book[]>([]);
   
-  
+  const [booting, setBooting] = useState(true);      // 🔑 block UI until first data ready
   const [loading, setLoading] = useState(false);
 
-  const themes=["gothic", "horror", "thriller", "supernatural","mystery"]
+  const themes=["gothic", "horror", "thriller", "supernatural","mystery"];
+
+    // one-shot auth promise
+  const waitForAuth = () =>
+    new Promise<User | null>((resolve) => {
+      const unsub = onAuthStateChanged(auth, (u) => {
+        unsub();
+        resolve(u);
+      });
+    });
 
 
   useEffect(() => { 
-      // Listen for authentication state changes
-      const unsubscribe = onAuthStateChanged(auth, async(user) => {
-         setCurrentUser(user?.uid);
-         if(user){
-           getUserProfile(user.uid, setProfileUrl);
-         }
-      })
-  
-      return () => unsubscribe(); 
-    
+    let alive = true;
+    (async() => {
+      setBooting(true);
+
+      // kick off theme fetch immediately; no need to wait on auth
+      setLoading(true);
+      const resultsP = fetchThemeResults(themes, (books: Book[]) => {
+        if (alive) setResults(books);
+      });
+
+      // resolve auth/profile in parallel
+      const user = await waitForAuth();
+      if (!alive) return;
+      setCurrentUser(user?.uid || undefined);
+
+      if (user) {
+        getUserProfile(user.uid, setProfileUrl); // you only need the side-effect here
+      }
+
+      await resultsP;        
+      if (!alive) return;
+
+      setLoading(false);
+      setBooting(false); 
+
+    })();      
+        return () => { alive = false; };
    }, []);
-
-    const quickSearch = async() => {
-      await fetchThemeResults(themes, setResults);
-    }
-
-    useEffect(() => {
-      quickSearch(); 
-    }, []);
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">
@@ -76,7 +94,11 @@ function Special({}: Props) {
 
     <div className="grid grid-cols-5 2xl:grid-cols-4 halflg:grid-cols-3 sm:grid-cols-2 ss:grid-cols-1 ss:gap-8 gap-4 halflg:gap-2">
           {results.map((result) => (
-            <div onClick={() => router.push(`/book/${result.id}`)} key={result.id} className="w-fit h-fit hover:cursor-pointer">
+            <div 
+              onMouseEnter={() => router.prefetch(`/book/${result.id}`)}
+              onClick={() => router.push(`/book/${result.id}`)} 
+              key={result.id} 
+              className="w-fit h-fit hover:cursor-pointer">
               <BookImageSearch imageFile={result?.book_image}/>
             </div>
           ))}
@@ -84,10 +106,10 @@ function Special({}: Props) {
 
 
       {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {(booting || loading) && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
-          <p className="text-lg text-white font-semibold">Fetching books...</p>
+          <p className="text-lg text-white font-semibold"> {booting ? 'Loading collection…' : 'Fetching books…'}</p>
         </div>
       )}
 

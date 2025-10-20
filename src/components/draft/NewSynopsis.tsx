@@ -2,16 +2,13 @@ import React from 'react'
 import XMark from '../icons/XMark';
 
 type Props = {
-  setNewSynopsis : Function; 
-  onConfirm : Function;
+  value: string;                         // 👈 current synopsis text (controlled)
+  setValue: (v: string) => void;
+  onConfirm: () => void;
   onCancel ?: () => void;
 }
 
-function NewSynopsis({setNewSynopsis, onConfirm, onCancel}: Props) {
-  const handleConfirm = () => {
-    onConfirm();
-  }
-
+function NewSynopsis({value, setValue, onConfirm, onCancel}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
@@ -27,18 +24,18 @@ function NewSynopsis({setNewSynopsis, onConfirm, onCancel}: Props) {
           </div>
 
           <div className="mb-4 space-y-2">
-              <input
+              <textarea
                 className="w-full focus:outline-none py-4 px-4 rounded-xl text-white bg-zinc-800"
-                name="genre"
                 placeholder='edit synopsis'
-                onChange={(e) => setNewSynopsis(e.target.value)}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
               />
         </div>
 
           <div className="flex justify-center w-full space-x-2">
               <button
                 className="flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#1b1c22] hover:text-[#5D3FD3] rounded-lg text-center text-lg w-full p-2 font-semibold"
-                onClick={handleConfirm}
+                onClick={onConfirm}
               >
                 Confirm
               </button>

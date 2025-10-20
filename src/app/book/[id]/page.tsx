@@ -17,6 +17,8 @@ import MediumHeader from '@/components/headers/MediumHeader';
 const { auth } = initializeFirebaseClient();
 function Book() {
   const params = useParams<{ id: string }>();
+  const [booting, setBooting] = useState(true);           // NEW: blocks UI until BookInfo done
+  const [pageOverlay, setPageOverlay] = useState(false); // generic overlay (you already had `loading`)
 
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -55,7 +57,8 @@ function Book() {
     })
     return () => unsubscribe(); 
   
-  }, []);
+  }, [params?.id]);
+
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
@@ -93,6 +96,8 @@ function Book() {
             bookmarks={bookmarks}
             userRating={userRating}
             setUserRating={setUserRating}
+            onLoadingChange={setPageOverlay}  // show/hide overlay for later re-fetches
+            onReady={() => setBooting(false)}
           />    
 
         </div>
@@ -131,6 +136,13 @@ function Book() {
             <p className="text-lg text-white font-semibold">Fetching book info...</p>
           </div>
         )}
+
+      {(booting || pageOverlay) && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+          <p className="text-lg text-white font-semibold">{booting ? 'Loading book…' : 'Fetching book info…'}</p>
+        </div>
+      )}
 
     </main>
   )

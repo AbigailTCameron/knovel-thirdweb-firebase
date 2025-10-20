@@ -8,9 +8,11 @@ type Props = {
   draftId : string;
   userId : string;
   oldFilePath: string;
+  onUploadingChange?: (loading: boolean) => void;              
+  onUploaded?: (downloadURL: string, filePath: string) => void;  
 }
 
-function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
+function ImageUploader2({onUploadingChange, onUploaded, bookUrl, draftId, userId, oldFilePath}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string>('');
   const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
@@ -19,6 +21,8 @@ function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [filename, setFilename] = useState<string>('');
+  const [localPreview, setLocalPreview] = useState<string | null>(null);    // NEW: optimistic preview
+
 
   function readFile(file: File) {
     return new Promise((resolve) => {
@@ -44,9 +48,8 @@ function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
     }
   };
 
-  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }
+  const onCropComplete = (_: Area, pixels: Area) => setCroppedAreaPixels(pixels);
+
 
   const urlToFile = async (croppedImage: string) => {
     const response = await fetch(croppedImage);
@@ -59,18 +62,29 @@ function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
   };
 
   const handleCropConfirm = async () => {
-    if (croppedAreaPixels && imageSrc) {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels); 
+    if (!croppedAreaPixels || !imageSrc) return;
 
-      setChooseCropped(false); 
+    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels); 
 
-      urlToFile(croppedImage).then((file) => { 
-        reuploadBookImageToSupabase(filename, file, userId, oldFilePath, draftId);
-      })
+    setLocalPreview(croppedImage);
+    setChooseCropped(false);
 
+    // Start upload
+    onUploadingChange?.(true);
+
+    try{
+        const file = await urlToFile(croppedImage);
+        const result = await reuploadBookImageToSupabase(filename, file, userId, oldFilePath, draftId);
+
+        if (result) {
+          onUploaded?.(result.downloadURL, result.filePath); // tell parent to update
+        }
+    }finally {
+      onUploadingChange?.(false);
     }
   };
 
+  const currentImg = localPreview ?? bookUrl;  // prefer local preview until real URL arrives
 
   return (
     <div className="flex flex-col self-center my-4 md:my-2 w-[250px] h-[375px] lg:h-fit">
@@ -82,10 +96,10 @@ function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
           onMouseEnter={() =>  setIsHovered(true)}
           onMouseLeave={() =>  setIsHovered(false)}
         >
-            {bookUrl ? (
+            {currentImg ? (
               <img
                 className={`w-full h-full rounded-xl ${isHovered && "opacity-50"}`}
-                src={bookUrl}
+                src={currentImg}
                 alt={`$ book cover`}
               />
             
@@ -107,7 +121,7 @@ function ImageUploader2({bookUrl, draftId, userId, oldFilePath}: Props) {
                     image={imageSrc}
                     crop={crop}
                     zoom={zoom}
-                    aspect={1/1.6} // 1:1.5 aspect ratio
+                    aspect={1/1.5} // 1:1.5 aspect ratio
                     onCropChange={setCrop}
                     onZoomChange={setZoom}
                     onCropComplete={onCropComplete}

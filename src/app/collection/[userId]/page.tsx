@@ -17,6 +17,7 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 function Collection({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+  const [booting, setBooting] = useState(true);  
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [searchResults, setSearchResults] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -80,6 +81,8 @@ function Collection({}: Props) {
             <div className='w-full flex flex-col p-4'>
               <UserProf 
                 userId={currentUser || ''}
+                onLoadingChange={setLoading}  
+                onReady={() => setBooting(false)}
               />
             </div>
 
@@ -113,7 +116,7 @@ function Collection({}: Props) {
       )}
 
       {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {(booting || loading) && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
         </div>

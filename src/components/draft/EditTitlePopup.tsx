@@ -1,15 +1,13 @@
 import React from 'react'
 
 type Props = {
-  setTitle: Function; 
-  onConfirm : Function;
+  onConfirm: () => void;
   onCancel ?: () => void;
+  value: string;                  
+  setValue: (v: string) => void; 
 }
 
-function EditTitlePopup({setTitle, onConfirm, onCancel}: Props) {
-  const handleConfirm = () => {
-    onConfirm();
-  }
+function EditTitlePopup({value, setValue, onConfirm, onCancel}: Props) {
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 text-base">
@@ -22,14 +20,15 @@ function EditTitlePopup({setTitle, onConfirm, onCancel}: Props) {
                   className="w-full focus:outline-none py-4 px-4 rounded-xl text-white bg-zinc-800"
                   name="genre"
                   placeholder='edit title'
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={value}        
+                  onChange={(e) => setValue(e.target.value)}
                 />
 
           </div>
           <div className="flex justify-center w-full space-x-2">
               <button
                 className="px-2 py-3 w-5/12 text-white font-semibold bg-zinc-800 rounded-xl"
-                onClick={handleConfirm}
+                onClick={onConfirm}
               >
                 Confirm
               </button>

@@ -28,6 +28,9 @@ function GenreBooks({title, genre}: Props) {
       router.push(`/book/${bookId}`);
     };
 
+    const handleMouseEnter = (id: string) => router.prefetch(`/book/${id}`);
+
+
   return (
     <div className='text-white w-full h-full overflow-x-hidden'>
       <p className="text-2xl font-extrabold">{title}</p>
@@ -36,6 +39,7 @@ function GenreBooks({title, genre}: Props) {
 
         {books.map((book) => (
           <div 
+            onMouseEnter={() => handleMouseEnter(book.id)}
             key={book.id} 
             onClick={() => handleBookClick(book.id)}
             className="group flex-shrink-0 flex h-fit md:h-full items-center hover:cursor-pointer"  

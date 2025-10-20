@@ -17,10 +17,13 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
     router.push(`/book/${bookId}`);
   };
 
+  const handleMouseEnter = (id: string) => router.prefetch(`/book/${id}`);
+  
   return (
     <div className='grid grid-cols-2 sm:grid-cols-1 gap-2 w-full h-fit'>
         {books.map((book, index) => (
           <div 
+            onMouseEnter={() => handleMouseEnter(book.id)}
             key={book.id} 
             className="flex w-full hover:cursor-pointer hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-full p-0.5"
             onClick={() => handleBookClick(book.id)} 
