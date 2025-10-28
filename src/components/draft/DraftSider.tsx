@@ -144,7 +144,7 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
 
     const selectedChapters = chapters.slice(0, Math.max(0, Math.min(upto, chapters.length)));
     setPublishing(true);
-    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl);
+    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl, selectedChapters.length);
 
     if (ok) {
       router.push('/explore');
