@@ -317,11 +317,11 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
 }
 
 
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
+export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string, publishedCount: number) => {
   try{
     const epubFile = await createEpubFile(publishedChapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
-    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl);
+    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl, publishedCount);
 
     return true;
 
@@ -425,7 +425,7 @@ const smartContractConfig = async() => {
   return {contract, smartAccount}
 }
 
-export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string) {
+export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number) {
   try{
     const {contract, smartAccount} = await smartContractConfig(); 
 
@@ -473,7 +473,7 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
       throw new Error("BookRegistered event not found in transaction logs.");
     }
 
-    await pushToBooks(userId, author, title, synopsis, genres, ipfsHash, transactionHash, bookId, draftId, chapters, imageFilePath, bookUrl);
+    await pushToBooks(userId, author, title, synopsis, genres, ipfsHash, transactionHash, bookId, draftId, chapters, imageFilePath, bookUrl, publishedCount);
     
   }catch(err){
     console.error("Error trying to call public registry smart contract", err);
@@ -503,7 +503,7 @@ export async function uploadBookImageToFirebase(file: File | null, userId: strin
   }
 }
 
-export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, draftId: string, chapters: any[], imageFilePath: string, bookUrl: string){
+export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number){
   try{
       // Step 1: Generate a Firestore auto ID
       const booksCollection = collection(db, "books");
@@ -549,10 +549,11 @@ export async function pushToBooks(userId: string, name: string, title: string, s
 
 
       // Map over the chapters and add `published: "true"` to each chapter object
-      const updatedChapters = chapters.map((chapter) => ({
+      const updatedChapters = chapters.map((chapter, i) => ({
         ...chapter,
-        published: true,
+        published: i < publishedCount ? true : Boolean(chapter.published) // keep prior truthy if you support re-publish
       }));
+
 
       // Step 2: Generate a Firestore auto ID
       const publishedCollection = collection(db, "published", userId, "userDrafts");
