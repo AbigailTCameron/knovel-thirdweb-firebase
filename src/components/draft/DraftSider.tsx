@@ -135,21 +135,22 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
     router.push(`/newChapter/${draftId}`)
   }
 
-  const handlePublish = async () => {
+  const handlePublish = async (upto: number) => {
     if (!imagePath) {
       alert('Book cover file is missing. Please upload a book cover.');
       setPublishPopup(false);
       return;
     }
 
+    const selectedChapters = chapters.slice(0, Math.max(0, Math.min(upto, chapters.length)));
     setPublishing(true);
-    await uploadEpub(userId, genres, chapters, title, name, newSynopsis, imagePath, draftId, imageUrl).then(success => {
-      if(success){
-        router.push("/explore");
-      }else{
-        alert("Error trying to your draft!")
-      }
-    })
+    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl);
+
+    if (ok) {
+      router.push('/explore');
+    } else {
+      alert('Error trying to publish your draft!');
+    }
   };
 
   useEffect(() => {
@@ -264,6 +265,8 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
 
         {publishPopup && (
           <PublishPopup 
+            chaptersCount={chapters.length}
+            defaultUpto={chapters.length}    
             title={title}
             onConfirm={handlePublish}
             onCancel={() => setPublishPopup(false)}

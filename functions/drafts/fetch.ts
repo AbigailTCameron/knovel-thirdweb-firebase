@@ -317,9 +317,9 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
 }
 
 
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
+export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
   try{
-    const epubFile = await createEpubFile(chapters, title, author, synopsis, imageUrl); 
+    const epubFile = await createEpubFile(publishedChapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
     await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl);
 
@@ -570,6 +570,7 @@ export async function pushToBooks(userId: string, name: string, title: string, s
         hash: cid,
         bytesId: bookId
       });
+      
 
       await deleteDraft(userId, draftId, imageFilePath);
       
