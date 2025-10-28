@@ -172,8 +172,9 @@ function EditPublish({}: Props) {
 
               {synopsis && (
                 <NewSynopsis 
+                  value={newSynopsis === '' ? oldSynopsis : newSynopsis}
+                  setValue={setNewSynopsis}
                   onCancel={() => setSynopsis(false)}
-                  setNewSynopsis={setNewSynopsis}
                   onConfirm={handleConfirm}
                 />
               )}

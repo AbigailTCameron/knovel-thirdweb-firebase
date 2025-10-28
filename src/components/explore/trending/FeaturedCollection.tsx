@@ -56,7 +56,10 @@ function FeaturedCollection({}: Props) {
       </div>
 
 
-      <div onClick={() => router.push('/special')} className="absolute bottom-4 lg:bottom-2 sm:bottom-1 right-4 lg:right-2 sm:right-1 z-20 bg-[#272831] border-[0.5px] border-slate-600 px-4 sm:px-2 py-2 sm:py-1 rounded-md hover:cursor-pointer">
+      <div
+        onMouseEnter={() => router.prefetch('/special')}
+        onClick={() => router.push('/special')} 
+        className="absolute bottom-4 lg:bottom-2 sm:bottom-1 right-4 lg:right-2 sm:right-1 z-20 bg-[#272831] border-[0.5px] border-slate-600 px-4 sm:px-2 py-2 sm:py-1 rounded-md hover:cursor-pointer">
         <p className="font-semibold sm:text-sm sm:font-medium">Browse Collection</p>
       </div>
 

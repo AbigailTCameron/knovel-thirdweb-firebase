@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase'
 import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import Trending from '@/components/explore/trending/Trending'
 import SpinLoader from '@/components/loading/SpinLoader'
 import NftMint from '@/components/explore/popup/NftPopup'
@@ -27,54 +27,78 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function page({}: Props) {
-    const router = useRouter(); 
+  const router = useRouter(); 
   
   const account = useActiveAccount();
-  const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+  const [booting, setBooting] = useState(true);      // 🔑 blocks UI until ready
+  const [currentUser, setCurrentUser] = useState<string | undefined>(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
+  const [filePath, setFilePath] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [genreOptions, setGenreOptions] = useState<string[]>([]);
+  const [userBalance, setUserBalance] = useState(0);
+
+  // existing popups/loaders…
   const [loading, setLoading] = useState(false);
   const [mintPopup, setMintPopup] = useState<boolean>(false);
   const [mintLoading, setMintLoading] = useState(false);
-  const [userBalance, setUserBalance] = useState(0);
   const [claimed, setClaimed] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
-  const [filePath, setFilePath] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
   
 
-  const [genreOptions, setGenreOptions] = useState([]); 
+
+  const waitForAuth = () =>
+    new Promise<User|null>((resolve) => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+          unsub();
+          resolve(u);
+        });
+    });
   
 
   useEffect(() => { 
-     // Listen for authentication state changes
-     const unsubscribe = onAuthStateChanged(auth, async(user) => {
-        setCurrentUser(user?.uid);
-        if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl);
-          if(data?.genres){
-            setGenreOptions(data.genres);
-            setFilePath(data.profilePicturePath);
-            setUsername(data.username);
-            setName(data.name);
-           }   
-        }else {
-          setProfileUrl(''); 
-        }
-     })
+     let alive = true;
 
-     return () => unsubscribe(); 
+     (async() => {
+        setBooting(true);
+
+        // wait for auth to initialize first
+        const u = await waitForAuth();
+        if (!alive) return;
+
+        setCurrentUser(u?.uid);
+
+        if(u?.uid){
+            // 2) fetch first-render data in parallel
+            const [userData, _balance] = await Promise.all([
+              getUserProfile(u.uid, setProfileUrl),      // returns userData (you already return it)
+              fetchUserNftBalance(u.uid, setUserBalance) // this sets state internally too
+            ]);
+
+            if (!alive) return;
+
+            if (userData) {
+              setUsername(userData.username ?? '');
+              setName(userData.name ?? '');
+              setFilePath(userData.profilePicturePath ?? '');
+              if (Array.isArray(userData.genres)) setGenreOptions(userData.genres);
+            }
+        }else{
+            // not signed in — ensure defaults are clean
+            setProfileUrl('');
+            setUsername('');
+            setName('');
+            setGenreOptions([]);
+        }
+        // 3) release the UI
+        setBooting(false);
+     })();
+    return () => { alive = false; };
    
   }, []);
-
-
-  useEffect(() => {
-    if (currentUser) {
-      fetchUserNftBalance(currentUser, setUserBalance);
-    }
-  }, [currentUser]);
 
   // useEffect(() => {
   //   if(!account){
@@ -82,6 +106,7 @@ function page({}: Props) {
   //   }
   // }, [account])
 
+  
   const mint = async() => {
     if(currentUser && account){
       setMintLoading(true);
@@ -105,6 +130,16 @@ function page({}: Props) {
       return () => clearTimeout(timer);
     }
   }, [claimed]);
+
+
+  if (booting) {
+    return (
+      <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+        <SpinLoader />
+        <p className="text-lg text-white font-semibold">Loading your Explore feed…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">

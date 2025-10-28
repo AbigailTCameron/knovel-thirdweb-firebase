@@ -62,7 +62,7 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
       await updateDoc(draftRef, { book_image: downloadURL, bookPath: filePath });
 
       console.log("Draft image successfully reuploaded.");
-      return downloadURL;
+      return { downloadURL, filePath };
 
   }catch (error) {
     if (error instanceof Error) {
@@ -253,12 +253,30 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
 
   }catch (error) {
     if (error instanceof Error) {
-      console.error("Error deleting drafr:", error.message);
+      console.error("Error deleting draft:", error.message);
       return false;
     } else {
       console.error("Error deleting draft:", String(error));
       return false;
     }
+  }
+}
+
+export const deleteDraftChapter = async(userId: string, draftId: string, index: number) => {
+  try{
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
+    const snap = await getDoc(draftRef);
+    if (!snap.exists()) throw new Error("Draft not found");
+
+    const data = snap.data();
+    const chapters: any[] = data?.draft_chapters ?? [];
+
+    // remove the chapter at index
+    const next = chapters.filter((_, i) => i !== index);
+    await updateDoc(draftRef, { draft_chapters: next });
+  }catch (error) {
+   
+    console.error("Error deleting chapter:", error);
   }
 }
 
@@ -299,9 +317,9 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
 }
 
 
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
+export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string) => {
   try{
-    const epubFile = await createEpubFile(chapters, title, author, synopsis, imageUrl); 
+    const epubFile = await createEpubFile(publishedChapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
     await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl);
 
@@ -552,6 +570,7 @@ export async function pushToBooks(userId: string, name: string, title: string, s
         hash: cid,
         bytesId: bookId
       });
+      
 
       await deleteDraft(userId, draftId, imageFilePath);
       

@@ -33,6 +33,8 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
   const [titleContent, setTitleContent] = useState<string>('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false); // 👈 prevent double-clicks
+
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -62,13 +64,30 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
   
 
   const handleSubmit = async() => { 
-    localStorage.removeItem('unsavedContent');
-    localStorage.removeItem('unsavedTitleContent');
+    if (saving) return;                // 👈 double-click guard
+    if (!userId || !id) return;        // sanity guard
+    if (!titleContent.trim() && !content.trim()) return; // optional: avoid empty chapter
 
-    setHasUnsavedChanges(false); 
+    setHasUnsavedChanges(false);
+    setSaving(true);
     setLoading(true);
-    await handleSubmitAnotherDraftChapter(userId, id, titleContent, content, setError);
-    router.push(`/draft/${id}`); 
+
+    try{
+      const result = await handleSubmitAnotherDraftChapter(
+        userId, id, titleContent, content, setError
+      );
+
+      if (error) return;
+
+      localStorage.removeItem('unsavedContent');
+      localStorage.removeItem('unsavedTitleContent');
+
+      router.prefetch(`/draft/${id}`);
+      await router.push(`/draft/${id}`);
+    }finally {
+      setLoading(false);               // ✅ always hide overlay
+      setSaving(false);
+    } 
   }
 
 
@@ -202,17 +221,17 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
             </div>
         </div>
 
-        <div className="absolute bottom-0 w-full md:flex md:relative md:items-center md:justify-center">
+        <div className="absolute bottom-0 w-full px-4 md:px-4 flex flex-col md:relative md:items-stretch">
 
           <div className="text-slate-400 text-sm p-4">
             <p> {editor?.storage.characterCount.characters()} characters </p>
             <p>{editor?.storage.characterCount.words()} words</p>
           </div>
     
-
-          <div onClick={handleSubmit} className="hover:cursor-pointer bg-indigo-600 p-4 mb-4 md:p-2 md:mb-0 md:w-1/3 md:text-lg rounded-2xl mx-4 font-semibold text-xl text-center">
+          
+          <button disabled={saving} onClick={handleSubmit} className="hover:cursor-pointer bg-indigo-600 p-4 mb-4 md:p-2 md:mb-0 md:w-1/3 md:text-lg rounded-2xl mx-4 font-semibold text-xl text-center">
               <p>Save</p>
-          </div>
+          </button>
       
         </div>
 
