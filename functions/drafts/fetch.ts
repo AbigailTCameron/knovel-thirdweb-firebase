@@ -5,7 +5,7 @@ import { pinata } from "../../utils/config";
 import { client } from "@/lib/client";
 import { eth_getTransactionReceipt, getContract, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
 import { smartWallet } from "thirdweb/wallets";
-import { personalAccount } from "@/lib/client";
+//import { personalAccount } from "@/lib/client";
 import { defineChain } from "thirdweb/chains";
 import {generateKeywords} from "../helper-utils";
 
@@ -402,7 +402,7 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
 
 }
 
-const smartContractConfig = async() => {
+const smartContractConfig = async(personalAccount: any) => {
   // Configure the smart wallet
   const wallet = smartWallet({
     chain: defineChain(123420001114),
@@ -427,7 +427,7 @@ const smartContractConfig = async() => {
 
 export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number, account: any) {
   try{
-    const {contract, smartAccount} = await smartContractConfig(); 
+    const {contract, smartAccount} = await smartContractConfig(account); 
 
     const transaction = await prepareContractCall({
       contract,
@@ -438,7 +438,7 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
 
     const { transactionHash } = await sendTransaction({
       transaction,
-      account: account,
+      account: smartAccount,
     });
 
 
