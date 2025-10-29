@@ -317,11 +317,11 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
 }
 
 
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string, publishedCount: number) => {
+export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string, publishedCount: number, account: any) => {
   try{
     const epubFile = await createEpubFile(publishedChapters, title, author, synopsis, imageUrl); 
     const response = await pinata.upload.file(epubFile);
-    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl, publishedCount);
+    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl, publishedCount, account);
 
     return true;
 
@@ -425,7 +425,7 @@ const smartContractConfig = async() => {
   return {contract, smartAccount}
 }
 
-export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number) {
+export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number, account: any) {
   try{
     const {contract, smartAccount} = await smartContractConfig(); 
 
@@ -438,7 +438,7 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
 
     const { transactionHash } = await sendTransaction({
       transaction,
-      account: smartAccount,
+      account: account,
     });
 
 
