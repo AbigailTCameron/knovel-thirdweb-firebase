@@ -12,6 +12,7 @@ import Finger from '../icons/Finger';
 import GenrePopup from './GenrePopup';
 import Options from '../icons/Options';
 import OptionsPopup from './OptionsPopup';
+import { useActiveAccount } from 'thirdweb/react';
 
 type Props = {
   imageUrl : string;
@@ -37,6 +38,8 @@ type Props = {
 
 function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title, setTitle, chapterCount, genres, setGenres, setLoading, name, newSynopsis, chapters, imagePath, setPublishing, setDeleting, created_at, setSynopsis}: Props) {
   const router = useRouter();
+  const account = useActiveAccount();
+  
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [genre, setGenre] = useState<string>('');
@@ -144,7 +147,7 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
 
     const selectedChapters = chapters.slice(0, Math.max(0, Math.min(upto, chapters.length)));
     setPublishing(true);
-    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl, selectedChapters.length);
+    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl, selectedChapters.length, account);
 
     if (ok) {
       router.push('/explore');
