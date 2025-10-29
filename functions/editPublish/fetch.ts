@@ -453,7 +453,7 @@ const reuploadEpub = async (chapters: any[], title: string, author_name: string,
   }
 }
 
-export async function rePublishtoSmartContract(userId: string, title: string, author_name: string, ipfsHash: string, book_synopsis: string, genres: string[], chapters: any[], bytesId: `0x${string}`, bookId: string) {
+export async function rePublishtoSmartContract(userId: string, title: string, author_name: string, ipfsHash: string, book_synopsis: string, genres: string[], chapters: any[], bytesId: `0x${string}`, bookId: string, publishedCount: number) {
   try{
 
     const {contract, smartAccount} = await smartContractConfig(); 
@@ -470,7 +470,7 @@ export async function rePublishtoSmartContract(userId: string, title: string, au
     });
     
 
-    await rePushToBooks(userId, author_name, title, book_synopsis, genres, ipfsHash, transactionHash, chapters, bookId);
+    await rePushToBooks(userId, author_name, title, book_synopsis, genres, ipfsHash, transactionHash, chapters, bookId, publishedCount);
     
   }catch(err){
     console.error("Error trying to call public registry smart contract", err);
@@ -486,7 +486,8 @@ export async function rePushToBooks(
   cid: string,
   txhash: string,
   chapters: any[],
-  bookId: string
+  bookId: string,
+  publishedCount: number
 ) {
   try {
     // Reference to the book document in the `books` collection
@@ -506,10 +507,11 @@ export async function rePushToBooks(
 
 
     // Mark all chapters as published
-    const updatedChapters = chapters.map((chapter) => ({
+    const updatedChapters = chapters.map((chapter, i) => ({
       ...chapter,
-      published: true,
+      published: i < publishedCount ? true : Boolean(chapter.published),
     }));
+
 
     // Update the `draft_chapters` field in the publish document
     await updateDoc(publishRef, {
@@ -529,20 +531,22 @@ export const updateUploadEpub = async(
   author_name: string, 
   book_synopsis: string, 
   chapters: any[],
+  selectedChapters: any[],
   userId: string,
   genres: string[],
   imageFile: string,
   ipfsHash: string,
   bytesId: `0x${string}`,
-  bookId: string
+  bookId: string,
+  publishedCount: number
 ): Promise<boolean> => {
   try{
 
-    const epubFile = await reuploadEpub(chapters, title, author_name, imageFile, book_synopsis); 
+    const epubFile = await reuploadEpub(selectedChapters, title, author_name, imageFile, book_synopsis); 
     await pinata.unpin([ipfsHash]);
     const response = await pinata.upload.file(epubFile);
 
-    await rePublishtoSmartContract(userId, title, author_name, response.IpfsHash, book_synopsis, genres, chapters, bytesId, bookId);
+    await rePublishtoSmartContract(userId, title, author_name, response.IpfsHash, book_synopsis, genres, chapters, bytesId, bookId, publishedCount);
     return true;
   }catch(err){
     console.error("Error trying to convert book info to epub", err); 
