@@ -12,6 +12,7 @@ import { formatDate } from '../../../tools/formatDate';
 import Finger from '../icons/Finger';
 import GenrePopup from '../draft/GenrePopup';
 import OptionsPopup from '../draft/OptionsPopup';
+import { useActiveAccount } from 'thirdweb/react';
 
 type Props = {
   imageFile: string;
@@ -35,6 +36,7 @@ type Props = {
 
 function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, bookId, userId, setLoading, authorName, synopsis, chapters, ipfsHash, bytesId, imageFilePath, setPublishing, created_at, setSynopsis}: Props) {
   const router = useRouter();
+  const account = useActiveAccount(); // This is the currently signed-in user
 
   const [editTitle, setEditTitle] = useState<boolean>(false);
   const [addGenre, setAddGenre] = useState<boolean>(false);
@@ -94,7 +96,7 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
     const selectedChapters = chapters.slice(0, upto); // prefix only
 
     setPublishing(true);
-    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto).then(success => {
+    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto, account).then(success => {
       if(success){
         router.push("/explore");
       }else{
