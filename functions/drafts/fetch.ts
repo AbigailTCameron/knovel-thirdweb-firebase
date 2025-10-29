@@ -419,7 +419,7 @@ const smartContractConfig = async(personalAccount: any) => {
   const contract = getContract({
     client,
     chain: defineChain(123420001114),
-    address: "0xaBfD0aB24F4291725627a6FDb9267f32b2a93d8C",
+    address: "0x0016404CCCf31605294dD86c1c39e65B4D882c82",
   });
 
   return {contract, smartAccount}
