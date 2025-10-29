@@ -30,9 +30,10 @@ type Props = {
   setPublishing: Function;
   created_at: any;
   setSynopsis: Function;
+  setDeleting: Function;
 }
 
-function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userId, setLoading, authorName, synopsis, chapters, ipfsHash, bytesId, imageFilePath, setPublishing, created_at, setSynopsis}: Props) {
+function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, bookId, userId, setLoading, authorName, synopsis, chapters, ipfsHash, bytesId, imageFilePath, setPublishing, created_at, setSynopsis}: Props) {
   const router = useRouter();
 
   const [editTitle, setEditTitle] = useState<boolean>(false);
@@ -74,7 +75,7 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
 
   const handleConfirm = async() => {
     if(bookId){
-      setLoading(true);
+      setDeleting(true);
       router.push("/explore");
   
       const success = await deleteEntireBook(userId, bookId, imageFilePath, ipfsHash, bytesId);
@@ -84,9 +85,16 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
     }
   }
 
-  const handlePublish = async () => {
+  const publishedCount = chapters.filter((c) => c?.published).length; 
+  const totalChapters = chapters?.length ?? 0;
+
+  const handlePublish = async (upto: number) => {
+    if (upto < publishedCount || upto > chapters.length) return;
+
+    const selectedChapters = chapters.slice(0, upto); // prefix only
+
     setPublishing(true);
-    await updateUploadEpub(title, authorName, synopsis, chapters, userId, genres, imageFile, ipfsHash, bytesId, bookId).then(success => {
+    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto).then(success => {
       if(success){
         router.push("/explore");
       }else{
@@ -195,6 +203,8 @@ function EditPublishSider({imageFile, title, chapterCount, genres, bookId, userI
             title={title}
             onConfirm={handlePublish}
             onCancel={() => setPublishPopup(false)}
+            publishedCount={publishedCount}  
+            chaptersCount={totalChapters}   
           />
         )}
 
