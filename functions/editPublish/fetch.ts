@@ -453,7 +453,7 @@ const reuploadEpub = async (chapters: any[], title: string, author_name: string,
   }
 }
 
-export async function rePublishtoSmartContract(userId: string, title: string, author_name: string, ipfsHash: string, book_synopsis: string, genres: string[], chapters: any[], bytesId: `0x${string}`, bookId: string, publishedCount: number, account:any) {
+export async function rePublishtoSmartContract(userId: string, title: string, author_name: string, ipfsHash: string, book_synopsis: string, genres: string[], chapters: any[], bytesId: `0x${string}`, bookId: string, publishedCount: number) {
   try{
 
     const {contract, smartAccount} = await smartContractConfig(); 
@@ -466,7 +466,7 @@ export async function rePublishtoSmartContract(userId: string, title: string, au
     });
     const { transactionHash } = await sendTransaction({
       transaction,
-      account: account,
+      account: smartAccount,
     });
     
 
@@ -538,8 +538,7 @@ export const updateUploadEpub = async(
   ipfsHash: string,
   bytesId: `0x${string}`,
   bookId: string,
-  publishedCount: number,
-  account: any
+  publishedCount: number
 ): Promise<boolean> => {
   try{
 
@@ -547,7 +546,7 @@ export const updateUploadEpub = async(
     await pinata.unpin([ipfsHash]);
     const response = await pinata.upload.file(epubFile);
 
-    await rePublishtoSmartContract(userId, title, author_name, response.IpfsHash, book_synopsis, genres, chapters, bytesId, bookId, publishedCount, account);
+    await rePublishtoSmartContract(userId, title, author_name, response.IpfsHash, book_synopsis, genres, chapters, bytesId, bookId, publishedCount);
     return true;
   }catch(err){
     console.error("Error trying to convert book info to epub", err); 
