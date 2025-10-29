@@ -129,7 +129,7 @@ function EditPublish({}: Props) {
                     genres={genres || []}
                     bookId={params.id}
                     userId={currentUser || ''}
-                    setLoading={setDeleting}
+                    setLoading={setLoading}
                     authorName={authorName}
                     synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
                     chapters={chapters}
@@ -139,6 +139,7 @@ function EditPublish({}: Props) {
                     setPublishing={setPublishing}
                     created_at={created}
                     setSynopsis={setSynopsis}
+                    setDeleting={setDeleting}
                   />
               </div>
 
