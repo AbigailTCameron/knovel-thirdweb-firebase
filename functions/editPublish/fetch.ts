@@ -186,7 +186,7 @@ export const removePublishGenre = async (userId: string, bookId: string, genre: 
   }
 }
 
-const smartContractConfig = async() => {
+const smartContractConfig = async(personalAccount: any) => {
 
   // Configure the smart wallet
   const wallet = smartWallet({
@@ -204,13 +204,13 @@ const smartContractConfig = async() => {
   const contract = getContract({
     client,
     chain: defineChain(123420001114),
-    address: "0xaBfD0aB24F4291725627a6FDb9267f32b2a93d8C",
+    address: "0x0016404CCCf31605294dD86c1c39e65B4D882c82",
   });
 
   return {contract, smartAccount}
 }
 
-export const deleteEntireBook = async(userId: string, bookId: string, imageFilePath: string, hash: string, bytesId: `0x${string}`) => {
+export const deleteEntireBook = async(userId: string, bookId: string, imageFilePath: string, hash: string, bytesId: `0x${string}`, account: any) => {
   try{
     await pinata.unpin([hash]); 
 
@@ -245,7 +245,7 @@ export const deleteEntireBook = async(userId: string, bookId: string, imageFileP
       await deleteObject(imageRef);
     }
 
-    const {contract, smartAccount} = await smartContractConfig();  
+    const {contract, smartAccount} = await smartContractConfig(account);  
 
      const transaction = await prepareContractCall({
       contract,
@@ -456,7 +456,7 @@ const reuploadEpub = async (chapters: any[], title: string, author_name: string,
 export async function rePublishtoSmartContract(userId: string, title: string, author_name: string, ipfsHash: string, book_synopsis: string, genres: string[], chapters: any[], bytesId: `0x${string}`, bookId: string, publishedCount: number, account: any) {
   try{
 
-    const {contract, smartAccount} = await smartContractConfig(); 
+    const {contract, smartAccount} = await smartContractConfig(account); 
 
     const transaction = await prepareContractCall({
       contract,
@@ -466,7 +466,7 @@ export async function rePublishtoSmartContract(userId: string, title: string, au
     });
     const { transactionHash } = await sendTransaction({
       transaction,
-      account: account,
+      account: smartAccount,
     });
     
 
