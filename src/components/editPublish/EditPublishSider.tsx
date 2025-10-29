@@ -96,7 +96,7 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
     const selectedChapters = chapters.slice(0, upto); // prefix only
 
     setPublishing(true);
-    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto).then(success => {
+    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto, account).then(success => {
       if(success){
         router.push("/explore");
       }else{
