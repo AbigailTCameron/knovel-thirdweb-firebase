@@ -432,8 +432,8 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
     const transaction = await prepareContractCall({
       contract,
       method:
-      "function publishBook(string _title, string _author, string _ipfsHash, address author_addr, uint256 _price)",
-      params: [title, author, ipfsHash, userId, toUnits("0", 18)],
+      "function publishBook(string _title, string _author, string _ipfsHash, uint256 _price)",
+      params: [title, author, ipfsHash, toUnits("0", 18)],
     });
 
     const { transactionHash } = await sendTransaction({

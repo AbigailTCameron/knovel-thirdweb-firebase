@@ -249,8 +249,8 @@ export const deleteEntireBook = async(userId: string, bookId: string, imageFileP
 
      const transaction = await prepareContractCall({
       contract,
-      method: "function deleteBook(bytes32 _bookId, address author_addr)",
-      params: [bytesId, userId],
+      method: "function deleteBook(bytes32 _bookId)",
+      params: [bytesId],
     });
     await sendTransaction({
       transaction,
@@ -461,8 +461,8 @@ export async function rePublishtoSmartContract(userId: string, title: string, au
     const transaction = await prepareContractCall({
       contract,
       method:
-      "function updateBookInfo(bytes32 _bookId, string _newTitle, string _newIpfsHash, address author_addr, uint256 _newPrice)",
-      params: [bytesId, title, ipfsHash, userId, toUnits("0", 18)],
+      "function updateBookInfo(bytes32 _bookId, string _newTitle, string _newIpfsHash, uint256 _newPrice)",
+      params: [bytesId, title, ipfsHash, toUnits("0", 18)],
     });
     const { transactionHash } = await sendTransaction({
       transaction,
