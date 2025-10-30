@@ -9,11 +9,17 @@ export default function initializeFirebaseServer(): {
   auth: Auth;
 } {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = (process.env.FIREBASE_PRIVATE_KEY as string).replace(
-    /\\n/g,
-    "\n"
-  );
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+
   const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+
+
+  if (!clientEmail || !privateKeyRaw || !projectId) {
+    throw new Error("Missing Firebase admin env vars");
+  }
+
+  const privateKey = privateKeyRaw?.replace(/\\n/g, "\n");
+
 
   if (admin.apps.length === 0) {
     initializeApp({
