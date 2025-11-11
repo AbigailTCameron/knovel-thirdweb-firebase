@@ -41,6 +41,9 @@ const config: Config = {
       'se': {'max': '430px'},
       // => @media (max-width: 430px) { ... }
 
+      'extramini': {'max': '380px'},
+      // => @media (max-width: 430px) { ... }
+
       'ylg': { 'raw': '(max: 1023px)'},
       // => @media (min-width: 1023px) { ... }
 
