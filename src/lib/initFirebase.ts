@@ -1,9 +1,6 @@
-"use client"
-
 import { initializeApp } from "firebase/app";
 import { Auth, getAuth } from "firebase/auth";
 import { Firestore, getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
 
 // Create Client-Side Instance of Firebase
 export default function initializeFirebaseClient(): {
@@ -17,12 +14,10 @@ export default function initializeFirebaseClient(): {
     storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
     messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
     appId: process.env.NEXT_PUBLIC_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_MESSAGING_ID
   });
 
   const db = getFirestore(firebaseApp);
   const auth = getAuth(firebaseApp);
-  const analytics = getAnalytics(firebaseApp);
 
   return {
     db,
