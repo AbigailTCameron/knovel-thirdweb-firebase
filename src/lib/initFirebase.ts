@@ -1,3 +1,5 @@
+"use client"
+
 import { initializeApp } from "firebase/app";
 import { Auth, getAuth } from "firebase/auth";
 import { Firestore, getFirestore } from "firebase/firestore";
