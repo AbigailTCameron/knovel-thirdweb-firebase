@@ -28,11 +28,11 @@ function Bookmark({userId, bookmarks}: Props) {
   }, [bookmarks])
 
   return (
-    <div className="grid grid-cols-5 xxl:grid-cols-4 halfxl:grid-cols-3 sm:grid-cols-2 gap-4 sm:gap-1 se:grid-cols-1 w-full h-full">
+    <div className="grid grid-cols-5 xxl:grid-cols-4 halfxl:grid-cols-3 sm:grid-cols-2 gap-4 sm:gap-1 w-full h-full">
       {bookDetails.map((bookmark, index) => (
-        <div onClick={() => handleBookClick(bookmark.id)}  key={index} className="group relative col-span-1 hover:col-span-2 transition-all duration-300 ease-in-out flex space-x-2 cursor-pointer">
+        <div onClick={() => handleBookClick(bookmark.id)}  key={index} className="group relative col-span-1 hover:col-span-2 transition-all duration-300 ease-in-out flex space-x-2 extramini:space-x-1 cursor-pointer">
 
-              <div className=" w-[250px] h-[400px] halflg:w-[180px] halflg:h-[270px] flex-shrink-0">
+              <div className=" w-[250px] h-[400px] halflg:w-[180px] halflg:h-[270px] extramini:w-[150px] extramini:h-[240px] flex-shrink-0">
                 <img 
                   className="z-10 p-0.5 w-full h-full group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-3xl object-cover" 
                   src={bookmark.book_image} 
