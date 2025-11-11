@@ -50,7 +50,7 @@ function Top({profileUrl, setLoading}: Props) {
 
 
   return (
-    <div className='flex w-full justify-between items-center backdrop-blur-md px-4 py-2 z-10'>
+    <div className='flex w-full justify-between items-center backdrop-blur-md px-4 py-2 z-30'>
          <div className="relative items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
             <form onSubmit={handleSearch} className="flex items-center bg-[#272831] w-full rounded-3xl p-0.5">
                 <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
