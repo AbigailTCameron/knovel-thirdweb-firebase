@@ -209,13 +209,13 @@ function Search({}: Props) {
 
         </div>
 
-        <div className="text-white text-2xl font-bold mb-4">
+        <div className="text-white text-2xl font-bold mb-4 extramini:text-center">
             <p>Search Results for "{q}"</p>
         </div>
 
         <div className="text-white px-4 xl:px-2">
             {results.length > 0 ? (
-                <div className="grid grid-cols-5 2xl:grid-cols-4 halflg:grid-cols-3 sm:grid-cols-2 ss:grid-cols-1 ss:gap-8 gap-4 halflg:gap-2">
+                <div className="grid grid-cols-5 2xl:grid-cols-4 halflg:grid-cols-3 extramini:grid-cols-2 gap-4 halflg:gap-2">
                     {results.map((result) => (
                       <div
                         onMouseEnter={() => router.prefetch(`/book/${result.id}`)} 

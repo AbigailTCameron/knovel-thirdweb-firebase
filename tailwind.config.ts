@@ -32,6 +32,9 @@ const config: Config = {
       'sm': {'max': '639px'},
       // => @media (max-width: 639px) { ... }
 
+      'mid': {'max': '550px'},
+      // => @media (max-width: 550px) { ... }
+
       'ss': {'max': '500px'},
       // => @media (max-width: 500px) { ... }
 
@@ -42,7 +45,7 @@ const config: Config = {
       // => @media (max-width: 430px) { ... }
 
       'extramini': {'max': '380px'},
-      // => @media (max-width: 430px) { ... }
+      // => @media (max-width: 380px) { ... }
 
       'ylg': { 'raw': '(max: 1023px)'},
       // => @media (min-width: 1023px) { ... }

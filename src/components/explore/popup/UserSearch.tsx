@@ -64,48 +64,50 @@ function UserSearch({setSearchResults, userId}: Props) {
               <div className="flex-1 flex-col w-full mt-6 space-y-2 overflow-y-auto">
                 {usernameResults.map((user) => (
                   <div key={user.id} className="flex text-white w-full items-center rounded-xl justify-center hover:bg-[#1b1c22] p-2">
-                    <div className="w-full flex items-center justify-between">
+                    <div className="w-full flex items-center justify-between gap-3">
 
-                        <div className="flex space-x-4">
+                        {/* LEFT: avatar + names */}
+                        <div className="flex space-x-4 flex-1 min-w-0">
                             {user.profilePicture ? (
                                 <img 
                                   src={user.profilePicture}
-                                  className="w-[50px] h-[50px] rounded-full"
+                                  className="w-[50px] h-[50px] ss:w-[40px] ss:h-[40px] rounded-full"
                                 />
                             ) : (
-                              <Profile className="w-[50px] h-[50px] rounded-full stroke-white"/>
+                              <Profile className="w-[50px] h-[50px] ss:w-[40px] ss:h-[40px] rounded-full stroke-white"/>
                             )}
                           
 
-                            <div className="flex flex-col mx-2">
-                                  <div className="flex items-center space-x-2">
-                                    <p className="">{user.name}</p>  
+                            <div className="flex flex-col mx-2 min-w-0">
+                                  <div className="flex items-center space-x-2 min-w-0">
+                                    <p className="truncate max-w-full">{user.name}</p>  
                                     {user.verified && (
                                       <img 
-                                        className="w-[20px] h-[20px]"
+                                        className="w-[15px] h-[15px] se:w-[10px] se:h-[10px] shrink-0"
                                         src="/verified.png"
                                       />
                                     )}
                                   </div>
                                   
                                   
-                                  <p className="text-sm">@{user.username}</p>
+                                  <p className="text-sm text-white/70 truncate max-w-full">@{user.username}</p>
                             </div>
                         </div>
 
+                        {/* RIGHT: follow button */}
                         {user.isFollowing ? (
                           <div onClick={(e) => {
                             e.stopPropagation();
                             toggleFollow(user.id)
-                          }} className="border-[0.1px] bg-[#0b0b0b] border-white/30 px-6 py-1 rounded-xl">
-                            <p>following</p>
+                          }} className="shrink-0 border-[0.1px] bg-[#0b0b0b] border-white/30 px-4 ss:px-2 py-1 rounded-xl">
+                            <p className='ss:text-xs'>following</p>
                           </div>
                         ) : (
                           <div onClick={(e) => {
                             e.stopPropagation();
                             toggleFollow(user.id);
-                            }} className="bg-[#7F60F9] px-4 py-2 h-fit rounded-xl">
-                            <p className="text-sm font-bold">follow</p>
+                            }} className="shrink-0 bg-[#7F60F9] px-4 ss:px-2 py-2 h-fit rounded-xl">
+                            <p className="text-sm ss:text-xs font-bold">follow</p>
                           </div> 
                         )}
 

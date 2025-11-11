@@ -36,7 +36,7 @@ function Carousel({setMintPopup, userId}: Props) {
           />
         )}
 
-          <div className="absolute bottom-0 z-40">
+          <div className="absolute bottom-0 z-20">
             <Multirect 
               setScreen={setScreen}
               selected={screen}
