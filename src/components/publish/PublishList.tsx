@@ -42,7 +42,7 @@ function PublishList({userId}: Props) {
         </div>
       )}
    
-    <div className="grid grid-cols-3 xl:grid-cols-2 md:grid-cols-1 gap-4 w-full h-full">
+    <div className="grid grid-cols-3 xl:grid-cols-2 md:grid-cols-1 gap-4 w-full h-fit">
       {published.map((publish, index) => (
         <div onClick={() => handleBookClick(publish.id)}  key={index}  className="flex w-full h-[320px] lg:h-[270px] ss:h-[160px] space-x-4 hover:cursor-pointer border border-[#272831] rounded-xl overflow-y-hidden">            
             <BookCover imageFile={publish.book_image}/>
