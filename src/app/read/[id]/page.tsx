@@ -12,6 +12,7 @@ import Reader from '@/components/read/Reader';
 import SpinLoader from '@/components/loading/SpinLoader';
 import CommentSection from '@/components/read/CommentSection';
 import UsernamePopup2 from '@/components/read/UsernamePopup';
+import PageAnalytics from '@/components/analytics/PageAnalytics';
 
 
 type Props = {}
@@ -97,6 +98,8 @@ function Read({}: Props) {
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">
+      <PageAnalytics pageTitle="Read" pagePath="/read" />
+
       <div className="sticky top-0 w-full z-50">
           <ExploreHeader 
             userId={currentUser}
