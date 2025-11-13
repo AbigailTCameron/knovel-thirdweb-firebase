@@ -11,6 +11,7 @@ import UserSearch from '@/components/explore/popup/UserSearch'
 import Notifications from '@/components/community/Notifications'
 import SettingsPopup from '@/components/explore/popup/SettingsPopup'
 import MediumHeader from '@/components/headers/MediumHeader'
+import PageAnalytics from '@/components/analytics/PageAnalytics'
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
@@ -53,6 +54,7 @@ function Readinglist({}: Props) {
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
+      <PageAnalytics pageTitle="Reading List" pagePath="/readinglist" />
 
       <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
           <Sider 

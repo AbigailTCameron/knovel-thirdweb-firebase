@@ -13,6 +13,7 @@ import Technology from "@/components/home/Technology";
 import ComingSoon from "@/components/home/ComingSoon";
 import Footer from "@/components/footers/Footer";
 import { defineChain } from 'thirdweb/chains'
+import PageAnalytics from "@/components/analytics/PageAnalytics";
 
 
 export default function Home() {
@@ -23,6 +24,8 @@ export default function Home() {
 
   return (
     <div className="flex w-screen min-h-screen flex-col items-center overflow-x-hidden">
+        <PageAnalytics pageTitle="Home" pagePath="/"/>
+
         <div className="sticky top-0 w-full z-50">
            <LandingHeader />
         </div>
