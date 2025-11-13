@@ -57,8 +57,8 @@ function AuthorCard({className, username, author, userId, tags, imgSrc}: Props) 
               </p>
 
               <div className="flex space-x-2 font-semibold lg:hidden">
-                {tags.map((tag) => (
-                  <div className="bg-black/50 backdrop-blur-md rounded-full px-2 halfxl:px-1 py-1">
+                {tags.map((tag, index) => (
+                  <div key={index} className="bg-black/50 backdrop-blur-md rounded-full px-2 halfxl:px-1 py-1">
                       <p className="font-white halfxl:text-sm">{tag}</p>
                   </div>
                 ))}
@@ -92,7 +92,7 @@ function AuthorCard({className, username, author, userId, tags, imgSrc}: Props) 
           </div>
 
           {usernameResults.map((user) => (
-            <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 ss:p-2 w-1/2 lg:w-3/4 ss:w-full space-y-2 rounded-2xl bg-white/20 backdrop-blur-md flex flex-col'>
+            <div key={user.id} className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 ss:p-2 w-1/2 lg:w-3/4 ss:w-full space-y-2 rounded-2xl bg-white/20 backdrop-blur-md flex flex-col'>
     
                 <div onClick={() => router.push(`/search?q=${encodeURIComponent(author)}`)} className="bg-black/60 backdrop-blur-md rounded-full px-4 py-3 sm:px-2 sm:py-1 text-center">
                       <p className="font-white font-bold sm:text-sm">Browse</p>

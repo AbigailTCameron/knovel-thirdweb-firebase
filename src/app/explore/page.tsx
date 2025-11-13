@@ -20,6 +20,7 @@ import Recommend from '@/components/community/Recommend'
 import Notifications from '@/components/community/Notifications'
 import SettingsPopup from '@/components/explore/popup/SettingsPopup'
 import MediumHeader from '@/components/headers/MediumHeader'
+import PageAnalytics from '@/components/analytics/PageAnalytics'
 
 
 type Props = {}
@@ -28,6 +29,7 @@ const { auth } = initializeFirebaseClient();
 
 function page({}: Props) {
   const router = useRouter(); 
+  
   
   const account = useActiveAccount();
   const [booting, setBooting] = useState(true);      // 🔑 blocks UI until ready
@@ -143,6 +145,7 @@ function page({}: Props) {
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
+      <PageAnalytics pageTitle="Explore" pagePath="/explore"/>
     
       <div className='relative md:hidden flex w-fit border-r-[0.5px] border-white/50'>
           <Sider 
