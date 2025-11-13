@@ -11,6 +11,7 @@ import Notifications from '@/components/community/Notifications';
 import SpinLoader from '@/components/loading/SpinLoader';
 import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 import MediumHeader from '@/components/headers/MediumHeader';
+import PageAnalytics from '@/components/analytics/PageAnalytics';
 
 type Props = {}
 
@@ -49,6 +50,8 @@ function Collection({}: Props) {
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
+        <PageAnalytics pageTitle="Collection" pagePath="/collection"/>
+
         <div className='flex md:hidden w-fit border-r-[0.5px] border-white/50'>
             <Sider 
               setLoading={setLoading}
