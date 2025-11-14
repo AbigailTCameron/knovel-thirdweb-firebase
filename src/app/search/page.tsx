@@ -4,11 +4,12 @@ import React from 'react'
 import SearchWrapper from '@/components/search/SearchWrapper';
 
 type SearchPageProps = {
-  searchParams?: { q?: string | string[] };
+  searchParams: Promise<{ q?: string | string[] }>;
 };
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
-  const rawQ = searchParams?.q;
+
+  const { q: rawQ } = await searchParams;
   const q =
     typeof rawQ === "string"
       ? rawQ

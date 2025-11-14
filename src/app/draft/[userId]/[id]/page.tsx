@@ -6,14 +6,11 @@ import initializeFirebaseServer from "@/lib/initFirebaseAdmin";
 const { db } = initializeFirebaseServer();
 
 type Props = {
-  params: {
-    userId: string;
-    id: string;
-  };
-};
+  params: Promise<{ userId: string, id: string }>
+}
 
-export async function generateMetadata({params}: Props): Promise<Metadata> {
-  const { userId, id } = params;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { userId, id } = await params;
   let title: string | null = null;
 
   try{
