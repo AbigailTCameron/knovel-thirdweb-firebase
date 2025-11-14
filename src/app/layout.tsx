@@ -15,12 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Knovel Protocol",
-  description: "The best web3 literary platform",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+  title: {
+    default: "Knovel Protocol",
+    template: "%s - Knovel Protocol"
   },
+  description: "A social, self-publishing, platform powered by the blockchain.",
+  twitter: {
+    card: "summary_large_image"
+  }
 };
 
 

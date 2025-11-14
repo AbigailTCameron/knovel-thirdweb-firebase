@@ -38,7 +38,7 @@ function UserListDrafts({userId, setLoading}: Props) {
                   <div 
                     onClick={() => (
                       setLoading(true),
-                      router.push(`/draft/${draft.draftId}`
+                      router.push(`/draft/${userId}/${draft.draftId}`
                     ))}  
                     key={index} className="flex w-full h-[320px] lg:h-[270px] ss:h-[160px] space-x-4 hover:cursor-pointer border border-[#272831] rounded-xl overflow-y-hidden"
                   >  
