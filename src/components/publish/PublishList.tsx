@@ -23,10 +23,8 @@ function PublishList({userId}: Props) {
   }, [userId])
 
   const handleBookClick = (bookId: string) => {
-    router.push(`/editPublish/${bookId}`)
+    router.push(`/editPublish/${userId}/${bookId}`)
   };
-
-
 
 
   return (

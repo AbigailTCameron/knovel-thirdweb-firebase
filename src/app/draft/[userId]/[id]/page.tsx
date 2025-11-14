@@ -1,31 +1,31 @@
 import type { Metadata } from "next";
 import React from 'react'
-import ReadPageClient from '@/components/read/ReadPageClient';
+import DraftPageClient from '@/components/draft/DraftPageClient';
 import initializeFirebaseServer from "@/lib/initFirebaseAdmin";
-
 
 const { db } = initializeFirebaseServer();
 
 type Props = {
   params: {
+    userId: string;
     id: string;
   };
 };
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-  const { id } = params;
+  const { userId, id } = params;
   let title: string | null = null;
-  let author: string | null = null;
 
   try{
-    const snap = await db
-      .collection("books")
+     const snap = await db
+      .collection("drafts")
+      .doc(userId)
+      .collection("userDrafts")
       .doc(id)
       .get();
 
     if (snap.exists) {
       title = snap.data()?.title ?? null;
-      author = snap.data()?.author ?? null;
     }
 
   }catch (e) {
@@ -34,14 +34,13 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   
   return {
     title: {
-      absolute: title || author ? `${title} by ${author}` : "Finish reading"
-    }
+      absolute: title ? `Continue editing the draft - ${title}` : "Continue editing the draft"
+    },
+    description: title ? `Editing draft "${title}" on Knovel Protocol.` : "Edit your draft on Knovel Protocol."
   }
 }
-
-function Read({}: Props) {
-
-return <ReadPageClient />
+function Draft() {
+  return <DraftPageClient />
 }
 
-export default Read
+export default Draft

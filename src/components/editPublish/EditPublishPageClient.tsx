@@ -1,94 +1,91 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+"use client"
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import NewSynopsis from '@/components/draft/NewSynopsis';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserProfile } from '../../../../functions/explore/fetch';
-import { editBookSynopsis, fetchPublishInfo } from '../../../../functions/editPublish/fetch';
-import EditPublishSider from '@/components/editPublish/EditPublishSider';
-import PublishedList from '@/components/editPublish/PublishedList';
-import UploadingBook from '@/components/loading/UpdatingBook';
-import Butterfly from '@/components/loading/Butterfly';
-import SpinLoader from '@/components/loading/SpinLoader';
-import Sider from '@/components/headers/Sider';
-import Top from '@/components/headers/Top';
-import MediumHeader from '@/components/headers/MediumHeader';
-import UserSearch from '@/components/explore/popup/UserSearch';
-import SettingsPopup from '@/components/explore/popup/SettingsPopup';
-import Notifications from '@/components/community/Notifications';
+import { getUserProfile } from '../../../functions/explore/fetch';
+import { editBookSynopsis, fetchPublishInfo } from '../../../functions/editPublish/fetch';
+import Sider from '../headers/Sider';
+import Top from '../headers/Top';
+import MediumHeader from '../headers/MediumHeader';
+import EditPublishSider from './EditPublishSider';
+import PublishedList from './PublishedList';
+import NewSynopsis from '../draft/NewSynopsis';
+import UserSearch from '../explore/popup/UserSearch';
+import SettingsPopup from '../explore/popup/SettingsPopup';
+import Notifications from '../community/Notifications';
+import SpinLoader from '../loading/SpinLoader';
 
-type Props = {
-  
-}
+
+type Props = {}
+
 const { auth } = initializeFirebaseClient();
 
-function EditPublish({}: Props) {
-  const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
-  const params = useParams<{ id: string }>();
-  const [profileUrl, setProfileUrl] = useState<string>(''); 
-
-
-  const router = useRouter();
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [imagePath, setImagePath] = useState<string>('');
-
-  const [chapterCount, setChapterCount] = useState<number | null>(null);
-  const [chapters, setChapters] = useState<any[]>([]); // Store the list of chapters
-  const [title, setTitle] = useState<string>('');
-  const [genres, setBookGenres] = useState<string[]>();
-  const [oldSynopsis, setOldSynopsis] = useState<string>('');
-  const [synopsis, setSynopsis] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
-  const [newSynopsis, setNewSynopsis] = useState<string>('');
-  const [ipfsHash, setIpfsHash] = useState<string>('')
-  const [authorName, setAuthorName] = useState<string>('');
-  const [bytesId, setBytesId] = useState<string>('');
-  const [publishing, setPublishing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [searchResults, setSearchResults] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
-  const [filePath, setFilePath] = useState<string>('');
-  const [created, setCreated] = useState();
+function EditPublishPageClient({}: Props) {
+    const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+    const params = useParams<{ id: string }>();
+    const [profileUrl, setProfileUrl] = useState<string>(''); 
   
   
-  useEffect(() => { 
-    // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async(user) => {
-       setCurrentUser(user?.uid);
-       if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl); 
-          if(data){
-            setAuthorName(data?.name);
-            setUsername(data.username);
-            setName(data.name);
-            setFilePath(data.profilePicturePath);
+    const router = useRouter();
+    const [imageUrl, setImageUrl] = useState<string>('');
+    const [imagePath, setImagePath] = useState<string>('');
+
+    const [chapterCount, setChapterCount] = useState<number | null>(null);
+    const [chapters, setChapters] = useState<any[]>([]); // Store the list of chapters
+    const [title, setTitle] = useState<string>('');
+    const [genres, setBookGenres] = useState<string[]>();
+    const [oldSynopsis, setOldSynopsis] = useState<string>('');
+    const [synopsis, setSynopsis] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
+    const [newSynopsis, setNewSynopsis] = useState<string>('');
+    const [ipfsHash, setIpfsHash] = useState<string>('')
+    const [authorName, setAuthorName] = useState<string>('');
+    const [bytesId, setBytesId] = useState<string>('');
+    const [publishing, setPublishing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [searchResults, setSearchResults] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+    const [name, setName] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
+    const [filePath, setFilePath] = useState<string>('');
+    const [created, setCreated] = useState();
+
+    useEffect(() => { 
+      // Listen for authentication state changes
+      const unsubscribe = onAuthStateChanged(auth, async(user) => {
+          setCurrentUser(user?.uid);
+          if(user){
+            const data = await getUserProfile(user.uid, setProfileUrl); 
+            if(data){
+              setAuthorName(data?.name);
+              setUsername(data.username);
+              setName(data.name);
+              setFilePath(data.profilePicturePath);
+            }
+                
+          }else {
+            setProfileUrl(''); 
           }
-             
-       }else {
-         setProfileUrl(''); 
-       }
-    })
-    return () => unsubscribe(); 
+      })
+      return () => unsubscribe(); 
+    
+    }, []);
+    
+    useEffect(() => {
+      if(params.id && currentUser){
+        fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, router, setImagePath, setIpfsHash, setBytesId, setCreated); 
+      }
+    }, [params.id, genres, title, currentUser])
   
-  }, []);
-
-  useEffect(() => {
-    if(params.id && currentUser){
-      fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, router, setImagePath, setIpfsHash, setBytesId, setCreated); 
+    const handleConfirm = async () => {
+      if(currentUser){
+        await editBookSynopsis(currentUser, params?.id, newSynopsis);
+      }
+      setSynopsis(false);
     }
-  }, [params.id, genres, title, currentUser])
-
-  const handleConfirm = async () => {
-    if(currentUser){
-      await editBookSynopsis(currentUser, params?.id, newSynopsis);
-    }
-    setSynopsis(false);
-  }
-
+    
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
@@ -237,4 +234,4 @@ function EditPublish({}: Props) {
   )
 }
 
-export default EditPublish
+export default EditPublishPageClient
