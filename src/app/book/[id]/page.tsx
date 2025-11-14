@@ -13,6 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   let title: string | null = null;
   let author: string | null = null;
+  let synopsis: string | null = null;
 
   try{
     const snap = await db
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (snap.exists) {
       title = snap.data()?.title ?? null;
       author = snap.data()?.author ?? null;
+      synopsis = snap.data()?.synopsis ?? null;
     }
 
   }catch (e) {
@@ -33,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: {
       absolute: title || author ? `Read ${title} by ${author}` : "Read this book."
     },
+    description: synopsis
   }
 }
 
