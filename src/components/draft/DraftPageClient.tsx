@@ -1,126 +1,126 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+"use client"
+
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserProfile } from '../../../../functions/explore/fetch';
-import { editDraftSynopsis, fetchChapterInfo } from '../../../../functions/drafts/fetch';
-import DraftSider from '@/components/draft/DraftSider';
-import DraftList from '@/components/draft/DraftList';
-import NewSynopsis from '@/components/draft/NewSynopsis';
-import SpinLoader from '@/components/loading/SpinLoader';
-import Sider from '@/components/headers/Sider';
-import Top from '@/components/headers/Top';
-import UserSearch from '@/components/explore/popup/UserSearch';
-import Notifications from '@/components/community/Notifications';
-import SettingsPopup from '@/components/explore/popup/SettingsPopup';
-import MediumHeader from '@/components/headers/MediumHeader';
+import { getUserProfile } from '../../../functions/explore/fetch';
+import { editDraftSynopsis, fetchChapterInfo } from '../../../functions/drafts/fetch';
+import Sider from '../headers/Sider';
+import Top from '../headers/Top';
+import MediumHeader from '../headers/MediumHeader';
+import DraftSider from './DraftSider';
+import UserSearch from '../explore/popup/UserSearch';
+import SettingsPopup from '../explore/popup/SettingsPopup';
+import Notifications from '../community/Notifications';
+import SpinLoader from '../loading/SpinLoader';
+import DraftList from './DraftList';
+import NewSynopsis from './NewSynopsis';
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
-function Draft({}: Props) {
-  const params = useParams<{ id: string }>();
 
-  const router = useRouter();
-  const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
-  const [profileUrl, setProfileUrl] = useState<string>(''); 
-
-  const [chapterCount, setChapterCount] = useState<number | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [genres, setBookGenres] = useState<string[]>();
-  const [synopsis, setSynopsis] = useState<boolean>(false);
-  const [oldSynopsis, setOldSynopsis] = useState<string>('');
-  const [chapters, setChapters] = useState<any[]>([]); // Store the list of chapters
-  const [newSynopsis, setNewSynopsis] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [authorName, setAuthorName] = useState<string>('');
-  const [imagePath, setImagePath] = useState<string>('');
-  const [publishing, setPublishing] = useState<boolean>(false);
-  const [searchResults, setSearchResults] = useState(false);
-  const [deleting, setDeleting] = useState<boolean>(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [created, setCreated] = useState();
-  const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
-  const [filePath, setFilePath] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
-  const [booting, setBooting] = useState<boolean>(true);      // ⬅️ NEW
-
+function DraftPageClient({}: Props) {
+    const params = useParams<{ id: string }>();
   
-  useEffect(() => { 
-    // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async(user) => {
-       setCurrentUser(user?.uid);
-       if(user){
-         const data =  await getUserProfile(user.uid, setProfileUrl);    
-         if(data){
-          setFilePath(data.profilePicturePath);
-          setUsername(data.username);
-          setName(data.name);
-         }
-       }else {
-         setProfileUrl(''); 
-       }
-    })
-    return () => unsubscribe(); 
+    const router = useRouter();
+    const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+    const [profileUrl, setProfileUrl] = useState<string>(''); 
   
-  }, []);
+    const [chapterCount, setChapterCount] = useState<number | null>(null);
+    const [imageUrl, setImageUrl] = useState<string>('');
+    const [title, setTitle] = useState<string>('');
+    const [genres, setBookGenres] = useState<string[]>();
+    const [synopsis, setSynopsis] = useState<boolean>(false);
+    const [oldSynopsis, setOldSynopsis] = useState<string>('');
+    const [chapters, setChapters] = useState<any[]>([]); // Store the list of chapters
+    const [newSynopsis, setNewSynopsis] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [authorName, setAuthorName] = useState<string>('');
+    const [imagePath, setImagePath] = useState<string>('');
+    const [publishing, setPublishing] = useState<boolean>(false);
+    const [searchResults, setSearchResults] = useState(false);
+    const [deleting, setDeleting] = useState<boolean>(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [created, setCreated] = useState();
+    const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+    const [filePath, setFilePath] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
+    const [booting, setBooting] = useState<boolean>(true);    
 
-  useEffect(() => {
-    if (!params.id || !currentUser || deleting) return;
-
-    let alive = true;
-    setBooting(true);
-
-    (async() => {
+    useEffect(() => { 
+      // Listen for authentication state changes
+      const unsubscribe = onAuthStateChanged(auth, async(user) => {
+          setCurrentUser(user?.uid);
+          if(user){
+            const data =  await getUserProfile(user.uid, setProfileUrl);    
+            if(data){
+            setFilePath(data.profilePicturePath);
+            setUsername(data.username);
+            setName(data.name);
+            }
+          }else {
+            setProfileUrl(''); 
+          }
+      })
+      return () => unsubscribe(); 
+    
+    }, []);
+    
+    useEffect(() => {
+      if (!params.id || !currentUser || deleting) return;
+  
+      let alive = true;
+      setBooting(true);
+  
+      (async() => {
+        try{
+            await fetchChapterInfo(
+              currentUser,
+              params.id,
+              setChapterCount,
+              setChapters,
+              setImageUrl,
+              setTitle,
+              setBookGenres,
+              setOldSynopsis,
+              setAuthorName,
+              router,
+              setImagePath,
+              setCreated
+            );
+        } finally {
+          if (alive) setBooting(false);
+        }
+      })();
+  
+      return () => { alive = false; };
+    }, [params.id, currentUser, deleting])
+  
+    const handleConfirm = async () => {
+      if (!currentUser || !params?.id) return;
+  
+      const prev = oldSynopsis;       
+      const next = newSynopsis.trim();
+  
+      // show the new text immediately everywhere
+      setOldSynopsis(next);
+      setLoading(true);
+  
       try{
-          await fetchChapterInfo(
-            currentUser,
-            params.id,
-            setChapterCount,
-            setChapters,
-            setImageUrl,
-            setTitle,
-            setBookGenres,
-            setOldSynopsis,
-            setAuthorName,
-            router,
-            setImagePath,
-            setCreated
-          );
-      } finally {
-        if (alive) setBooting(false);
+        await editDraftSynopsis(currentUser, params.id, next);
+        setNewSynopsis(''); 
+      }catch(e){
+        setOldSynopsis(prev);
+        console.error(e);
+        alert('Failed to update synopsis');
+      }finally {
+        setLoading(false);
+        setSynopsis(false);          
       }
-    })();
-
-    return () => { alive = false; };
-  }, [params.id, currentUser, deleting])
-
-  const handleConfirm = async () => {
-    if (!currentUser || !params?.id) return;
-
-    const prev = oldSynopsis;       
-    const next = newSynopsis.trim();
-
-    // show the new text immediately everywhere
-    setOldSynopsis(next);
-    setLoading(true);
-
-    try{
-      await editDraftSynopsis(currentUser, params.id, next);
-      setNewSynopsis(''); 
-    }catch(e){
-      setOldSynopsis(prev);
-      console.error(e);
-      alert('Failed to update synopsis');
-    }finally {
-      setLoading(false);
-      setSynopsis(false);          
     }
-  }
-
 
   return (
     <main className="flex w-screen h-screen overflow-hidden">
@@ -221,7 +221,6 @@ function Draft({}: Props) {
 
       </div>
 
-
       {searchResults && (
         <UserSearch 
           setSearchResults={setSearchResults}
@@ -229,7 +228,7 @@ function Draft({}: Props) {
         />
       )}
 
-    {settingsPopup && (
+      {settingsPopup && (
         <SettingsPopup 
             setSettingsPopup={setSettingsPopup}
             userId={currentUser}
@@ -242,15 +241,12 @@ function Draft({}: Props) {
         />
       )}
 
-
       {showNotifications && (
         <Notifications 
           setShowNotifications={setShowNotifications}
           userId={currentUser}
         />
-      )}
-
-   
+      )} 
 
       {/* One unified overlay */}
       {(booting || loading || publishing || deleting) && (
@@ -264,4 +260,4 @@ function Draft({}: Props) {
   )
 }
 
-export default Draft
+export default DraftPageClient

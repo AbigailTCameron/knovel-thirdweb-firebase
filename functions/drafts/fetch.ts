@@ -73,8 +73,6 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
   }
 }
 
-
-
 export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function, setCreated: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
