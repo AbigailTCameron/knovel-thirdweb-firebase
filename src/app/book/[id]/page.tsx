@@ -11,9 +11,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  let title: string | null = null;
+  let title;
   let author: string | null = null;
-  let synopsis: string | null = null;
+  let synopsis;
+  let coverUrl;
 
   try{
     const snap = await db
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title = snap.data()?.title ?? null;
       author = snap.data()?.author ?? null;
       synopsis = snap.data()?.synopsis ?? null;
+      coverUrl = snap.data()?.book_image;
     }
 
   }catch (e) {
@@ -35,7 +37,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: {
       absolute: title || author ? `Read ${title} by ${author}` : "Read this book."
     },
-    description: synopsis
+    description: synopsis,
+    openGraph: {
+      title: title,
+      description: synopsis,
+      images: [
+        { 
+          url: coverUrl
+        }
+      ]
+    }
   }
 }
 
