@@ -8,6 +8,7 @@ import { smartWallet } from "thirdweb/wallets";
 //import { personalAccount } from "@/lib/client";
 import { defineChain } from "thirdweb/chains";
 import {generateKeywords} from "../helper-utils";
+import { notFound } from "next/navigation";
 
 
 const { db } = initializeFirebaseClient();
@@ -73,7 +74,7 @@ export const reuploadBookImageToSupabase = async (filename: string, file: File, 
   }
 }
 
-export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, router:any, setImagePath: Function, setCreated: Function) => {
+export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, setImagePath: Function, setCreated: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
       const draftRef = doc(db, 'drafts', userId, 'userDrafts', draftId);
@@ -82,8 +83,7 @@ export const fetchChapterInfo = async(userId: string, draftId: string, setChapte
       const draftSnap = await getDoc(draftRef);
       if (!draftSnap.exists()) {
         // If the document does not exist, redirect to the error page
-        router.push(`/drafterror/${draftId}`);
-        return;
+        notFound();
       }
 
       setChapters(draftSnap.data().draft_chapters);

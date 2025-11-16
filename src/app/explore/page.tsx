@@ -6,7 +6,8 @@ import ExplorePageClient from "@/components/explore/ExplorePageClient";
 export const metadata: Metadata = {
   title: {
     absolute: "Explore"
-  }
+  },
+  description: "Explore our catalogue of books."
 };
 
 function page({}) {

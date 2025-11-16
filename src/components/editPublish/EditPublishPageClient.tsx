@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
@@ -26,8 +26,6 @@ function EditPublishPageClient({}: Props) {
     const params = useParams<{ id: string }>();
     const [profileUrl, setProfileUrl] = useState<string>(''); 
   
-  
-    const router = useRouter();
     const [imageUrl, setImageUrl] = useState<string>('');
     const [imagePath, setImagePath] = useState<string>('');
 
@@ -75,7 +73,7 @@ function EditPublishPageClient({}: Props) {
     
     useEffect(() => {
       if(params.id && currentUser){
-        fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, router, setImagePath, setIpfsHash, setBytesId, setCreated); 
+        fetchPublishInfo(currentUser, params.id, setChapterCount, setChapters, setImageUrl, setTitle, setBookGenres, setOldSynopsis, setImagePath, setIpfsHash, setBytesId, setCreated); 
       }
     }, [params.id, genres, title, currentUser])
   

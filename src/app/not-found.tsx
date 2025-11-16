@@ -4,22 +4,20 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserProfile } from '../../../../functions/explore/fetch';
-import { publishErrorPage } from '../../../../functions/publisherror/fetch';
 import SpinLoader from '@/components/loading/SpinLoader';
+import { getUserProfile } from '../../functions/explore/fetch';
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function PublishError({}: Props) {
+function DraftError({}: Props) {
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
 
   const params = useParams<{ id: string }>();
   const router = useRouter();
-
 
   useEffect(() => { 
     // Listen for authentication state changes
@@ -35,18 +33,6 @@ function PublishError({}: Props) {
   
   }, []);
 
-  useEffect(() => {
-    if(params.id){
-      publishErrorPage(params.id, router);  
-    }
-
-  }, [params.id])
-
-  if(loading){
-    return(
-      <SpinLoader />
-    )
-  }
 
   return (
     <main className="flex flex-col w-screen h-screen items-center">
@@ -54,7 +40,7 @@ function PublishError({}: Props) {
             <ExploreHeader 
               userId={currentUser}
               profileUrl={profileUrl}
-              setLoading={setLoading}
+              setLoading={setLoading}  
             />
         </div>
 
@@ -70,9 +56,15 @@ function PublishError({}: Props) {
             <p>Go home</p>
           </div>
         </div>
-
+   
+        {/* ✅ Overlay with blur effect */}
+          {loading && (
+        <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <SpinLoader />
+        </div>
+      )}
     </main>
   )
 }
 
-export default PublishError
+export default DraftError

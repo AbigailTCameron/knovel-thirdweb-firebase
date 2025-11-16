@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
@@ -24,7 +24,6 @@ const { auth } = initializeFirebaseClient();
 function DraftPageClient({}: Props) {
     const params = useParams<{ id: string }>();
   
-    const router = useRouter();
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
   
@@ -87,7 +86,6 @@ function DraftPageClient({}: Props) {
               setBookGenres,
               setOldSynopsis,
               setAuthorName,
-              router,
               setImagePath,
               setCreated
             );
