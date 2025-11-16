@@ -45,16 +45,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       now;
 
     const bookUrl = `${baseUrl}/book/${doc.id}`;
-    const imageUrl = data.book_image as string | "";
+    const rawImageUrl = data.book_image as string | undefined;
 
-    return {
+    const entry: MetadataRoute.Sitemap[number] = {
       url: bookUrl,
       lastModified: updated,
       changeFrequency: "weekly",
       priority: 0.7,
-      images: [imageUrl]
-    }
+    };
 
+
+    if (rawImageUrl && typeof rawImageUrl === "string") {
+      // 🔍 Strip query params to avoid & in XML (common with Firebase URLs)
+      const [cleanUrl] = rawImageUrl.split("?");
+
+      // Optional: only keep absolute http(s) URLs
+      if (cleanUrl.startsWith("http")) {
+        entry.images = [cleanUrl];
+      } else {
+        console.warn("Skipping non-absolute image URL in sitemap:", rawImageUrl);
+      }
+    }
+    return entry;
   })
 
 
