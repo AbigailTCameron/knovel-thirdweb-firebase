@@ -7,10 +7,11 @@ import { client, personalAccount } from "@/lib/client";
 import { smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
 import {generateKeywords} from "../helper-utils";
+import { notFound } from "next/navigation";
 
 const { db } = initializeFirebaseClient();
 
-export const fetchPublishInfo = async(userId: string, bookId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, router:any, setImagePath: Function, setIpfsHash: Function, setBytesId: Function, setCreated: Function) => {
+export const fetchPublishInfo = async(userId: string, bookId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setImagePath: Function, setIpfsHash: Function, setBytesId: Function, setCreated: Function) => {
   try{
       // Reference to the specific draft document in the Firestore "drafts" collection
       const draftRef = doc(db, 'published', userId, 'userDrafts', bookId);
@@ -19,8 +20,7 @@ export const fetchPublishInfo = async(userId: string, bookId: string, setChapter
       const draftSnap = await getDoc(draftRef);
       if (!draftSnap.exists()) {
         // If the document does not exist, redirect to the error page
-        router.push(`/publisherror/${bookId}`);
-        return;
+        notFound(); // 👈 this renders app/not-found.tsx with 404
       }
 
       setChapters(draftSnap.data().chapters);
