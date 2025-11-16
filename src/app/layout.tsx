@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     template: "%s - Knovel Protocol"
   },
   description: "A social, self-publishing, platform powered by the blockchain.",
+  keywords:["knovel", "web3 publishing", "on-chain books", "self-publishing", "blockchain books"],
   twitter: {
     card: "summary_large_image"
   }
