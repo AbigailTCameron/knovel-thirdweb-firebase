@@ -12,9 +12,14 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ua = request.headers.get('user-agent');
 
+  const isExplore = pathname === '/explore';
+  const isReadBook = pathname.startsWith('/read/');
+  const isBook = pathname.startsWith('/book/');
+  const isCollection = pathname.startsWith('/collection/');
+
 
   // ✅ Allow preview bots to see /explore without auth (for correct OG tags)
-  if (pathname === '/explore' && isBot(ua)) {
+  if ((isExplore || isReadBook || isBook) && isBot(ua)) {
     return NextResponse.next();
   }
 
