@@ -1,9 +1,10 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
 import { arrayRemove, arrayUnion, doc, getDoc, increment, updateDoc } from "firebase/firestore";
+import { notFound } from "next/navigation";
 
 const { db } = initializeFirebaseClient();
 
-export const fetchBookData = async (id : string, router: any, setBook: Function) => {
+export const fetchBookData = async (id : string, setBook: Function) => {
   try {
     // Reference to the specific book document in the Firestore "books" collection
     const bookRef = doc(db, 'books', id);
@@ -12,8 +13,7 @@ export const fetchBookData = async (id : string, router: any, setBook: Function)
     const bookSnap = await getDoc(bookRef);
     if (!bookSnap.exists()) {
       // If the document does not exist, redirect to the error page
-      router.push(`/bookerror/${id}`);
-      return;
+      notFound();
     }
 
     // Update state with the book data
