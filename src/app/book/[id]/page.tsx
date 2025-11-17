@@ -46,7 +46,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: coverUrl
         }
       ]
-    }
+    },
+    twitter: {
+      title: title,
+      description: synopsis,
+      images: [coverUrl],
+    },
   }
 }
 
