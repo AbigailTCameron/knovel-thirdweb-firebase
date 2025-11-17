@@ -30,7 +30,7 @@ export default async function Image({ params }: Props){
 
   return new ImageResponse(
     (
-      <div tw="flex w-full h-full items-center justify-center p-4 text-white rounded-xl">
+      <div tw="flex w-full h-full items-center justify-center p-4 text-white rounded-xl bg-black">
         <div tw="flex w-1/3 h-full items-center rounded-xl overflow-hidden">
           <img
             tw="w-full h-fit object-cover rounded-xl" 

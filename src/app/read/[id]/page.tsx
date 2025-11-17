@@ -15,7 +15,6 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   let title;
   let author;
   let synopsis;
-  let coverUrl;
 
   try{
     const snap = await db
@@ -27,7 +26,6 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
       title = snap.data()?.title ?? null;
       author = snap.data()?.author ?? null;
       synopsis = snap.data()?.synopsis ?? null;
-      coverUrl = snap.data()?.book_image;
     }
 
   }catch (e) {
@@ -45,14 +43,14 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
       description: synopsis,
       images: [
         { 
-          url: coverUrl
+          url: `/read/${id}/opengraph-image`
         }
       ]
     },
     twitter: {
       title: title,
       description: synopsis,
-      images: [coverUrl],
+      images: [`/book/${id}/opengraph-image`],
     },
   }
 }
