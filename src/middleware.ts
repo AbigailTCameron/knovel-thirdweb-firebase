@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
 
 
   // ✅ Allow preview bots to see /explore without auth (for correct OG tags)
-  if ((isExplore || isReadBook || isBook) && isBot(ua)) {
+  if ((isExplore || isReadBook || isBook || isCollection) && isBot(ua)) {
     return NextResponse.next();
   }
 
