@@ -62,7 +62,6 @@ function ReadPageClient({}: Props) {
             // - Book fetch (chapters + metadata)
             const bookP = fetchBookInfo(
               params.id,
-              router,
               (chs:BookChapters[]) => { if (alive) setChapters(chs) },
               (bk:any)  => { if (alive) setBook(bk) },
               (md: BookMetadata)  => { if (alive) setMetadata(md) },

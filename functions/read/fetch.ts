@@ -2,11 +2,13 @@ import initializeFirebaseClient from "@/lib/initFirebase";
 import { doc, getDoc } from "firebase/firestore";
 import { pinata } from "../../utils/config";
 import ePub, { NavItem, type Rendition } from 'epubjs';
+import { notFound } from "next/navigation";
+
 
 
 const { db } = initializeFirebaseClient();
 
-export const fetchBookInfo = async (id: string, router: any, setChapters: Function, setBook: Function, setMetadata: Function, setAuthorId: Function) => {
+export const fetchBookInfo = async (id: string, setChapters: Function, setBook: Function, setMetadata: Function, setAuthorId: Function) => {
   try{
     // Reference to the specific book document in the Firestore "books" collection
     const bookRef = doc(db, 'books', id);
@@ -15,8 +17,7 @@ export const fetchBookInfo = async (id: string, router: any, setChapters: Functi
     const bookSnap = await getDoc(bookRef);
     if (!bookSnap.exists()) {
       // If the document does not exist, redirect to the error page
-      router.push(`/bookerror/${id}`);
-      return;
+      notFound();
     }
 
     const hash = bookSnap.data().hash;

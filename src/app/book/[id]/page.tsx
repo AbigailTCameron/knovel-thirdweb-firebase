@@ -9,6 +9,7 @@ type Props = {
   params: Promise<{ id: string }>
 }
 
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   let title;
@@ -46,7 +47,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: coverUrl
         }
       ]
-    }
+    },
+    twitter: {
+      title: title,
+      description: synopsis,
+      images: [coverUrl],
+    },
   }
 }
 

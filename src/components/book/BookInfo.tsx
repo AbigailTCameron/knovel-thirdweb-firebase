@@ -61,7 +61,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
       onLoadingChange?.(true);
       try {
         fetchBookmark(bookmarks, id, setBookmark);
-        await fetchBookData(id, router, (data: Book) => setBook(data));
+        await fetchBookData(id, (data: Book) => setBook(data));
       } finally {
         onLoadingChange?.(false);
         onReady?.(); // signal that the book is ready to render
