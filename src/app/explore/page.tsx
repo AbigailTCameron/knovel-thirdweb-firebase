@@ -8,10 +8,15 @@ export const metadata: Metadata = {
     absolute: "Explore"
   },
   description: "Explore our catalogue of books.",
-   openGraph: {
+  openGraph: {
     title: "Explore - Knovel Protocol",
     description: "Browse classics, originals, and curated collections."
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Explore",
+    description: "Browse classics, originals, and curated collections."
+  }
 };
 
 function page({}) {
