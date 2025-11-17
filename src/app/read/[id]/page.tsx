@@ -50,7 +50,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     twitter: {
       title: title,
       description: synopsis,
-      images: [`/book/${id}/opengraph-image`],
+      images: [`/read/${id}/opengraph-image`],
     },
   }
 }
