@@ -1,6 +1,5 @@
 'use client'
 import { ConnectButton } from "thirdweb/react";
-
 import { client } from "@/lib/client";
 import { generatePayload, isLoggedIn, login, logout } from "./actions/login";
 import { firebaseAuthClient } from "./actions/firebaseauth";

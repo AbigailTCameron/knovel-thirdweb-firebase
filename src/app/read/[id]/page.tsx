@@ -34,6 +34,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     console.error("Error fetching draft title for metadata", e);
   }
   
+  
   return {
     title: {
       absolute: title || author ? `${title} by ${author}` : "Finish reading"
