@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.knovelprotocol.com"),
   title: {
     default: "Knovel Protocol",
     template: "%s - Knovel Protocol"
