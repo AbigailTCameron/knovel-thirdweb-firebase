@@ -13,11 +13,14 @@ import UserSearch from '../explore/popup/UserSearch';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import Notifications from '../community/Notifications';
 import SpinLoader from '../loading/SpinLoader';
+import { useRouter } from 'next/navigation';
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 function PublishPageClient({}: Props) {
+    const router = useRouter();
+  
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>('');
     const [username, setUsername] = useState<string>('');
@@ -27,21 +30,31 @@ function PublishPageClient({}: Props) {
     const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
     const [filePath, setFilePath] = useState<string>('');
     const [name, setName] = useState<string>('');
+    const [booting, setBooting] = useState<boolean>(true);    
+  
 
     useEffect(() => { 
+      setBooting(true);
+
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
-          setCurrentUser(user?.uid);
-          if(user){
-            const data = await getUserProfile(user.uid, setProfileUrl);    
-            if(data){
-              setUsername(data.username);
-              setFilePath(data.profilePicturePath);
-              setName(data.name);
-            }
-          }else {
-            setProfileUrl(''); 
+          if (!user) {
+            setCurrentUser(undefined);
+            setBooting(false);
+
+            router.replace("/explore"); // or "/"
+            return;
           }
+
+          setCurrentUser(user?.uid);
+
+          const data = await getUserProfile(user.uid, setProfileUrl);    
+          if(data){
+            setUsername(data.username);
+            setFilePath(data.profilePicturePath);
+            setName(data.name);
+          }
+          setBooting(false); 
       })
       return () => unsubscribe(); 
     
@@ -114,7 +127,7 @@ function PublishPageClient({}: Props) {
       )}
     
       {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {booting || loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
         </div>

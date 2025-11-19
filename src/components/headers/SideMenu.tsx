@@ -18,9 +18,10 @@ type Props = {
   setSettingsPopup: Function;
   setLoading: Function;
   showMenu: Function;
+  onRequireWalletConnect?: () => void;
 }
 
-function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPopup, setLoading, showMenu}: Props) {
+function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPopup, setLoading, showMenu, onRequireWalletConnect}: Props) {
   const router = useRouter();
   const pathname = usePathname();   
 
@@ -32,6 +33,11 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
   };
 
   const handleCollectiblesClick = () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
     if(pathname !== `/collection/${userId}`){
       setLoading(true); 
       router.push(`/collection/${userId}`);
@@ -39,6 +45,10 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
   }
 
   const handleCreateClick = () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
     if(pathname !== '/create'){
       setLoading(true); 
       router.push('/create');
@@ -46,6 +56,10 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
   };
 
   const handleDraftsClick = () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
     if(pathname !== `/drafts/${userId}`){
       setLoading(true); 
       router.push(`/drafts/${userId}`);
@@ -53,6 +67,10 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
   };
 
   const handleReadingClick = () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
     if(pathname !== `/readinglist/${userId}`){
       setLoading(true); 
       router.push(`/readinglist/${userId}`);
@@ -60,6 +78,10 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
   }
 
   const handlePublishClick = () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
     if(pathname !== `/publish`){
       setLoading(true); 
       router.push(`/publish`);
@@ -123,13 +145,25 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
                   </div> 
 
 
-                  <div onClick={() => setShowNotifications(true)} className='flex w-full py-2 px-2 space-x-2 items-center text-2xl ss:text-xl font-semibold hover:cursor-pointer hover:bg-black'>
+                  <div onClick={() => {
+                    if(!userId){
+                      onRequireWalletConnect?.();
+                      return;
+                    }
+                    setShowNotifications(true)
+                  }} className='flex w-full py-2 px-2 space-x-2 items-center text-2xl ss:text-xl font-semibold hover:cursor-pointer hover:bg-black'>
                     <Notifications className='flex basis-1/5 size-10 ss:size-7'/>
                     <p className='flex basis-4/5'>Notifications</p>
                   </div> 
 
  
-                  <div onClick={() => setSettingsPopup(true)} className="flex items-center text-2xl ss:text-xl self-center font-semibold space-x-2 absolute bottom-10 hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
+                  <div onClick={() => {
+                    if(!userId){
+                      onRequireWalletConnect?.();
+                      return;
+                    }
+                    setSettingsPopup(true);
+                  }} className="flex items-center text-2xl ss:text-xl self-center font-semibold space-x-2 absolute bottom-10 hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
                       <SettingsIcon />
                       <p className='flex basis-4/5'>Settings</p>
                   </div>

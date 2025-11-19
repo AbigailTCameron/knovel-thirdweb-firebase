@@ -12,88 +12,107 @@ import Reader from './Reader';
 import UsernamePopup2 from './UsernamePopup';
 import CommentSection from './CommentSection';
 import SpinLoader from '../loading/SpinLoader';
+import { useActiveAccount } from 'thirdweb/react';
+import { defineChain } from 'thirdweb';
+import { client } from '@/lib/client';
+import { ConnectEmbed } from 'thirdweb/react';
+import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
+import XMark from '../icons/XMark';
 
 
 type Props = {}
 
 const { auth } = initializeFirebaseClient();
 function ReadPageClient({}: Props) {
-    const params = useParams<{ id: string }>();
-    const router = useRouter();
+  const router = useRouter();
   
-    const [loading, setLoading] = useState(false);
-    const [booting, setBooting] = useState(true);  
+  const camp = defineChain({
+    id: 123420001114,
+  });
   
-    const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
-    const [profileUrl, setProfileUrl] = useState<string>(''); 
-  
-    const [chapters, setChapters] = useState<BookChapters[]>([])
-    const [book, setBook] = useState();
-    const [metadata, setMetadata] = useState<BookMetadata>(); 
-    const [authorId, setAuthorId] = useState<string>('');
-  
-    const [showChat, setShowChat] = useState(false);
-    const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
-    const [username, setUsername] = useState('');
-    const [name, setName] = useState('');
+  const [showConnect, setShowConnect] = useState(false);
+  const params = useParams<{ id: string }>();
 
-    const waitForAuth = () =>
-      new Promise<User | null>((resolve) => {
-        const unsub = onAuthStateChanged(auth, (u) => {
-          unsub();
-          resolve(u);
-        });
+  const [loading, setLoading] = useState(false);
+  const [booting, setBooting] = useState(true);  
+  
+  const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
+  const [profileUrl, setProfileUrl] = useState<string>(''); 
+  
+  const [chapters, setChapters] = useState<BookChapters[]>([])
+  const [book, setBook] = useState();
+  const [metadata, setMetadata] = useState<BookMetadata>(); 
+  const [authorId, setAuthorId] = useState<string>('');
+
+  const [showChat, setShowChat] = useState(false);
+  const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user?.uid || undefined);
+
+      if (user?.uid) {
+        const data = await getUserProfile(user.uid, setProfileUrl);
+        if (data) {
+          setUsername(data.username ?? "");
+          setName(data.name ?? "");
+        }
+      } else {
+        setProfileUrl("");
+        setUsername("");
+        setName("");
+      }
     });
-    
-    useEffect(() => { 
-        let alive = true;
-    
-        (async() => {
-            // guard: need an id to fetch the book
-            if (!params?.id) {
-              setBooting(false);
-              return;
-            }
-    
-            setBooting(true);
-            setLoading(true);
-    
-            // Kick off both in parallel:
-            // - Book fetch (chapters + metadata)
-            const bookP = fetchBookInfo(
-              params.id,
-              (chs:BookChapters[]) => { if (alive) setChapters(chs) },
-              (bk:any)  => { if (alive) setBook(bk) },
-              (md: BookMetadata)  => { if (alive) setMetadata(md) },
-              (aid:string) => { if (alive) setAuthorId(aid) }
-            );
-    
-            // - First auth tick + profile
-            const user = await waitForAuth();
-            if (!alive) return;
-    
-            setCurrentUser(user?.uid);
-            if(user?.uid){
-                const data = await getUserProfile(user.uid, setProfileUrl);
-                if (alive && data) {
-                  setUsername(data.username ?? '');
-                  setName(data.name ?? '');
-                }
-            }else{
-              setProfileUrl('');
-            }
-    
-            // Wait for the book data to complete
-            await bookP;
-            if (!alive) return;
-    
-            setLoading(false);
-            setBooting(false);
-    
-        })();
-        return () => { alive = false; };
-      
-    }, [params?.id, router]);
+
+    return () => unsubscribe();
+  }, []);
+
+    // 📚 2) Fetch book data when params.id changes
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      if (!params?.id) {
+        setBooting(false);
+        return;
+      }
+
+      setBooting(true);
+      setLoading(true);
+
+      await fetchBookInfo(
+        params.id,
+        (chs: BookChapters[]) => {
+          if (alive) setChapters(chs);
+        },
+        (bk: any) => {
+          if (alive) setBook(bk);
+        },
+        (md: BookMetadata) => {
+          if (alive) setMetadata(md);
+        },
+        (aid: string) => {
+          if (alive) setAuthorId(aid);
+        },
+      );
+
+      if (!alive) return;
+
+      setLoading(false);
+      setBooting(false);
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [params?.id]);
+
+  const onRequireWalletConnect = () => {
+    setShowConnect(true);
+  };
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">
@@ -138,11 +157,57 @@ function ReadPageClient({}: Props) {
                 username={username}
                 name={name}
                 setUsernamePopup={setUsernamePopup}
+                onRequireWalletConnect={onRequireWalletConnect}
               />
           </div>
           )}
 
       </div>
+
+      {showConnect && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
+          <div className="relative bg-transparent rounded-lg shadow-lg p-0">
+
+            <button
+              onClick={() => setShowConnect(false)}
+              className="absolute top-4 right-4 hover:bg-[#1b1c22] hover:stroke-slate-200 hover:rounded-lg text-2xl font-bold z-10"
+              aria-label="Close"
+            >
+              <XMark className='stroke-[#7c7a85] size-6'/>
+            </button>
+            <ConnectEmbed 
+              client={client}
+              chain={camp}
+              modalSize='wide'
+              header={{ 
+                title: "Knovel Protocol ",
+                titleIcon: "/knovel-logo-white.png",
+              }}
+              auth={{
+                getLoginPayload: async ({ address }) => {
+                  return generatePayload({ address })
+                },
+                doLogin: async (params) => {
+                  const result = await login(params); 
+                  if(result && result.token) {
+                    const {token} = result;
+                    firebaseAuthClient(token, router);
+                    setShowConnect(false);
+                  }
+                  
+                },
+                isLoggedIn: async () => {
+                  return await isLoggedIn();
+                },
+                doLogout: async () => {
+                  await logout();
+                  await firebaseLogout(router); 
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
       
 
       {/* ✅ Overlay with blur effect */}

@@ -12,12 +12,15 @@ import UserSearch from '../explore/popup/UserSearch';
 import Notifications from '../community/Notifications';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
+import { useRouter } from 'next/navigation';
 
 type Props = {}
 
 const { auth } = initializeFirebaseClient();
 
 function CollectionPageClient({}: Props) {
+  const router = useRouter();
+
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [booting, setBooting] = useState(true);  
   const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -30,19 +33,29 @@ function CollectionPageClient({}: Props) {
   const [username, setUsername] = useState<string>('');
 
   useEffect(() => { 
+    setBooting(true);    
+
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
+        if(!user){
+          setCurrentUser(undefined);
+          setBooting(false);
+
+          // redirect wherever makes sense for you
+          router.replace('/explore'); // or '/'
+          return;
+        }
+
         setCurrentUser(user?.uid);
-        if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl);   
-          if(data){
+    
+        const data = await getUserProfile(user.uid, setProfileUrl);   
+        if(data){
           setFilePath(data.profilePicturePath);
           setUsername(data.username);
           setName(data.name);
-          }   
-        }else {
-          setProfileUrl(''); 
-        }
+        }   
+
+        setBooting(false);
     })
     return () => unsubscribe(); 
   

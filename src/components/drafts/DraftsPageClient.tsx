@@ -12,14 +12,20 @@ import UserSearch from '../explore/popup/UserSearch';
 import Notifications from '../community/Notifications';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
+import { useParams, useRouter } from 'next/navigation';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function DraftsPageClient({}: Props) {
+    const router = useRouter();
+    const params = useParams<{ userId: string }>();
+
+  
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
     const [username, setUsername] = useState<string>('');
+    const [booting, setBooting] = useState(true);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchResults, setSearchResults] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
@@ -28,20 +34,37 @@ function DraftsPageClient({}: Props) {
     const [name, setName] = useState<string>('');
     
     useEffect(() => { 
+      setBooting(true);
+
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
-         setCurrentUser(user?.uid);
-         if(user){
-           const data = await getUserProfile(user.uid, setProfileUrl);
-           if(data){
-            setUsername(data.username);
-            setFilePath(data.profilePicturePath);
-            setName(data.name);
-           }
+        const routeUserId = params?.userId;
+
+        if (!user) {
+          setCurrentUser(undefined);
+          setBooting(false);
+
+          router.replace("/explore"); // or "/"
+          return;
+        }
+
+        setCurrentUser(user?.uid);
+
+        // ❌ Logged in but trying to view someone else’s drafts → redirect to their own drafts
+        if (routeUserId && routeUserId !== user.uid) {
+          router.replace(`/drafts/${user.uid}`);
+          return;
+        }
+
+    
+        const data = await getUserProfile(user.uid, setProfileUrl);
+        if(data){
+        setUsername(data.username);
+        setFilePath(data.profilePicturePath);
+        setName(data.name);
+        }
            
-         }else {
-           setProfileUrl(''); 
-         }
+        setBooting(false);
       })
       return () => unsubscribe(); 
     }, []);
@@ -120,7 +143,7 @@ function DraftsPageClient({}: Props) {
 
 
       {/* ✅ Overlay with blur effect */}
-           {loading && (
+        {booting || loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
         </div>

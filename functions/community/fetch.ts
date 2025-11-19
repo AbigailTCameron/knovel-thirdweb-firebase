@@ -3,6 +3,35 @@ import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, increment, l
 
 const { db } = initializeFirebaseClient();
 
+export const fetchUsernameResultsWithoutLogin = async(queryText: string, setResults: Function) => {
+  try{
+    const usersCollection = collection(db, "users");
+
+    // Normalize queryText: Trim and convert to lowercase
+    const normalizedQuery = queryText.trim().toLowerCase();
+
+    // Create a query for matching titles (case-sensitive)
+    const usersQuery = query(
+      usersCollection, 
+      where("username", ">=", normalizedQuery),
+      where("username", "<", normalizedQuery + '\uf8ff') 
+    );
+
+    const querySnapshot = await getDocs(usersQuery);
+
+    const results = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setResults(results);
+
+  }catch(err){
+    console.error("Error fetching users", err); 
+  }
+
+}
+
 export const fetchUsernameResults = async(queryText: string, setResults: Function, userId: string) => {
   try {
     const usersCollection = collection(db, "users");

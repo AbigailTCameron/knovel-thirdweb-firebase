@@ -1,11 +1,8 @@
 'use client'
 import Image from 'next/image'
 import React from 'react'
-import { ConnectButton } from 'thirdweb/react'
-import { client } from '@/lib/client'
 import { useRouter } from 'next/navigation'
-import { firebaseAuthClient } from '@/app/actions/firebaseauth'
-import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
+
 
 type Props = {}
 
@@ -30,46 +27,9 @@ function Connect({}: Props) {
               <p className="font-extralight lg:text-sm md:text-xs">Join thousands of authors and readers on Knovel now to share your stories, discover new works, and earn rewards in a vibrant, decentralized ecosystem!</p>
             </div>
 
-            <div className="relative text-center w-fit rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
-            <div className="absolute inset-0 w-fit h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine"></div>
-
-              <ConnectButton 
-                client={client}
-                connectModal={{ 
-                  size: "wide",
-                  title: "Knovel Protocol ",
-                  titleIcon: "/knovel-logo-white.png",
-                }}
-                connectButton={{
-                  label: "Join",
-                  style: {
-                    padding: '30px 45px',
-                    background: "transparent",
-                    color: "white",
-                    border: "none", 
-                    fontWeight: "600",
-                    cursor: "pointer"
-                  }
-                }}
-                auth={{
-                    getLoginPayload: async ({ address }) => generatePayload({ address }),
-                    doLogin: async (params) => {
-                      const result = await login(params); 
-                      if(result && result.token) {
-                        const {token} = result;
-                        firebaseAuthClient(token, router);
-                      }
-                      
-                    },
-                    isLoggedIn: async () => {
-                      return await isLoggedIn();
-                    },
-                    doLogout: async () => {
-                      await logout();
-                    },
-                }}
-                
-                />
+            <div onClick={() => router.push('/explore')} className="relative text-center w-fit rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
+              <div className="absolute inset-0 w-fit h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine"></div>
+                <p className="bg-transparent font-semibold px-6 py-4">Connect</p>
               </div>
 
         </div>

@@ -6,15 +6,15 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 const {auth, db} = initializeFirebaseClient();
 
-export const firebaseAuthClient = (token: string, router: any) => {
-  signInWithCustomToken(auth, token)
+export const firebaseAuthClient = async(token: string, router: any) => {
+  await signInWithCustomToken(auth, token)
   .then(async(userCredential) => {
 
     const user = userCredential.user;
 
     const userRef = doc(db, "users", user.uid!);
 
-    getDoc(userRef).then((doc) => {
+    await getDoc(userRef).then((doc) => {
        if(!doc.exists()){
         setDoc(userRef, {
           createdAt: serverTimestamp(), 

@@ -1,8 +1,4 @@
 'use client'
-import { ConnectButton } from "thirdweb/react";
-import { client } from "@/lib/client";
-import { generatePayload, isLoggedIn, login, logout } from "./actions/login";
-import { firebaseAuthClient } from "./actions/firebaseauth";
 import { useRouter } from "next/navigation";
 import LandingHeader from "@/components/headers/LandingHeader";
 import HeroSection from "@/components/home/HeroSection";
@@ -17,9 +13,6 @@ import PageAnalytics from "@/components/analytics/PageAnalytics";
 
 export default function Home() {
   const router = useRouter(); 
-  const camp = defineChain({
-    id: 123420001114,
-  });
 
   return (
     <div className="flex w-screen min-h-screen flex-col items-center overflow-x-hidden">
@@ -58,46 +51,9 @@ export default function Home() {
               <p>Join our platform today! </p>
             </div>
 
-            <div className="relative text-center rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
+            <div onClick={() => router.push('/explore')} className="relative text-center rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine"></div>
-
-              <ConnectButton 
-                client={client}
-                chain={camp}
-                connectModal={{ 
-                  size: "wide",
-                  title: "Knovel Protocol ",
-                  titleIcon: "/knovel-logo-white.png",
-                }}
-                connectButton={{
-                  label: "Sign up",
-                  style: {
-                    padding: '30px 40px',
-                    background: "transparent",
-                    color: "white",
-                    border: "none", 
-                    fontWeight: "600",
-                    cursor: "pointer"
-                  }
-                }}
-                auth={{
-                  getLoginPayload: async ({ address }) => generatePayload({ address }),
-                  doLogin: async (params) => {
-                    const result = await login(params); 
-                    if(result && result.token) {
-                      const {token} = result;
-                      firebaseAuthClient(token, router);
-                    }
-                    
-                  },
-                  isLoggedIn: async () => {
-                    return await isLoggedIn();
-                  },
-                  doLogout: async () => {
-                    await logout();
-                  },
-                }}
-              />
+                  <p className="bg-transparent font-semibold px-6 py-4">Explore</p>
             </div>
         
         </div>

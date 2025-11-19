@@ -12,12 +12,16 @@ import UserSearch from '../explore/popup/UserSearch';
 import Notifications from '../community/Notifications';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
+import { useParams, useRouter } from 'next/navigation';
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function ReadingListPageClient({}: Props) {
+    const params = useParams<{ userId: string }>();
+    const router = useRouter();
+  
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
     const [username, setUsername] = useState<string>('');
@@ -29,12 +33,31 @@ function ReadingListPageClient({}: Props) {
     const [filePath, setFilePath] = useState<string>('');
     const [name, setName] = useState<string>('');
     const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+    const [booting, setBooting] = useState<boolean>(true);    
 
     useEffect(() => { 
+      setBooting(true);
+
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
+          const routeUserId = params?.userId;
+
+          if (!user) {
+            setCurrentUser(undefined);
+            setBooting(false);
+
+            router.replace("/explore"); // or "/"
+            return;
+          }
+
           setCurrentUser(user?.uid);
-          if(user){
+
+          // ❌ Logged in but trying to view someone else’s drafts → redirect to their own drafts
+          if (routeUserId && routeUserId !== user.uid) {
+            router.replace(`/readinglist/${user.uid}`);
+            return;
+          }
+
           const data = await getUserProfile(user.uid, setProfileUrl);
           if(data){
             setUsername(data.username);
@@ -42,9 +65,7 @@ function ReadingListPageClient({}: Props) {
             setFilePath(data.profilePicturePath);
             setName(data.name)
           }      
-          }else {
-            setProfileUrl(''); 
-          }
+        setBooting(false)
       })
   
       return () => unsubscribe(); 
@@ -120,7 +141,7 @@ function ReadingListPageClient({}: Props) {
 
 
       {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {booting || loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
           <p className="text-lg text-white font-semibold">Fetching...</p>
