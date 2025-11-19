@@ -7,9 +7,9 @@ const { db } = initializeFirebaseServer();
 
 export async function POST(
   _req: Request,
-  { params }: { params: { bookId: string } }
+   { params }: any
 ) {
-  const { bookId } = await params;
+  const { bookId } = params;
 
   await db.collection("books").doc(bookId).update({
       views: FieldValue.increment(1), // Admin SDK increment
