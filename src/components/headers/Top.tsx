@@ -82,6 +82,11 @@ function Top({profileUrl, setLoading}: Props) {
             <ConnectButton
               client={client}
               chain={camp}
+              connectModal={{ 
+                size: "wide",
+                title: "Knovel Protocol ",
+                titleIcon: "/knovel-logo-white.png",
+              }}
               detailsButton={{
                 style: {
                   background: "transparent", // Transparent to allow the gradient effect
@@ -93,6 +98,17 @@ function Top({profileUrl, setLoading}: Props) {
                 },
                 connectedAccountAvatarUrl:`${profileUrl}`,
                 showBalanceInFiat: "USD",
+              }}
+              connectButton={{
+                label: "Sign in",
+                style: {
+                  background: "transparent", // Transparent to allow the gradient effect
+                  color: "white",
+                  border: "none", // Remove any default border
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  zIndex: "10", // Ensure the text is above the gradient
+                }
               }}
               detailsModal={{
                 connectedAccountAvatarUrl:`${profileUrl}`,

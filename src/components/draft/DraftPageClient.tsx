@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
@@ -22,7 +22,8 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function DraftPageClient({}: Props) {
-    const params = useParams<{ id: string }>();
+    const router = useRouter();
+    const params = useParams<{ userId: string, id: string }>();
   
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -50,19 +51,35 @@ function DraftPageClient({}: Props) {
     const [booting, setBooting] = useState<boolean>(true);    
 
     useEffect(() => { 
+      setBooting(true);
+
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
+          const routeUserId = params?.userId;
+          if (!user) {
+            setCurrentUser(undefined);
+            setBooting(false);
+
+            router.replace("/explore"); // or "/"
+            return;
+          }
+
           setCurrentUser(user?.uid);
-          if(user){
-            const data =  await getUserProfile(user.uid, setProfileUrl);    
-            if(data){
+
+          // ❌ Logged in but trying to view someone else’s drafts → redirect to their own drafts
+          if (routeUserId && routeUserId !== user.uid) {
+            router.replace(`/drafts/${user.uid}`);
+            return;
+          }
+
+          const data =  await getUserProfile(user.uid, setProfileUrl);    
+          if(data){
             setFilePath(data.profilePicturePath);
             setUsername(data.username);
             setName(data.name);
-            }
-          }else {
-            setProfileUrl(''); 
           }
+
+          setBooting(false)
       })
       return () => unsubscribe(); 
     

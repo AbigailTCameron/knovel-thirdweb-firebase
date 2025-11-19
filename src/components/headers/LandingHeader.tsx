@@ -1,20 +1,13 @@
 'use client'
-import { firebaseAuthClient } from '@/app/actions/firebaseauth'
-import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
-import { client } from '@/lib/client'
+
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { defineChain } from 'thirdweb/chains'
-import { ConnectButton } from 'thirdweb/react'
 
 
 type Props = {}
 
 function LandingHeader({}: Props) {
   const router = useRouter(); 
-  const camp = defineChain({
-    id: 123420001114,
-  });
 
   return (
     <div className="flex z-10 justify-between w-full backdrop-blur-md text-white items-center font-mono text-sm px-6 md:p-8 py-4 sm:py-4 sm:px-2 xs:py-8">
@@ -25,59 +18,10 @@ function LandingHeader({}: Props) {
         />
       </div>
 
-      <div className="relative text-center rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
+      <div onClick={() => router.push('/explore')} className="relative text-center rounded-3xl bg-white/30 overflow-hidden font-semibold group hover:cursor-pointer text-white">
         <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-50 animate-shine"></div>
 
-          <ConnectButton 
-            client={client}
-            chain={camp}
-            connectModal={{ 
-              size: "wide",
-              title: "Knovel Protocol ",
-              titleIcon: "/knovel-logo-white.png",
-            }}
-            connectButton={{
-              label: "Sign in",
-              style: {
-                background: "transparent", // Transparent to allow the gradient effect
-                color: "white",
-                border: "none", // Remove any default border
-                fontWeight: "600",
-                cursor: "pointer",
-                zIndex: "10", // Ensure the text is above the gradient
-              }
-            }}
-            signInButton={{
-              style: {
-                background: "transparent", // Transparent to allow the gradient effect
-                color: "white",
-                border: "none", // Remove any default border
-                fontWeight: "600",
-                cursor: "pointer",
-                zIndex: "10", // Ensure the text is above the gradient
-              }
-            }}
-            auth={{
-              getLoginPayload: async ({ address }) => generatePayload({ address }),
-              doLogin: async (params) => {
-                const result = await login(params); 
-                if(result && result.token) {
-                  const {token} = result;
-                  firebaseAuthClient(token, router);
-                }
-                
-              },
-              isLoggedIn: async () => {
-                return await isLoggedIn();
-              },
-              doLogout: async () => {
-                await logout();
-              },
-            }}
-          />
-
-
-
+          <p className="bg-transparent font-semibold px-6 py-4">Explore</p>
       </div>
 
     

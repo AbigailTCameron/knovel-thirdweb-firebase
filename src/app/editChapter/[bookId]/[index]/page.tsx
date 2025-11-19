@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../../functions/explore/fetch';
@@ -20,6 +20,8 @@ const { auth } = initializeFirebaseClient();
 
 function EditChapter({}: Props) {
   const params = useParams<{ bookId: string, index: string }>();
+  const router = useRouter();
+  
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [loading, setLoading] = useState(false);
@@ -30,21 +32,30 @@ function EditChapter({}: Props) {
   const [filePath, setFilePath] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+  const [booting, setBooting] = useState<boolean>(true);    
 
   useEffect(() => { 
+    setBooting(true);
+
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
-       setCurrentUser(user?.uid);
-       if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl);    
-          if(data){
-            setFilePath(data.profilePicturePath);
-            setUsername(data.username);
-            setName(data.name);
-          }   
-       }else {
-         setProfileUrl(''); 
-       }
+      if (!user) {
+        setCurrentUser(undefined);
+        setBooting(false);
+
+        router.replace("/explore"); // or "/"
+        return;
+      }
+
+      setCurrentUser(user?.uid);
+      const data = await getUserProfile(user.uid, setProfileUrl);    
+      if(data){
+        setFilePath(data.profilePicturePath);
+        setUsername(data.username);
+        setName(data.name);
+      }   
+
+      setBooting(false);
     })
     return () => unsubscribe(); 
   
@@ -121,7 +132,7 @@ function EditChapter({}: Props) {
 
 
       {/* ✅ Overlay with blur effect */}
-      {loading && (
+      {booting || loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
         </div>

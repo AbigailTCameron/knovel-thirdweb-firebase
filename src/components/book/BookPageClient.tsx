@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import initializeFirebaseClient from '@/lib/initFirebase';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import PageAnalytics from '../analytics/PageAnalytics';
@@ -13,14 +13,27 @@ import UserSearch from '../explore/popup/UserSearch';
 import Notifications from '../community/Notifications';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
+import { ConnectEmbed } from 'thirdweb/react';
+import { defineChain } from 'thirdweb';
+import { client } from '@/lib/client';
+import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
+import XMark from '../icons/XMark';
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function BookPageClient({}: Props) {
+    const camp = defineChain({
+      id: 123420001114,
+    });
+
+    const router = useRouter();
+
     const params = useParams<{ id: string }>();
     const [booting, setBooting] = useState(true);           // NEW: blocks UI until BookInfo done
     const [pageOverlay, setPageOverlay] = useState(false); // generic overlay (you already had `loading`)
+    const [showConnect, setShowConnect] = useState(false);
   
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -62,6 +75,10 @@ function BookPageClient({}: Props) {
     
     }, [params?.id]);
 
+  const onRequireWalletConnect = () => {
+    setShowConnect(true);
+  };
+
   return (
     <main className="flex w-screen h-screen overflow-hidden">
         <PageAnalytics pageTitle="Book" pagePath="/book" />
@@ -91,6 +108,7 @@ function BookPageClient({}: Props) {
               setUserResults={setSearchResults}
               setShowNotifications={setShowNotifications}
               setSettingsPopup={setSettingsPopup}
+              onRequireWalletConnect={onRequireWalletConnect}
             />
           </div>
 
@@ -102,9 +120,55 @@ function BookPageClient({}: Props) {
             setUserRating={setUserRating}
             onLoadingChange={setPageOverlay}  // show/hide overlay for later re-fetches
             onReady={() => setBooting(false)}
+            onRequireWalletConnect={onRequireWalletConnect}
           />    
 
         </div>
+
+
+        {showConnect && (
+          <div className="absolute w-screen h-screen flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
+              <div className="relative bg-transparent rounded-lg shadow-lg p-0">
+                  <button
+                    onClick={() => setShowConnect(false)}
+                    className="absolute top-4 right-4 hover:bg-[#1b1c22] hover:stroke-slate-200 hover:rounded-lg text-2xl font-bold z-10"
+                    aria-label="Close"
+                  >
+                    <XMark className='stroke-[#7c7a85] size-6'/>
+                  </button>
+                  <ConnectEmbed 
+                    client={client}
+                    chain={camp}
+                    modalSize='wide'
+                    header={{ 
+                      title: "Knovel Protocol ",
+                      titleIcon: "/knovel-logo-white.png",
+                    }}
+                    auth={{
+                      getLoginPayload: async ({ address }) => {
+                        return generatePayload({ address })
+                      },
+                      doLogin: async (params) => {
+                        const result = await login(params); 
+                        if(result && result.token) {
+                          const {token} = result;
+                          firebaseAuthClient(token, router);
+                          setShowConnect(false);
+                        }
+                        
+                      },
+                      isLoggedIn: async () => {
+                        return await isLoggedIn();
+                      },
+                      doLogout: async () => {
+                        await logout();
+                        await firebaseLogout(router); 
+                      },
+                    }}
+                  />
+            </div>
+          </div>
+        )}
 
         {searchResults && (
             <UserSearch 

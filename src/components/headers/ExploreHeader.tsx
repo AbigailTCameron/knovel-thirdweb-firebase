@@ -108,6 +108,22 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
             <ConnectButton
               client={client}
               chain={camp}
+              connectModal={{ 
+                size: "wide",
+                title: "Knovel Protocol ",
+                titleIcon: "/knovel-logo-white.png",
+              }}
+              connectButton={{
+                label: "Sign in",
+                style: {
+                  background: "transparent", // Transparent to allow the gradient effect
+                  color: "white",
+                  border: "none", // Remove any default border
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  zIndex: "10", // Ensure the text is above the gradient
+                }
+              }}
               detailsButton={{
                 style: {
                   background: "transparent", // Transparent to allow the gradient effect

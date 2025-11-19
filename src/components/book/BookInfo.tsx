@@ -13,6 +13,7 @@ import {FaStar} from "react-icons/fa";
 import View from '../icons/View';
 
 
+
 type Props = {
   id ?: string
   userId ?: string;
@@ -20,17 +21,18 @@ type Props = {
   userRating : number;
   setUserRating: Function;
   onLoadingChange?: (loading: boolean) => void; // NEW
-  onReady?: () => void;                         // NEW
+  onReady?: () => void;    
+  onRequireWalletConnect?: () => void; 
+  setShowConnect?: () => void;    
 }
 
-function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingChange, onReady}: Props) {
+function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingChange, onReady, onRequireWalletConnect, setShowConnect}: Props) {
   const router = useRouter();
 
   const [book, setBook] = useState<Book>();
   const [bookmark, setBookmark] = useState<boolean>(false); 
   const [error, setError] = useState<string>(''); 
   const [hoverRating, setHoverRating] = useState<number>(0); // Temporary hover rating
-
 
   const handleSaveRating = async(newRating: number) => {
     if (!userId || !id) return;
@@ -47,6 +49,11 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
 
 
   const handleBookmarkClick = async () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
     const newBookmarkState = !bookmark;
     setBookmark(newBookmarkState); 
 
@@ -71,9 +78,20 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
   }, [id, bookmarks]);
 
 
+  const handleReadClick = async (id?: string) => {
+    if (!id) return;
+
+    // Fire-and-forget; don't block navigation
+    fetch(`/api/books/${id}/views`, { method: 'POST' }).catch(() => {});
+
+    router.push(`/read/${id}`);
+  };
+
+
   if(error){
     return<p>Error fetching book information.</p>
   }
+  
 
 
   return (
@@ -90,7 +108,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
               <div 
                 onMouseEnter={() => router.prefetch(`/read/${id}`)}
                 onClick={async() => {
-                  await incrementBookViews(id);
+                  await handleReadClick(id);
                   router.push(`/read/${id}`)
                   }} 
                   className="w-1/2 halflg:w-[200px] xsymd:w-[120px] sm:w-fit">
@@ -123,7 +141,13 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
                         } hover:text-yellow-500`}
                           onMouseEnter={() => setHoverRating(value)}
                           onMouseLeave={() => setHoverRating(0)}
-                          onClick={() => handleSaveRating(value)}
+                          onClick={() => { 
+                            if(!userId){
+                              onRequireWalletConnect?.();
+                              return;
+                            }
+                            handleSaveRating(value)
+                          }}
                       />  
                 ))}
 

@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { SearchedUser } from '../../../..';
 import { useRouter } from 'next/navigation';
 import Profile from '@/components/icons/Profile';
-import { fetchUsernameResults, updateFollowList } from '../../../../functions/community/fetch';
+import { fetchUsernameResults, fetchUsernameResultsWithoutLogin, updateFollowList } from '../../../../functions/community/fetch';
+import { ConnectEmbed } from 'thirdweb/react';
+import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
+import { client } from '@/lib/client';
+import { defineChain } from 'thirdweb';
 
 type Props = {
   setSearchResults: Function;
@@ -11,15 +16,29 @@ type Props = {
 }
 
 function UserSearch({setSearchResults, userId}: Props) {
+    const camp = defineChain({
+      id: 123420001114,
+    });
+  
     const router = useRouter(); 
     const [searchQuery, setSearchQuery] = useState('');
     const [usernameResults, setUsernameResults] = useState<SearchedUser[]>([]);
+    const [showConnect, setShowConnect] = useState(false);
 
     const quickSearch = async() => {
-      await fetchUsernameResults(searchQuery, setUsernameResults, userId);
+      if(!userId){
+        await fetchUsernameResultsWithoutLogin(searchQuery, setUsernameResults)
+      }else{
+        await fetchUsernameResults(searchQuery, setUsernameResults, userId);
+      }
     }
 
     const toggleFollow = async(user: string) => {
+      if(!userId){
+        onRequireWalletConnect?.();
+        return;
+      }
+
       await updateFollowList(userId, user);
   
       // Update the local state to reflect follow/unfollow changes
@@ -37,6 +56,10 @@ function UserSearch({setSearchResults, userId}: Props) {
           setUsernameResults([]); 
         }
     }, [searchQuery]);
+
+  const onRequireWalletConnect = () => {
+    setShowConnect(true);
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
@@ -128,6 +151,51 @@ function UserSearch({setSearchResults, userId}: Props) {
               </div>
             )}
         </div>
+
+      {showConnect && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
+          <div className="relative bg-transparent rounded-lg shadow-lg p-0">
+            <button
+              onClick={() => setShowConnect(false)}
+              className="absolute top-4 right-4 hover:bg-[#1b1c22] hover:stroke-slate-200 hover:rounded-lg text-2xl font-bold z-10"
+              aria-label="Close"
+            >
+              <XMark className='stroke-[#7c7a85] size-6'/>
+            </button>
+            <ConnectEmbed 
+              client={client}
+              chain={camp}
+              modalSize='wide'
+              header={{ 
+                title: "Knovel Protocol ",
+                titleIcon: "/knovel-logo-white.png",
+              }}
+              auth={{
+                getLoginPayload: async ({ address }) => {
+                  return generatePayload({ address })
+                },
+                doLogin: async (params) => {
+                  const result = await login(params); 
+                  if(result && result.token) {
+                    const {token} = result;
+                    firebaseAuthClient(token, router);
+                    setShowConnect(false);
+                  }
+                  
+                },
+                isLoggedIn: async () => {
+                  return await isLoggedIn();
+                },
+                doLogout: async () => {
+                  await logout();
+                  await firebaseLogout(router); 
+                },
+              }}
+            />
+            </div>
+        </div>
+      )}
+
     </div>
   )
 }

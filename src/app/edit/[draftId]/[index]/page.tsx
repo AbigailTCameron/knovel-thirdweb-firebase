@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../../../functions/explore/fetch';
@@ -18,6 +18,8 @@ type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function Edit({}: Props) {
+  const router = useRouter();
+  
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const params = useParams<{ draftId: string, index: string }>();
   const [profileUrl, setProfileUrl] = useState<string>(''); 
@@ -30,22 +32,33 @@ function Edit({}: Props) {
   const [filePath, setFilePath] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+
+  const [booting, setBooting] = useState<boolean>(true);    
   
 
   useEffect(() => { 
+    setBooting(true);
+
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
+        if (!user) {
+          setCurrentUser(undefined);
+          setBooting(false);
+
+          router.replace("/explore"); // or "/"
+          return;
+        }
+
        setCurrentUser(user?.uid);
-       if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl);    
-          if(data){
-            setFilePath(data.profilePicturePath);
-            setUsername(data.username);
-            setName(data.name);
-          }
-       }else {
-         setProfileUrl(''); 
-       }
+     
+      const data = await getUserProfile(user.uid, setProfileUrl);    
+      if(data){
+        setFilePath(data.profilePicturePath);
+        setUsername(data.username);
+        setName(data.name);
+      }
+
+      setBooting(false);
     })
     return () => unsubscribe(); 
   
@@ -121,10 +134,14 @@ function Edit({}: Props) {
 
 
       {/* ✅ Overlay with blur effect */}
-         {loading || uploading && (
+         {booting || loading || uploading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
-          <p className="text-lg text-white font-semibold">Saving edit...</p>
+          {booting ? (
+            <div/>
+          ): (
+            <p className="text-lg text-white font-semibold">Saving edit...</p>
+          )}
         </div>
       )}
     </div>

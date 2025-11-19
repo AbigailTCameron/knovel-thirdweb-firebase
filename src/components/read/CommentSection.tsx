@@ -17,9 +17,10 @@ type Props = {
   username: string;
   name: string;
   setUsernamePopup: Function;
+  onRequireWalletConnect?: () => void;
 }
 
-function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title, username, name, setUsernamePopup}: Props) {
+function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title, username, name, setUsernamePopup, onRequireWalletConnect}: Props) {
   const [commentText, setCommentText] = useState(''); 
   const [comments, setComments] = useState<Comment[]>([]);
   
@@ -34,6 +35,11 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
   }
 
   const handlePostComment = async () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
     if(!username && !name){
       setUsernamePopup(true);
       return;
@@ -85,6 +91,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
                   commentId={comment.id}
                   bookId={bookId}
                   onDeleteComment={handleDeleteComment} // Pass delete handler
+                  onRequireWalletConnect={onRequireWalletConnect}
                 />
       
             </div>
@@ -125,7 +132,6 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
             </div>
            
         </div>
-
     </div>
   )
 }

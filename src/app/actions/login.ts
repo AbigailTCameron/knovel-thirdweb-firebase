@@ -79,7 +79,7 @@ export async function isLoggedIn() {
 
 export async function logout() {
   (await cookies()).delete("jwt");
-  redirect('/');
+  // redirect('/');
 }
 
 
