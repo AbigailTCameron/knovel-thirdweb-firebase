@@ -13,12 +13,17 @@ import UserSearch from '../explore/popup/UserSearch';
 import Notifications from '../community/Notifications';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
+import { useRouter } from 'next/navigation';
 
 
 type Props = {}
 const { auth } = initializeFirebaseClient();
 
 function CreatePageClient({}: Props) {
+  const router = useRouter();
+  
+  const [booting, setBooting] = useState(true);  
+  
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [name, setName] = useState<string>(''); 
@@ -31,20 +36,27 @@ function CreatePageClient({}: Props) {
   const [filePath, setFilePath] = useState<string>('');
 
   useEffect(() => { 
+    setBooting(true);
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
+        if (!user) {
+          setCurrentUser(undefined);
+          setBooting(false);
+
+          router.replace("/explore"); // or "/"
+          return;
+        }
+
         setCurrentUser(user?.uid);
-        if(user){
-          const data = await getUserProfile(user.uid, setProfileUrl);
-          if(data){
+       
+        const data = await getUserProfile(user.uid, setProfileUrl);
+        if(data){
           setName(data.name); 
           setUsername(data.username);
           setFilePath(data.profilePicturePath);
-          }
-          
-        }else {
-          setProfileUrl(''); 
         }
+          
+        setBooting(false);
     })
     return () => unsubscribe(); 
   }, []);
@@ -129,7 +141,7 @@ function CreatePageClient({}: Props) {
       )}
 
         {/* ✅ Overlay with blur effect */}
-        {loading && (
+        {booting || loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
         </div>

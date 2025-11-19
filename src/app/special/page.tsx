@@ -35,45 +35,52 @@ function Special({}: Props) {
 
   const themes=["gothic", "horror", "thriller", "supernatural","mystery"];
 
-    // one-shot auth promise
-  const waitForAuth = () =>
-    new Promise<User | null>((resolve) => {
-      const unsub = onAuthStateChanged(auth, (u) => {
-        unsub();
-        resolve(u);
-      });
-    });
+  
+  // 🔁 1) Persistent auth listener (like ExplorePageClient)
+  useEffect(() => {
+    setBooting(true);
 
-
-  useEffect(() => { 
-    let alive = true;
-    (async() => {
-      setBooting(true);
-
-      // kick off theme fetch immediately; no need to wait on auth
-      setLoading(true);
-      const resultsP = fetchThemeResults(themes, (books: Book[]) => {
-        if (alive) setResults(books);
-      });
-
-      // resolve auth/profile in parallel
-      const user = await waitForAuth();
-      if (!alive) return;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('Special page auth state changed:', user?.uid);
       setCurrentUser(user?.uid || undefined);
 
       if (user) {
-        getUserProfile(user.uid, setProfileUrl); // you only need the side-effect here
+        // you only need side-effect; function already sets profileUrl internally
+        await getUserProfile(user.uid, setProfileUrl);
+      } else {
+        setProfileUrl('');
       }
 
-      await resultsP;        
+      // We don't set booting false here yet; we let the books fetch control that
+      // so the overlay only disappears once books are ready too.
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  // 📚 2) Fetch spooky theme results (independent of auth)
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      setBooting(true);
+      setLoading(true);
+
+      await fetchThemeResults(themes, (books: Book[]) => {
+        if (!alive) return;
+        setResults(books);
+      });
+
       if (!alive) return;
-
       setLoading(false);
-      setBooting(false); 
+      setBooting(false); // 🔑 only when books are ready
+    })();
 
-    })();      
-        return () => { alive = false; };
-   }, []);
+    return () => {
+      alive = false;
+    };
+  }, []); // run once on mount
 
   return (
     <div className="flex w-screen h-screen flex-col items-center">

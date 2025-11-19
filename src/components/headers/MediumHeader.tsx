@@ -4,7 +4,6 @@ import SearchIcon from '../icons/SearchIcon';
 import SearchResults from '../search/SearchResults';
 import Menu from '../icons/Menu';
 import { fetchSearchResults } from '../../../functions/explore/fetch';
-import SpinLoader from '../loading/SpinLoader';
 import SideMenu from './SideMenu';
 
 type Props = {
@@ -13,9 +12,10 @@ type Props = {
   setShowNotifications: Function;
   setSettingsPopup: Function;
   setLoading: Function;
+  onRequireWalletConnect?: () => void;
 }
 
-function MediumHeader({setLoading, setShowNotifications, setSettingsPopup, userId, setUserResults}: Props) {
+function MediumHeader({setLoading, setShowNotifications, setSettingsPopup, userId, setUserResults, onRequireWalletConnect}: Props) {
   const router = useRouter();
   const pathname = usePathname(); 
   
@@ -104,6 +104,7 @@ function MediumHeader({setLoading, setShowNotifications, setSettingsPopup, userI
             setShowNotifications={setShowNotifications}
             setSettingsPopup={setSettingsPopup}
             showMenu={showMenu}
+            onRequireWalletConnect={onRequireWalletConnect}
           />
       
       )}

@@ -16,9 +16,10 @@ type Props = {
   bookId: string; 
   authorId: string
   onDeleteComment: (commentId: string) => void; 
+  onRequireWalletConnect?: () => void;
 }
 
-function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment, authorId}: Props) {
+function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment, authorId, onRequireWalletConnect}: Props) {
   const [profileUrl, setProfileUrl] = useState('');
   const [fullname, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -37,6 +38,11 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
   }, [commenterId]);
 
   const handleToggleLike = async () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
     const { success, liked: newLiked } = await toggleLikeComment(authorId, bookId, commentId, userId);
     if (success) {
       setLiked(newLiked ?? false);

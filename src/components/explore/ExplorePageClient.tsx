@@ -17,17 +17,33 @@ import UserSearch from './popup/UserSearch'
 import SettingsPopup from './popup/SettingsPopup'
 import ClaimedNft from './popup/ClaimedNfft'
 import Notifications from '../community/Notifications'
-import { useActiveAccount } from 'thirdweb/react'
+import { ConnectEmbed, useActiveAccount } from 'thirdweb/react'
 import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { defineChain } from 'thirdweb'
+import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
+import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth'
+import { client } from '@/lib/client'
+import { useRouter } from 'next/navigation'
+import CloseIcon from '../icons/CloseIcon'
+import XMark from '../icons/XMark'
+
 
 type Props = {}
 
 const { auth } = initializeFirebaseClient();
 
 function ExplorePageClient({}: Props) {
+  const router = useRouter();
+  
+  const camp = defineChain({
+    id: 123420001114,
+  });
+
   const account = useActiveAccount();
-  const [booting, setBooting] = useState(true);      // 🔑 blocks UI until ready
+  const [showConnect, setShowConnect] = useState(false);
+  
+  const [booting, setBooting] = useState(true); // 🔑 blocks UI until ready
   const [currentUser, setCurrentUser] = useState<string | undefined>(auth?.currentUser?.uid);
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   const [filePath, setFilePath] = useState<string>('');
@@ -44,54 +60,39 @@ function ExplorePageClient({}: Props) {
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
-
-  const waitForAuth = () =>
-    new Promise<User|null>((resolve) => {
-        const unsub = onAuthStateChanged(auth, (u) => {
-          unsub();
-          resolve(u);
-        });
-  });
     
-  useEffect(() => { 
-      let alive = true;
+  useEffect(() => {
+    setBooting(true);
 
-      (async() => {
-        setBooting(true);
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      setCurrentUser(u?.uid);
 
-        // wait for auth to initialize first
-        const u = await waitForAuth();
-        if (!alive) return;
+      if (u?.uid) {
+        // Fetch user data in parallel
+        const [userData, _balance] = await Promise.all([
+          getUserProfile(u.uid, setProfileUrl),
+          fetchUserNftBalance(u.uid, setUserBalance),
+        ]);
 
-        setCurrentUser(u?.uid);
-
-        if(u?.uid){
-            // 2) fetch first-render data in parallel
-            const [userData, _balance] = await Promise.all([
-              getUserProfile(u.uid, setProfileUrl),      // returns userData (you already return it)
-              fetchUserNftBalance(u.uid, setUserBalance) // this sets state internally too
-            ]);
-
-            if (!alive) return;
-
-            if (userData) {
-              setUsername(userData.username ?? '');
-              setName(userData.name ?? '');
-              setFilePath(userData.profilePicturePath ?? '');
-              if (Array.isArray(userData.genres)) setGenreOptions(userData.genres);
-            }
-        }else{
-            // not signed in — ensure defaults are clean
-            setProfileUrl('');
-            setUsername('');
-            setName('');
-            setGenreOptions([]);
+        if (userData) {
+          setUsername(userData.username ?? "");
+          setName(userData.name ?? "");
+          setFilePath(userData.profilePicturePath ?? "");
+          if (Array.isArray(userData.genres)) setGenreOptions(userData.genres);
         }
-        // 3) release the UI
-        setBooting(false);
-      })();
-    return () => { alive = false; };
-    
+      } else {
+        // logged out
+        setProfileUrl("");
+        setUsername("");
+        setName("");
+        setGenreOptions([]);
+        setUserBalance(0);
+      }
+
+      setBooting(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const mint = async() => {
@@ -120,6 +121,10 @@ function ExplorePageClient({}: Props) {
       </div>
     );
   }
+
+  const onRequireWalletConnect = () => {
+    setShowConnect(true);
+  };
 
   return (
     <div className="flex w-screen h-screen overflow-hidden">
@@ -151,6 +156,7 @@ function ExplorePageClient({}: Props) {
               setUserResults={setSearchResults}
               setShowNotifications={setShowNotifications}
               setSettingsPopup={setSettingsPopup}
+              onRequireWalletConnect={onRequireWalletConnect}
             />
 
           </div>
@@ -183,7 +189,7 @@ function ExplorePageClient({}: Props) {
           </div>
 
       </div>
-   
+
       {mintPopup && (
         <NftMint 
           onCancel={() => setMintPopup(false)}
@@ -195,6 +201,50 @@ function ExplorePageClient({}: Props) {
       {loading && (
         <div className="absolute flex-col inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/40">
           <SpinLoader />
+        </div>
+      )}
+
+      {showConnect && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 backdrop-blur-md flex justify-center items-center z-50 text-base">
+          <div className="relative bg-transparent rounded-lg shadow-lg p-0">
+            <button
+              onClick={() => setShowConnect(false)}
+              className="absolute top-4 right-4 hover:bg-[#1b1c22] hover:stroke-slate-200 hover:rounded-lg text-2xl font-bold z-10"
+              aria-label="Close"
+            >
+              <XMark className='stroke-[#7c7a85] size-6'/>
+            </button>
+            <ConnectEmbed 
+              client={client}
+              chain={camp}
+              modalSize='wide'
+              header={{ 
+                title: "Knovel Protocol ",
+                titleIcon: "/knovel-logo-white.png",
+              }}
+              auth={{
+                getLoginPayload: async ({ address }) => {
+                  return generatePayload({ address })
+                },
+                doLogin: async (params) => {
+                  const result = await login(params); 
+                  if(result && result.token) {
+                    const {token} = result;
+                    firebaseAuthClient(token, router);
+                    setShowConnect(false);
+                  }
+                  
+                },
+                isLoggedIn: async () => {
+                  return await isLoggedIn();
+                },
+                doLogout: async () => {
+                  await logout();
+                  await firebaseLogout(router); 
+                },
+              }}
+            />
+            </div>
         </div>
       )}
 
