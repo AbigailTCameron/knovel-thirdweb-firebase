@@ -77,3 +77,25 @@ export interface Notification {
   bookImage: string;
   bookId: string;
 }
+
+
+export type UserBookProfile = {
+  id: string;
+  preferredGenres: { [genre: string]: number }; // weight 0–1
+  followingAuthors: Set<string>;
+  followingUsers: Set<string>;
+  interactedBooks: Set<string>;
+}
+
+export type BookFeatures = {
+  id: string;
+  genres: string[];
+  authorId: string;
+  avgRating: number;
+  ratingCount: number;
+  totalReads: number;
+  totalLikes: number;
+  totalComments: number;
+  addedAt: number; // timestamp
+  interactionsFromFollowing: number;
+}
