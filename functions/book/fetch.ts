@@ -89,6 +89,29 @@ export const updateBookmarkData = async(userId: string, bookId: string) => {
   }
 }
 
+export const updateLikedBookData = async(userId: string, bookId: string) => {
+  try {
+      // Reference to the user's profile document in Firestore
+      const userRef = doc(db, "users", userId);
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+        const data = userSnapshot.data();
+        if(data.liked.includes(bookId)){
+            await updateDoc(userRef, {
+              liked: arrayRemove(bookId),
+            });
+        }else {
+            await updateDoc(userRef, {
+              liked: arrayUnion(bookId),
+            });
+        }
+      }
+  }catch (error) {
+    console.error("Error updating liked data:", error);
+  }
+}
+
 export const updateRating = async (userId: string, bookId: string, rating: number | null, oldRating: number) => {
   try {
     const userDocRef = doc(db, "users", userId);

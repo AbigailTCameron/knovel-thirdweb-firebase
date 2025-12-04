@@ -1,5 +1,5 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, increment, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, increment, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 
 const { db } = initializeFirebaseClient();
 
@@ -57,8 +57,6 @@ export const createNotification = async (
 
 export const addComment = async(authorId:string, bookId: string, userId: string, comment: string, title: string, username: string, name: string) => {
   try {
-    //const commentId = crypto.randomUUID();
-
     const newComment = {
       commenter: userId,
       comment: comment,
@@ -70,6 +68,15 @@ export const addComment = async(authorId:string, bookId: string, userId: string,
     // Reference to the collection where the comment should be added
     const userBookCommentCollectionRef = collection(db, "comments", authorId, 'books', bookId, 'comments');
     const docRef = await addDoc(userBookCommentCollectionRef, newComment);
+
+    // 2) Log an event for 30d engagement tracking
+    const eventsRef = collection(db, "book_events");
+    await addDoc(eventsRef, {
+      bookId,
+      userId,
+      type: "comment",
+      timestamp: serverTimestamp(),
+    });
 
     // Create a notification for the book author
     const notificationResult = await createNotification(authorId, bookId, docRef.id, userId, comment, title, username, name);

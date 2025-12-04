@@ -8,9 +8,10 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, incrementBookViews, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, incrementBookViews, updateBookmarkData, updateLikedBookData, updateRating } from '../../../functions/book/fetch';
 import {FaStar} from "react-icons/fa";
 import View from '../icons/View';
+import Liked from '../icons/Liked';
 
 
 
@@ -33,6 +34,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
   const [bookmark, setBookmark] = useState<boolean>(false); 
   const [error, setError] = useState<string>(''); 
   const [hoverRating, setHoverRating] = useState<number>(0); // Temporary hover rating
+  const [liked, setLiked] = useState<boolean>(false);
 
   const handleSaveRating = async(newRating: number) => {
     if (!userId || !id) return;
@@ -62,6 +64,22 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
     } 
   }
 
+
+  const handleLikeClick = async () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
+    const newLikeState = !liked;
+    setLiked(newLikeState); 
+
+    if(id && userId){
+      await updateLikedBookData(userId, id); 
+    } 
+  }
+
+
   useEffect(() => {
     const run = async () => {
       if (!id) return;
@@ -82,7 +100,13 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
     if (!id) return;
 
     // Fire-and-forget; don't block navigation
-    fetch(`/api/books/${id}/views`, { method: 'POST' }).catch(() => {});
+    fetch(`/api/books/${id}/views`, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId ?? null,
+      }),
+    }).catch(() => {});
 
     router.push(`/read/${id}`);
   };
@@ -107,10 +131,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
             <div className="flex w-full items-center justify-center space-x-4">
               <div 
                 onMouseEnter={() => router.prefetch(`/read/${id}`)}
-                onClick={async() => {
-                  await handleReadClick(id);
-                  router.push(`/read/${id}`)
-                  }} 
+                onClick={() => handleReadClick(id)} 
                   className="w-1/2 halflg:w-[200px] xsymd:w-[120px] sm:w-fit">
                   <FlowButton 
                     title='Read'
@@ -129,6 +150,15 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
                         <Bookmark className='size-10 sm:size-8'/>
                     </div>
                   )}
+              </div>
+
+              <div onClick={handleLikeClick} className="flex hover:cursor-pointer">
+                {liked ? (
+                  <Liked className='size-10 sm:size-8 stroke-white'/>
+                ): (
+                  <Liked className='size-10 sm:size-8 stroke-white'/>
+                )}
+                
               </div>
               
             </div>
