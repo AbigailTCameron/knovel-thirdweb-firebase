@@ -44,10 +44,9 @@ export const fetchBooks = async (setBooks: Function) => {
       const booksCollection = collection(db, "books");
 
 
-    // Query: get the 20 newest by created_at
     const booksQuery = query(
       booksCollection,
-      orderBy("created_at", "desc"),
+      orderBy("trendingScore", "desc"),
       limit(20)
     );
 
@@ -75,7 +74,7 @@ export const fetchTopRated = async (setBooks: Function) => {
     const booksCollection = collection(db, "books");
 
     // Create the query
-    const booksQuery = query(booksCollection, orderBy("rating", "desc"), limit(20));
+    const booksQuery = query(booksCollection, orderBy("ratingWeighted", "desc"), limit(20));
 
     const querySnapshot = await getDocs(booksQuery);
 

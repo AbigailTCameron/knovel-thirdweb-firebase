@@ -38,6 +38,8 @@ function BookPageClient({}: Props) {
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const [profileUrl, setProfileUrl] = useState<string>(''); 
     const [bookmarks, setBookmarks] = useState<string[]>([]); 
+    const [likes, setLikes] = useState<string[]>([]); 
+    const [finishedList, setFinishedList] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [userRating, setUserRating] = useState<number>(0); 
   
@@ -58,6 +60,8 @@ function BookPageClient({}: Props) {
             const data = await getUserProfile(user.uid, setProfileUrl);
             if(data?.bookmark){
             setBookmarks(data.bookmark);
+            setLikes(data.liked);
+            setFinishedList(data.finished);
             const rated = data?.rated || [];
             const userRating = rated.find((rating: { bookId: string; rating: number }) => rating.bookId === params.id)?.rating;
             setUserRating(userRating ?? 0);
@@ -116,6 +120,8 @@ function BookPageClient({}: Props) {
             userId={currentUser}
             id={params?.id}
             bookmarks={bookmarks}
+            likes={likes}
+            finishedList={finishedList}
             userRating={userRating}
             setUserRating={setUserRating}
             onLoadingChange={setPageOverlay}  // show/hide overlay for later re-fetches
