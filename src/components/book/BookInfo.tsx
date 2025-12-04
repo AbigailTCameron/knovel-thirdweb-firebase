@@ -8,9 +8,11 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, incrementBookViews, updateBookmarkData, updateRating } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, fetchFinishedList, fetchLiked, incrementBookViews, updateBookmarkData, updateFinishedBookData, updateLikedBookData, updateRating } from '../../../functions/book/fetch';
 import {FaStar} from "react-icons/fa";
 import View from '../icons/View';
+import Liked from '../icons/Liked';
+import Check from '../icons/Check';
 
 
 
@@ -18,6 +20,8 @@ type Props = {
   id ?: string
   userId ?: string;
   bookmarks : string[];
+  likes: string[];
+  finishedList: string[];
   userRating : number;
   setUserRating: Function;
   onLoadingChange?: (loading: boolean) => void; // NEW
@@ -26,13 +30,15 @@ type Props = {
   setShowConnect?: () => void;    
 }
 
-function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingChange, onReady, onRequireWalletConnect, setShowConnect}: Props) {
+function BookInfo({userId, id, bookmarks, likes, finishedList, userRating, setUserRating, onLoadingChange, onReady, onRequireWalletConnect, setShowConnect}: Props) {
   const router = useRouter();
 
   const [book, setBook] = useState<Book>();
   const [bookmark, setBookmark] = useState<boolean>(false); 
   const [error, setError] = useState<string>(''); 
   const [hoverRating, setHoverRating] = useState<number>(0); // Temporary hover rating
+  const [liked, setLiked] = useState<boolean>(false);
+  const [finished, setFinished] = useState(false);
 
   const handleSaveRating = async(newRating: number) => {
     if (!userId || !id) return;
@@ -62,12 +68,45 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
     } 
   }
 
+
+  const handleLikeClick = async () => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
+    const newLikeState = !liked;
+    setLiked(newLikeState); 
+
+    if(id && userId){
+      await updateLikedBookData(userId, id); 
+    } 
+  }
+
+  const handleMarkFinished = async() => {
+    if(!userId){
+      onRequireWalletConnect?.();
+      return;
+    }
+
+    const newState = !finished;
+    setFinished(newState);
+
+
+    if(id && userId){
+      await updateFinishedBookData(userId, id); 
+    } 
+  }
+
+
   useEffect(() => {
     const run = async () => {
       if (!id) return;
       onLoadingChange?.(true);
       try {
         fetchBookmark(bookmarks, id, setBookmark);
+        fetchLiked(likes, id, setLiked);
+        fetchFinishedList(finishedList, id, setFinished)
         await fetchBookData(id, (data: Book) => setBook(data));
       } finally {
         onLoadingChange?.(false);
@@ -75,17 +114,24 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
       }
     };
     run();
-  }, [id, bookmarks]);
+  }, [id, bookmarks, finishedList, likes]);
 
 
   const handleReadClick = async (id?: string) => {
     if (!id) return;
 
     // Fire-and-forget; don't block navigation
-    fetch(`/api/books/${id}/views`, { method: 'POST' }).catch(() => {});
+    fetch(`/api/books/${id}/views`, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId ?? null,
+      }),
+    }).catch(() => {});
 
     router.push(`/read/${id}`);
   };
+
 
 
   if(error){
@@ -107,10 +153,7 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
             <div className="flex w-full items-center justify-center space-x-4">
               <div 
                 onMouseEnter={() => router.prefetch(`/read/${id}`)}
-                onClick={async() => {
-                  await handleReadClick(id);
-                  router.push(`/read/${id}`)
-                  }} 
+                onClick={() => handleReadClick(id)} 
                   className="w-1/2 halflg:w-[200px] xsymd:w-[120px] sm:w-fit">
                   <FlowButton 
                     title='Read'
@@ -129,6 +172,15 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
                         <Bookmark className='size-10 sm:size-8'/>
                     </div>
                   )}
+              </div>
+
+              <div onClick={handleLikeClick} className="flex hover:cursor-pointer">
+                {liked ? (
+                  <Liked className='size-8 sm:size-8 stroke-[#7F60F9]'/>
+                ): (
+                  <Liked className='size-8 sm:size-8 stroke-white'/>
+                )}
+                
               </div>
               
             </div>
@@ -158,7 +210,20 @@ function BookInfo({userId, id, bookmarks, userRating, setUserRating, onLoadingCh
             <div className="flex flex-col space-y-3">
                 <p className="text-4xl ss:text-2xl font-bold">{book?.title}</p>
                 <p className="text-xl font-medium">{book?.author}</p>
-                <StarRating rating={book?.rating ?? 0}/> 
+
+                <div className='flex space-x-3 text-white/80'>
+                      <StarRating rating={book?.rating ?? 0}/> 
+                      <div onClick={handleMarkFinished} className={`flex space-x-2 items-center border border-[#272831] ${finished && "border-green-500"} rounded-lg px-2 py-1 hover:cursor-pointer`}>
+                        {finished ? (
+                          <p>Already read</p>
+                        ):(
+                          <p>Mark as read</p>
+                        )}
+                        
+                        <Check className={`stroke-white/80 ${finished && "stroke-green-500"} size-5`}/>
+                      </div>
+                </div>
+                
 
                 <div className="flex items-center space-x-1">
                   <View className="stroke-white size-5"/>

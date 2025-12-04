@@ -12,7 +12,6 @@ import Reader from './Reader';
 import UsernamePopup2 from './UsernamePopup';
 import CommentSection from './CommentSection';
 import SpinLoader from '../loading/SpinLoader';
-import { useActiveAccount } from 'thirdweb/react';
 import { defineChain } from 'thirdweb';
 import { client } from '@/lib/client';
 import { ConnectEmbed } from 'thirdweb/react';
