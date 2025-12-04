@@ -7,7 +7,7 @@ const { db } = initializeFirebaseServer();
 
 export async function POST(
   _req: Request,
-  { params }: { params: { bookId: string } }
+  { params }: any
 ) {
   const { bookId } = params;
 
