@@ -3,7 +3,7 @@ import Rect from './Rect'
 
 type Props = {
   selected ?: number;
-  setScreen ?: any;
+  setScreen : (value: number) => void;
 }
 
 function Multirect({selected, setScreen}: Props) {
