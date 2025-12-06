@@ -17,11 +17,9 @@ import Notifications from '../community/Notifications';
 import SpinLoader from '../loading/SpinLoader';
 
 
-type Props = {}
-
 const { auth } = initializeFirebaseClient();
 
-function EditPublishPageClient({}: Props) {
+function EditPublishPageClient({}) {
     const router = useRouter();
   
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
@@ -54,8 +52,7 @@ function EditPublishPageClient({}: Props) {
     const [booting, setBooting] = useState<boolean>(true);    
 
     useEffect(() => { 
-      setBooting(true);
-
+  
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
         if (!user) {
@@ -111,7 +108,6 @@ function EditPublishPageClient({}: Props) {
           <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 

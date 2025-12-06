@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import FaqsPopup from './FaqsPopup';
 import LinkedIn from '../icons/LinkedIn';
 import UpArrow from '../icons/UpArrow';
 import X from '../icons/X';
 import Youtube from '../icons/Youtube';
+import Image from 'next/image';
 
 
 function Footer() {
@@ -22,11 +23,14 @@ function Footer() {
 
           <div className="my-8 flex w-full">
               <div className="flex items-center basis-1/3 font-mono ">
-                <img 
-                  src={"/knovel-logo-white.png"}
-                  className="w-1/6 xxl:w-[90px] sm:w-[60px] h-fit sm:h-[60px]"
+                <Image 
+                    src={"/knovel-logo-white.png"}
+                    className="w-1/6 xxl:w-[90px] sm:w-[60px] h-fit sm:h-[60px]"
+                    alt=""
+                    width="5000"
+                    height="500"
                 />
-
+             
                 <div onClick={scrollToTop} className="hover:cursor-pointer flex items-center space-x-1">
                     <p className='text-xs sm:hidden'>BACK TO TOP</p>
                     <UpArrow />  

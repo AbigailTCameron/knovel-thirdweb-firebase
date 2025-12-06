@@ -14,11 +14,10 @@ import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
 import { useRouter } from 'next/navigation';
 
-type Props = {}
 
 const { auth } = initializeFirebaseClient();
 
-function CollectionPageClient({}: Props) {
+function CollectionPageClient({}) {
   const router = useRouter();
 
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
@@ -33,7 +32,6 @@ function CollectionPageClient({}: Props) {
   const [username, setUsername] = useState<string>('');
 
   useEffect(() => { 
-    setBooting(true);    
 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
@@ -79,7 +77,6 @@ function CollectionPageClient({}: Props) {
             <div className='flex md:hidden flex-col w-full sticky top-0 z-20'>
                 <Top 
                   profileUrl={profileUrl}
-                  setLoading={setLoading}
                 />
             </div>
 

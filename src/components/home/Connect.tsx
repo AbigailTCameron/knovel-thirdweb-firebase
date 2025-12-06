@@ -1,12 +1,9 @@
 'use client'
 import Image from 'next/image'
-import React from 'react'
 import { useRouter } from 'next/navigation'
 
 
-type Props = {}
-
-function Connect({}: Props) {
+function Connect({}) {
   const router = useRouter(); 
 
   return (
@@ -20,9 +17,8 @@ function Connect({}: Props) {
                 className="w-fit h-fit halfxl:w-[90px] md:hidden sm:flex"
                 src="/community.png"
                 alt="knovel community"
-                width={"235"}
-                height={"105"}
-                quality={100}        
+                width={"500"}
+                height={"500"}
               />
               <p className="font-extralight lg:text-sm md:text-xs">Join thousands of authors and readers on Knovel now to share your stories, discover new works, and earn rewards in a vibrant, decentralized ecosystem!</p>
             </div>
@@ -35,13 +31,13 @@ function Connect({}: Props) {
         </div>
 
         <div className="flex w-3/5 h-full sm:w-full">
-            <img 
-              className="w-fit h-fit"
+          <Image 
+             className="w-fit h-fit"
               src="/connect-img.png"
               alt=""
-              width={"2741"}
-              height={"1792"}      
-            />
+              width={"500"}
+              height={"500"}  
+          />
         </div>
     </div>
   )

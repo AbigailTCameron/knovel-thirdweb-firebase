@@ -1,11 +1,8 @@
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
-type Props = {
-  
-}
-
-function FeaturedCollection({}: Props) {
+function FeaturedCollection({}) {
   const router = useRouter(); 
   
   return (
@@ -14,44 +11,75 @@ function FeaturedCollection({}: Props) {
       <div className='flex flex-col items-center justify-center text-center space-y-1 z-10'>
         <p className="font-semibold text-xl xs:text-lg bg-gradient-to-b from-white to-orange-200 inline-block text-transparent bg-clip-text">Collection of the Month</p>
         <p className="text-6xl lg:text-4xl xs:text-2xl font-bold bg-gradient-to-b from-orange-200 via-orange-200/70 to-orange-200 inline-block text-transparent bg-clip-text" style={{ fontFamily: '"Old English Text MT", "Goudy Old Style", serif' }}>GOTHIC CLASSICS</p>
-        <p className="font-semibold text-2xl halflg:text-xl md:text-lg xs:text-base bg-gradient-to-b from-orange-200 to-white inline-block text-transparent bg-clip-text">Discover this month's curated collection of must read Gothic classics!</p>
+        <p className="font-semibold text-2xl halflg:text-xl md:text-lg xs:text-base bg-gradient-to-b from-orange-200 to-white inline-block text-transparent bg-clip-text">{"Discover this month's curated collection of must read Gothic classics!"}</p>
       </div>
     
       <div className="flex space-x-3 xs:space-x-1 z-10">
-          <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] md:hidden h-full'
-            src="/turn.png"
+          <Image 
+              className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] md:hidden h-full'
+              src="/turn.png"
+              alt=""
+              width="500"
+              height={"500"}
           />
-          <img
-            className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] xs:hidden h-full'
-            src="/sleepy.png"
+
+          <Image
+              className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] xs:hidden h-full'
+              src="/sleepy.png"
+              alt=""
+              width="500"
+              height={"500"}
           />
-          <img
+
+          <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/vampyre.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
-          <img
+        
+          <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/raven.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
-          <img
+      
+          <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/frakenstein.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
-          <img
+          
+          <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
             src="/carmilla.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
-          <img
+      
+          <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] sm:hidden h-full'
             src="/strange.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
       </div>
 
       <div className="w-full h-1/6 sm:h-1/8 -mt-8 lg:-mt-4">
-          <img 
+
+          <Image
             className='w-full h-full'
             src="/shelf-w.png"
+            alt=""
+            width="500"
+            height={"500"}
           />
       </div>
 

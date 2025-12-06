@@ -37,8 +37,6 @@ function Edit({}: Props) {
   
 
   useEffect(() => { 
-    setBooting(true);
-
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
         if (!user) {
@@ -81,7 +79,6 @@ function Edit({}: Props) {
           <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 

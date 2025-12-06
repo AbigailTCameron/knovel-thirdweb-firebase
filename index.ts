@@ -4,6 +4,7 @@ export interface Book {
   id: string;
   title: string;
   author: string;
+  authorId: string;
   book_image: string;
   synopsis: string;
   genres: string[];
@@ -16,6 +17,7 @@ export interface Book {
   price: number;
   currency: string;
   chapters: string[];
+  trendingScore: number;
 }
 
 export interface BookMetadata {

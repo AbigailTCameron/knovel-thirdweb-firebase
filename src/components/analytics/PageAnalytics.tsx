@@ -1,7 +1,7 @@
 "use client"
 import { getFirebaseAnalytics } from '@/lib/initAnalytics';
 import { logEvent } from 'firebase/analytics';
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 type Props = {
   pageTitle: string;

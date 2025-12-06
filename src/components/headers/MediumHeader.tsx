@@ -5,13 +5,14 @@ import SearchResults from '../search/SearchResults';
 import Menu from '../icons/Menu';
 import { fetchSearchResults } from '../../../functions/explore/fetch';
 import SideMenu from './SideMenu';
+import Image from 'next/image';
 
 type Props = {
   userId ?: string;   
-  setUserResults: Function;
-  setShowNotifications: Function;
-  setSettingsPopup: Function;
-  setLoading: Function;
+  setUserResults: (value: boolean) => void;
+  setShowNotifications: (value: boolean) => void;
+  setSettingsPopup: (value: boolean) => void;
+  setLoading: (value: boolean) => void;
   onRequireWalletConnect?: () => void;
 }
 
@@ -43,12 +44,10 @@ function MediumHeader({setLoading, setShowNotifications, setSettingsPopup, userI
   }
 
   useEffect(() => {
-    if (searchQuery) {
-      quickSearch(); 
-    } else {
-      setSearchResults([]); // Clear search results when the search query is empty
-    }
-  }, [searchQuery]);
+    if (!searchQuery) return; 
+    quickSearch();                  
+
+  });
 
 
   return (
@@ -57,13 +56,14 @@ function MediumHeader({setLoading, setShowNotifications, setSettingsPopup, userI
       <div className='flex space-x-2 items-center w-fit mr-2'>
           <Menu onClick={() => showMenu(true)} className='stroke-white size-6'/>
           <div className="flex w-[60px] h-fit hover:cursor-pointer">
-              <img 
+              <Image 
                 onClick={handleExploreClick}
                 className="w-full h-full"
                 src="/knovel-logo-white.png"
-                alt="knovel community"                
+                alt="knovel community" 
+                width={"500"}
+                height={"500"}
               />
-
           </div>
 
       </div>

@@ -1,20 +1,21 @@
 'use client'
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation'
-import React from 'react'
 
 
-type Props = {}
-
-function LandingHeader({}: Props) {
+function LandingHeader({}) {
   const router = useRouter(); 
 
   return (
     <div className="flex z-10 justify-between w-full backdrop-blur-md text-white items-center font-mono text-sm px-6 md:p-8 py-4 sm:py-4 sm:px-2 xs:py-8">
       <div className="flex w-[150px] h-fit">
-        <img 
-          src={"/knovel-logo-full.png"}
+        <Image 
+          src="/knovel-logo-full.png"
           className="w-full h-full"
+          alt=""
+          width="500"
+          height="500"
         />
       </div>
 

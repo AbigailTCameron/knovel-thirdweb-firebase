@@ -14,10 +14,9 @@ import SettingsPopup from '../explore/popup/SettingsPopup';
 import SpinLoader from '../loading/SpinLoader';
 import { useParams, useRouter } from 'next/navigation';
 
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function DraftsPageClient({}: Props) {
+function DraftsPageClient({}) {
     const router = useRouter();
     const params = useParams<{ userId: string }>();
 
@@ -89,7 +88,6 @@ function DraftsPageClient({}: Props) {
           <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 
