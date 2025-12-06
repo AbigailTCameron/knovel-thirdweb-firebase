@@ -1,4 +1,4 @@
-import React from 'react'
+import Image from 'next/image'
 
 
 function ComingSoon() {
@@ -8,11 +8,14 @@ function ComingSoon() {
         <div className="flex flex-col lg:space-y-4 w-full justify-between bg-[#141414] row-span-2 lg:col-span-2 py-10 sm:py-4 px-8 sm:px-4">
             <p className="text-[#a5a5a5] font-mono sm:text-xs">INTERCHAIN ACCOUNTS</p>
             <div className="flex w-fit h-fit items-center justify-center text-white lg:hidden">
-              <img 
+              <Image 
                 className="w-[700px] h-fit"
                 src="/interchain.png"
                 alt=""
+                width="5000"
+                height="500"
               />
+
             </div>
         
             <div className="flex flex-col space-y-10 -mt-10">
@@ -30,11 +33,14 @@ function ComingSoon() {
             </div>
 
             <div className="flex w-1/3 self-center lg:hidden">
-              <img 
+              <Image 
                   className="w-full h-fit"
                   src="/book.png"
                   alt=""
+                  width="5000"
+                  height="500"
               />
+        
             </div>
         
         </div>
@@ -47,11 +53,14 @@ function ComingSoon() {
             </div>
             
             <div className="flex w-1/3 self-center lg:hidden">
-              <img 
+              <Image 
                 className="w-full h-fit"
                 src="/badge.png"
                 alt=""
+                width="5000"
+                height="500"
               />
+          
             </div>
             
         </div>

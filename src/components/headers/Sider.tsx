@@ -15,13 +15,14 @@ import { client } from '@/lib/client';
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import XMark from '../icons/XMark';
+import Image from 'next/image';
 
 type Props = {
-  setLoading: Function;
+  setLoading: (value: boolean) => void;
   userId ?: string;
-  setSearchResults: Function;
-  setShowNotifications: Function;
-  setSettingsPopup: Function;
+  setSearchResults: (value: boolean) => void;
+  setShowNotifications: (value: boolean) => void;
+  setSettingsPopup: (value: boolean) => void;
 }
 
 function Sider({setLoading, userId, setSearchResults, setShowNotifications, setSettingsPopup}: Props) {
@@ -119,11 +120,13 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications, setS
   return (
     <div className='w-full h-full flex flex-col text-white mx-4 my-4 items-center'>
        <div className="flex w-[60px] h-fit hover:cursor-pointer">
-          <img 
+          <Image 
             onClick={handleExploreClick}
             className="w-full h-full"
             src="/knovel-logo-white.png"
-            alt="knovel community"                
+            alt="knovel community"  
+            width={"500"}
+            height={"500"} 
           />
 
       </div>

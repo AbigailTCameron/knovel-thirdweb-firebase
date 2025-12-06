@@ -2,7 +2,7 @@
 
 import initializeFirebaseClient from '@/lib/initFirebase'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PageAnalytics from '../analytics/PageAnalytics'
 import Sider from '../headers/Sider'
 import Top from '../headers/Top'
@@ -18,22 +18,19 @@ import SettingsPopup from './popup/SettingsPopup'
 import ClaimedNft from './popup/ClaimedNfft'
 import Notifications from '../community/Notifications'
 import { ConnectEmbed, useActiveAccount } from 'thirdweb/react'
-import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { computeAffinity, fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
+import { onAuthStateChanged } from 'firebase/auth';
 import { defineChain } from 'thirdweb'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth'
 import { client } from '@/lib/client'
 import { useRouter } from 'next/navigation'
-import CloseIcon from '../icons/CloseIcon'
 import XMark from '../icons/XMark'
 
 
-type Props = {}
-
 const { auth } = initializeFirebaseClient();
 
-function ExplorePageClient({}: Props) {
+function ExplorePageClient({}) {
   const router = useRouter();
   
   const camp = defineChain({
@@ -60,16 +57,20 @@ function ExplorePageClient({}: Props) {
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [finishedIds, setFinishedIds] = useState<Set<string>>(new Set());
+  const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
+  const [genreAffinity, setGenreAffinity] = useState<Record<string, number>>({}); // for current user
+  
     
   useEffect(() => {
-    setBooting(true);
-
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setCurrentUser(u?.uid);
 
       if (u?.uid) {
         // Fetch user data in parallel
-        const [userData, _balance] = await Promise.all([
+        const [userData, ] = await Promise.all([
           getUserProfile(u.uid, setProfileUrl),
           fetchUserNftBalance(u.uid, setUserBalance),
         ]);
@@ -79,6 +80,14 @@ function ExplorePageClient({}: Props) {
           setName(userData.name ?? "");
           setFilePath(userData.profilePicturePath ?? "");
           if (Array.isArray(userData.genres)) setGenreOptions(userData.genres);
+
+          const liked = Array.isArray(userData.liked) ? userData.liked : [];
+          const finished = Array.isArray(userData.finished) ? userData.finished : [];
+          const followedAuthors = Array.isArray(userData.following) ? userData.following : [];
+
+          setLikedIds(new Set(liked));
+          setFinishedIds(new Set(finished));
+          setFollowedAuthorIds(new Set(followedAuthors));
         }
       } else {
         // logged out
@@ -87,6 +96,10 @@ function ExplorePageClient({}: Props) {
         setName("");
         setGenreOptions([]);
         setUserBalance(0);
+
+        setLikedIds(new Set());
+        setFinishedIds(new Set());
+        setFollowedAuthorIds(new Set());
       }
 
       setBooting(false);
@@ -112,6 +125,14 @@ function ExplorePageClient({}: Props) {
       return () => clearTimeout(timer);
     }
   }, [claimed]);
+
+  useEffect(() => {
+    if(currentUser){
+      computeAffinity(currentUser, setGenreAffinity, genreOptions, likedIds, finishedIds);
+    }
+
+  }, [currentUser, genreOptions, likedIds, finishedIds])
+    
 
   if (booting) {
     return (
@@ -145,7 +166,6 @@ function ExplorePageClient({}: Props) {
           <div className='md:hidden flex flex-col w-full sticky top-0 z-40'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 
@@ -164,7 +184,6 @@ function ExplorePageClient({}: Props) {
           <div className='w-full flex flex-col px-4'>
               <div className='m-2'>
                   <Carousel 
-                    setMintPopup={setMintPopup}
                     userId={currentUser || ''}
                   />
               </div>
@@ -183,7 +202,12 @@ function ExplorePageClient({}: Props) {
 
 
               <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
-                 <Genre />
+                 <Genre 
+                    likedIds={likedIds}
+                    finishedIds={finishedIds}
+                    followedAuthorIds={followedAuthorIds}
+                    genreAffinity={genreAffinity}
+                 />
               </div>
 
           </div>
