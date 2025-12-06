@@ -35,8 +35,6 @@ function EditChapter({}: Props) {
   const [booting, setBooting] = useState<boolean>(true);    
 
   useEffect(() => { 
-    setBooting(true);
-
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
       if (!user) {
@@ -79,7 +77,6 @@ function EditChapter({}: Props) {
           <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 

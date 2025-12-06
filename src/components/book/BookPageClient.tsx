@@ -20,10 +20,9 @@ import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import XMark from '../icons/XMark';
 
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function BookPageClient({}: Props) {
+function BookPageClient({}) {
     const camp = defineChain({
       id: 123420001114,
     });
@@ -101,7 +100,6 @@ function BookPageClient({}: Props) {
           <div className='flex flex-col w-full md:hidden sticky top-0 z-20'>
               <Top 
                 profileUrl={profileUrl}
-                setLoading={setLoading}
               />
           </div>
 

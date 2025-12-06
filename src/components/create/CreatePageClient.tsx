@@ -16,10 +16,9 @@ import SpinLoader from '../loading/SpinLoader';
 import { useRouter } from 'next/navigation';
 
 
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function CreatePageClient({}: Props) {
+function CreatePageClient({}) {
   const router = useRouter();
   
   const [booting, setBooting] = useState(true);  
@@ -36,7 +35,6 @@ function CreatePageClient({}: Props) {
   const [filePath, setFilePath] = useState<string>('');
 
   useEffect(() => { 
-    setBooting(true);
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
         if (!user) {
@@ -80,7 +78,6 @@ function CreatePageClient({}: Props) {
           <div className='flex md:hidden flex-col w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 

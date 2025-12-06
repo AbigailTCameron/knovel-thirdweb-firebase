@@ -17,11 +17,9 @@ import SpinLoader from '../loading/SpinLoader';
 import DraftList from './DraftList';
 import NewSynopsis from './NewSynopsis';
 
-
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function DraftPageClient({}: Props) {
+function DraftPageClient({}) {
     const router = useRouter();
     const params = useParams<{ userId: string, id: string }>();
   
@@ -153,7 +151,6 @@ function DraftPageClient({}: Props) {
           <div className='flex flex-col md:hidden w-full'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 
