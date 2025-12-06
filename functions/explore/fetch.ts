@@ -20,6 +20,7 @@ import { Notification } from "../..";
 import { getContract, sendTransaction } from "thirdweb";
 import { balanceOf, claimTo } from "thirdweb/extensions/erc1155";
 import { useActiveAccount } from "thirdweb/react";
+import {genres as ALL_GENRES} from "../../bookGenres";
 
 const { db } = initializeFirebaseClient();
 
@@ -96,11 +97,73 @@ export const fetchTopRated = async (setBooks: Function) => {
   }
 }
 
+export const computeAffinity = async (currentUser: string, setGenreAffinity: Function, genreOptions: string[], likedIds: Set<string>, finishedIds: Set<string>) => {
+  if (!currentUser) {
+    setGenreAffinity({});
+    return;
+  }
+
+  // Base map: start all known genres at 0
+  const affinity: Record<string, number> = {};
+  ALL_GENRES.forEach((g) => {
+    affinity[g] = 0;
+  });
+
+  // 1) +3 for explicit user genres (user.genres / genreOptions)
+  for (const g of genreOptions) {
+    if (affinity[g] === undefined) affinity[g] = 0;
+    affinity[g] += 3;
+  }
+
+  // 2) +1 per liked/finished book in that genre
+  // We need to fetch the book docs to know which genres each has.
+  const likedArray = Array.from(likedIds);
+  const finishedArray = Array.from(finishedIds);
+  const bookIds = Array.from(new Set([...likedArray, ...finishedArray])); // unique
+
+  if (bookIds.length === 0) {
+    setGenreAffinity(affinity);
+    return;
+  }
+
+  const BATCH_SIZE = 10; // Firestore "in" queries limited to 10 IDs
+  for(let i = 0; i < bookIds.length; i+= BATCH_SIZE) {
+    const batchIds = bookIds.slice(i, i + BATCH_SIZE);
+    const booksRef = collection(db, "books");
+    const q = query(booksRef, where("__name__", "in", batchIds));
+    const snap = await getDocs(q);
+
+    snap.forEach((docSnap) => {
+        const data = docSnap.data() as any;
+        const bookGenres: string[] = Array.isArray(data.genres) ? data.genres : [];
+        const id = docSnap.id;
+
+        const liked = likedIds.has(id);
+        const finished = finishedIds.has(id);
+        const increment = (liked ? 1 : 0) + (finished ? 1 : 0);
+
+        if (increment === 0) return;
+
+        for (const g of bookGenres) {
+          if (affinity[g] === undefined) affinity[g] = 0;
+          affinity[g] += increment;
+        }
+    });
+  }
+  setGenreAffinity(affinity);
+
+}
+
 export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
   try {
     const booksCollection = collection(db, "books");
 
-    const booksQuery = query(booksCollection, where("genres", "array-contains", genre), limit(20));
+    const booksQuery = query(
+      booksCollection, 
+      where("genres", "array-contains", genre), 
+      orderBy("trendingScore", "desc"),
+      limit(30)
+    );
 
     const querySnapshot = await getDocs(booksQuery);
 

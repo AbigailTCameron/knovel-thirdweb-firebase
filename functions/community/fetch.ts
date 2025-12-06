@@ -132,6 +132,7 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
     let booksQuery = query(
       booksCollection, 
       where("genres", "array-contains-any", userGenres),
+      orderBy("trendingScore", "desc"),
       limit(10)
     );
 
@@ -142,6 +143,7 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
       booksQuery = query(
         booksCollection,
         where("genres", "array-contains-any", userGenres),
+        orderBy("trendingScore", "desc"),
         startAfter(lastVisibleDoc),
         limit(10)
       );
@@ -173,8 +175,8 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
         };
       }))
 
-      setResults((prevResults: any) => {
-        const existingIds = new Set(prevResults.map((book: any) => book.id));
+      setResults((prevResults: any[]) => {
+        const existingIds = new Set(prevResults.map((book) => book.id));
         const newBooks = books.filter((book) => !existingIds.has(book.id));
         return [...prevResults, ...newBooks];
       });
@@ -184,3 +186,35 @@ export const recommendedBooks = async(userGenres: string[], setResults: Function
     console.error("Error trying to get the recommended books.", err); 
   }
 }
+
+
+export const fetchRecommendedForUser = async (
+  userGenres: string[],
+  setBooks: Function
+) => {
+  if (!userGenres || userGenres.length === 0) {
+    setBooks([]);
+    return;
+  }
+
+  try {
+    const booksCollection = collection(db, "books");
+
+    const booksQuery = query(
+      booksCollection,
+      where("genres", "array-contains-any", userGenres),
+      orderBy("trendingScore", "desc"),
+      limit(20)
+    );
+
+    const snap = await getDocs(booksQuery);
+    const books = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setBooks(books);
+  } catch (err) {
+    console.error("Error fetching recommended books:", err);
+  }
+};

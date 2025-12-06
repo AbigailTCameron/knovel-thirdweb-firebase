@@ -18,7 +18,7 @@ import SettingsPopup from './popup/SettingsPopup'
 import ClaimedNft from './popup/ClaimedNfft'
 import Notifications from '../community/Notifications'
 import { ConnectEmbed, useActiveAccount } from 'thirdweb/react'
-import { fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
+import { computeAffinity, fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { defineChain } from 'thirdweb'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
@@ -60,6 +60,12 @@ function ExplorePageClient({}: Props) {
   const [searchResults, setSearchResults] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState<boolean>(false);
+
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [finishedIds, setFinishedIds] = useState<Set<string>>(new Set());
+  const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
+  const [genreAffinity, setGenreAffinity] = useState<Record<string, number>>({}); // for current user
+  
     
   useEffect(() => {
     setBooting(true);
@@ -79,6 +85,14 @@ function ExplorePageClient({}: Props) {
           setName(userData.name ?? "");
           setFilePath(userData.profilePicturePath ?? "");
           if (Array.isArray(userData.genres)) setGenreOptions(userData.genres);
+
+          const liked = Array.isArray(userData.liked) ? userData.liked : [];
+          const finished = Array.isArray(userData.finished) ? userData.finished : [];
+          const followedAuthors = Array.isArray(userData.following) ? userData.following : [];
+
+          setLikedIds(new Set(liked));
+          setFinishedIds(new Set(finished));
+          setFollowedAuthorIds(new Set(followedAuthors));
         }
       } else {
         // logged out
@@ -87,6 +101,10 @@ function ExplorePageClient({}: Props) {
         setName("");
         setGenreOptions([]);
         setUserBalance(0);
+
+        setLikedIds(new Set());
+        setFinishedIds(new Set());
+        setFollowedAuthorIds(new Set());
       }
 
       setBooting(false);
@@ -112,6 +130,14 @@ function ExplorePageClient({}: Props) {
       return () => clearTimeout(timer);
     }
   }, [claimed]);
+
+  useEffect(() => {
+    if(currentUser){
+      computeAffinity(currentUser, setGenreAffinity, genreOptions, likedIds, finishedIds);
+    }
+
+  }, [currentUser, genreOptions])
+    
 
   if (booting) {
     return (
@@ -183,7 +209,12 @@ function ExplorePageClient({}: Props) {
 
 
               <div className="flex w-full halfxl:mt-5 lg:mt-0 sm:px-2">
-                 <Genre />
+                 <Genre 
+                    likedIds={likedIds}
+                    finishedIds={finishedIds}
+                    followedAuthorIds={followedAuthorIds}
+                    genreAffinity={genreAffinity}
+                 />
               </div>
 
           </div>
