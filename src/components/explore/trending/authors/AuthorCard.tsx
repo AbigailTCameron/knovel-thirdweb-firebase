@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchUsernameResults, updateFollowList } from '../../../../../functions/community/fetch';
 import { SearchedUser } from '../../../../..';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type Props = {
   className ?: string;
@@ -34,23 +35,26 @@ function AuthorCard({className, username, author, userId, tags, imgSrc}: Props) 
     );
   }
 
+
   useEffect(() => {
-      if (username) {
-        quickSearch(); 
-      } else {
-        setUsernameResults([]); 
-      }
-  }, [username, userId]);
+    if (!username) return; 
+    quickSearch();                  
+  }, [username]);
 
 
   return (
     <div className={`group relative flex flex-col hover:cursor-pointer ${className}`}>
 
       <div className='relative w-full h-full group-hover:hidden'>
-          <img 
-            className='w-full h-full block object-cover'
-            src={imgSrc}
+
+          <Image
+              className='w-full h-full block object-cover'
+              src={imgSrc}
+              alt=""
+              width="500"
+              height={"500"}
           />
+    
           <div className='absolute bottom-0 flex flex-col self-center backdrop-blur-sm w-full items-center justify-center p-2 text-white'>
               <p className='text-3xl halfxl:text-xl ss:text-lg xs:text-base font-semibold'>
                 {author}
@@ -71,9 +75,13 @@ function AuthorCard({className, username, author, userId, tags, imgSrc}: Props) 
       <div className='hidden scale-[0.9] group-hover:flex bg-white/10 backdrop-blur-md w-full h-full rounded-t-3xl shadow-xl shadow-white/20'>
 
           <div className='relative w-full h-full scale-[1.1]'>
-              <img 
-                className='w-full h-full block object-cover'
-                src={imgSrc}
+           
+              <Image
+                  className='w-full h-full block object-cover'
+                  src={imgSrc}
+                  alt=""
+                  width="500"
+                  height={"500"}
               />
 
               <div className='absolute bottom-0 flex flex-col self-center backdrop-blur-sm w-full items-center justify-center p-2 text-white'>
