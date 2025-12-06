@@ -2,7 +2,7 @@
 
 import initializeFirebaseClient from '@/lib/initFirebase'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PageAnalytics from '../analytics/PageAnalytics'
 import Sider from '../headers/Sider'
 import Top from '../headers/Top'
@@ -19,21 +19,18 @@ import ClaimedNft from './popup/ClaimedNfft'
 import Notifications from '../community/Notifications'
 import { ConnectEmbed, useActiveAccount } from 'thirdweb/react'
 import { computeAffinity, fetchUserNftBalance, getUserProfile, mintNft } from '../../../functions/explore/fetch'
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { defineChain } from 'thirdweb'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth'
 import { client } from '@/lib/client'
 import { useRouter } from 'next/navigation'
-import CloseIcon from '../icons/CloseIcon'
 import XMark from '../icons/XMark'
 
 
-type Props = {}
-
 const { auth } = initializeFirebaseClient();
 
-function ExplorePageClient({}: Props) {
+function ExplorePageClient({}) {
   const router = useRouter();
   
   const camp = defineChain({
@@ -68,14 +65,12 @@ function ExplorePageClient({}: Props) {
   
     
   useEffect(() => {
-    setBooting(true);
-
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setCurrentUser(u?.uid);
 
       if (u?.uid) {
         // Fetch user data in parallel
-        const [userData, _balance] = await Promise.all([
+        const [userData, ] = await Promise.all([
           getUserProfile(u.uid, setProfileUrl),
           fetchUserNftBalance(u.uid, setUserBalance),
         ]);
@@ -136,7 +131,7 @@ function ExplorePageClient({}: Props) {
       computeAffinity(currentUser, setGenreAffinity, genreOptions, likedIds, finishedIds);
     }
 
-  }, [currentUser, genreOptions])
+  }, [currentUser, genreOptions, likedIds, finishedIds])
     
 
   if (booting) {
@@ -171,7 +166,6 @@ function ExplorePageClient({}: Props) {
           <div className='md:hidden flex flex-col w-full sticky top-0 z-40'>
             <Top 
               profileUrl={profileUrl}
-              setLoading={setLoading}
             />
           </div>
 
@@ -190,7 +184,6 @@ function ExplorePageClient({}: Props) {
           <div className='w-full flex flex-col px-4'>
               <div className='m-2'>
                   <Carousel 
-                    setMintPopup={setMintPopup}
                     userId={currentUser || ''}
                   />
               </div>

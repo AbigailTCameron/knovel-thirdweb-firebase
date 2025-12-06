@@ -12,10 +12,9 @@ import { fetchSearchResults } from '../../../functions/explore/fetch';
 
 type Props = {
   profileUrl : string;
-  setLoading: Function;
 }
 
-function Top({profileUrl, setLoading}: Props) {
+function Top({profileUrl}: Props) {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -41,12 +40,10 @@ function Top({profileUrl, setLoading}: Props) {
   }
 
   useEffect(() => {
-    if (searchQuery) {
-      quickSearch(); 
-    } else {
-      setSearchResults([]); // Clear search results when the search query is empty
-    }
-  }, [searchQuery]);
+    if (!searchQuery) return; 
+    quickSearch();                  
+
+  });
 
 
   return (
@@ -69,7 +66,7 @@ function Top({profileUrl, setLoading}: Props) {
                 </div>
             </form>
 
-            {searchResults.length > 0 && (
+            {searchQuery && searchResults.length > 0 && (
               <div className="absolute top-full w-full rounded-xl shadow-md bg-[#1d242e] mt-2">
                 <SearchResults results={searchResults}/>
               </div>

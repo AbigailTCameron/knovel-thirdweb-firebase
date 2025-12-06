@@ -1,11 +1,7 @@
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
-type Props = {
-  
-}
-
-function FeaturedCollection({}: Props) {
+function FeaturedCollection({}) {
   const router = useRouter(); 
   
   return (

@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import HomeIcon from '../icons/HomeIcon'
 import { usePathname, useRouter } from 'next/navigation';
 import Notifications from '../icons/Notifications';
@@ -10,14 +9,15 @@ import NewPage from '../icons/NewPage';
 import Pencil from '../icons/Pencil';
 import Dashboard from '../icons/Dashboard';
 import XMark from '../icons/XMark';
+import Image from 'next/image';
 
 type Props = {
   userId ?: string;   
-  setSearchResults: Function;
-  setShowNotifications: Function;
-  setSettingsPopup: Function;
-  setLoading: Function;
-  showMenu: Function;
+  setSearchResults: (value: boolean) => void;
+  setShowNotifications: (value: boolean) => void;
+  setSettingsPopup: (value: boolean) => void;
+  setLoading: (value: boolean) => void;
+  showMenu: (value: boolean) => void;
   onRequireWalletConnect?: () => void;
 }
 
@@ -94,11 +94,13 @@ function SideMenu({userId, setSearchResults, setShowNotifications, setSettingsPo
             <div className='w-full flex flex-col rounded-xl text-sm py-2 space-y-3'>
                   <div className="flex items-center justify-between px-2">
                       <div className="flex w-fit h-[60px] ss:h-[50px] hover:cursor-pointer">
-                          <img 
+                          <Image 
                             onClick={handleHomeClick}
                             className="w-full h-full"
                             src="/knovel-logo-full.png"
-                            alt="knovel community"                
+                            alt="knovel community"   
+                            width={"500"}
+                            height={"500"}
                           />
                       </div>
 

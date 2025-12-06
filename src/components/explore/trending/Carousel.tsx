@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import FeaturedNft from './FeaturedNft';
 import FeaturedAuthor from './FeaturedAuthor';
 import Multirect from '@/components/design/Multirect';
 import FeaturedCollection from './FeaturedCollection';
 
 type Props = {
-  setMintPopup: Function;
   userId: string;
 }
 
-function Carousel({setMintPopup, userId}: Props) {
+function Carousel({userId}: Props) {
   const [screen, setScreen] = useState<number>(0);
-  const [swipeDirection, setSwipeDirection] = useState('left'); 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSwipeDirection('left');
+      // setSwipeDirection('left');
       setScreen((prevPage) => (prevPage + 1) % 2);
     }, 10000); 
 

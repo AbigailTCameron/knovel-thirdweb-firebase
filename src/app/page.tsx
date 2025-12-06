@@ -7,7 +7,6 @@ import Connect from "@/components/home/Connect";
 import Technology from "@/components/home/Technology";
 import ComingSoon from "@/components/home/ComingSoon";
 import Footer from "@/components/footers/Footer";
-import { defineChain } from 'thirdweb/chains'
 import PageAnalytics from "@/components/analytics/PageAnalytics";
 
 
