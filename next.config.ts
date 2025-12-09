@@ -4,6 +4,14 @@ const nextConfig: NextConfig = {
   /* config options here */
    // Workaround for Turbopack + pino/thread-stream issue
   serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream'],
+    images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

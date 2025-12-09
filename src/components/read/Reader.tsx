@@ -1,147 +1,138 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { type Rendition} from 'epubjs';
 import PopOut from './PopOut';
 import ReadHeader from './ReadHeader';
-import { BookChapters, BookMetadata } from '../../..';
+import { BookChapters, BookMetadata, EpubBook, EpubRendition } from '../../..';
 import Footer from './Footer';
 import { applyCustomTheme, calculateFontSize } from '../../../functions/read/fetch';
 
 
 type Props = {
   chapters : BookChapters[];
-  book : any;
+  book ?: EpubBook;
   metadata ?: BookMetadata; 
   id: string;
-  setShowChat: Function;
-  showChat: boolean;
+  setShowChat: React.Dispatch<React.SetStateAction<boolean>>;
+  theme: string; 
+  setTheme: (theme: "dark" | "light") => void;
 }
 
-function Reader({chapters, book, metadata, id, setShowChat, showChat}: Props) {
-  const [location, setLocation] = useState<string | number>(0);
+function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Props) {
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+
   const [showChapters, setShowChapters] = useState(false);
-  const containerRef = useRef(null);
-  const renditionRef = useRef<Rendition | undefined>(undefined); 
-  const screenWidth = window.innerWidth;
+  const [fontSize, setFontSize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return calculateFontSize(window.innerWidth);
+    }
+    // Fallback for SSR
+    return 20;
+  });
+
+  const [rendition, setRendition] = useState<EpubRendition | null>(null);
+  const [currentHref, setCurrentHref] = useState<string | null>(null);
+  const [mode, setMode] = useState<"paginated" | "scrolled-doc">("paginated");
   const [highlightColor, setHighlightColor] = useState('yellow');
-  const [fontSize, setFontSize] = useState(calculateFontSize(screenWidth));
-  const [bookmark, setBookmark] = useState<string | null>(null);
 
+
+
+  // Initialize/recreate rendition when book or mode changes
   useEffect(() => {
-    const savedFontSize = localStorage.getItem(`fontSize-${id}`);
-    const savedBookmark =   localStorage.getItem(`bookmark-${id}`)
-    if(savedFontSize){
-      setFontSize(parseInt(savedFontSize, 10)); 
-    }
+    if (!book || !viewerRef.current || !book.renderTo) return;
 
-    if(savedBookmark){
-      setBookmark(savedBookmark); 
-    }
-  }, [fontSize, bookmark])
-
-
-  useEffect(() => {
+    // Clean a rendition
+    const r: EpubRendition | null = book.renderTo(viewerRef.current, {
+      width: "100%",
+      height: "100%",
+      flow: mode, 
+      spread: "auto",
+    }) as EpubRendition;
   
-    const savedLocation = localStorage.getItem(`currentPage-${id}`);
-    let initialLocationSet = false;
-
-    if(book){
-        book.opened.then(() => {
-          const rendition = book.renderTo(containerRef.current, {
-              flow: 'paginated',
-              width: '100%',
-              height: "100%"
-          })
-
-           // Apply the dynamic theme
-          applyCustomTheme(rendition, fontSize);
-
-          // Listen for location changes
-          rendition.on("locationChanged", (loc: React.SetStateAction<string | number>) => {
-              if (!initialLocationSet) return; 
-              setLocation(loc); 
-              localStorage.setItem(`currentPage-${id}`, JSON.stringify(loc));
-          })
-
-          renditionRef.current = rendition;
-          
-          // Restore location or bookmark if available
-          const restoreLocation = savedLocation || bookmark;
-            if (restoreLocation) {
-                const parsedLocation = JSON.parse(restoreLocation);
-                rendition.display(parsedLocation.start) // Use `start` for precise positioning
-                .then(() => {
-                    initialLocationSet = true; // Mark location restoration as done
-                })
-                .catch((error: any) => {
-                  console.error("Error restoring location:", error);
-                  initialLocationSet = true; // Still mark it as done to avoid blocking
-                });
-            } else {
-                rendition.display(location).then(() => {
-                  initialLocationSet = true; // Mark as initialized
-                });
-            }
-
-          })
-        
-      }
-
-      return () => {
-          if(renditionRef.current){
-            renditionRef.current.destroy()
-          }
-      };
-
-  }, [id, screenWidth, showChat, book, bookmark])
-
-  const handleBookmark = () => {
-    if (location) {
-      setBookmark(JSON.stringify(location));
-      localStorage.setItem(`bookmark-${id}`, JSON.stringify(location));
+    // Display first chapter or default
+    if (chapters.length > 0 && chapters[0].href) {
+      r.display(chapters[0].href);
+      //setCurrentHref(chapters[0].href);
+    } else {
+      r.display();
     }
-  };
+
+    const handleRelocated = (...args: unknown[]) => {
+      const location = args[0] as { start?: { href?: string } } | undefined;
+      const href = location?.start?.href ?? null;
+      setCurrentHref(href);               // ✅ OK: this is in a callback from epub.js
+    };
+
+    r.on("relocated", handleRelocated);
+
+    setRendition(r);
+
+    // Cleanup when component unmounts or dependencies change
+    return () => {
+      r.off?.("relocated", handleRelocated);
+      r?.destroy?.();
+      setRendition(null);
+    };
+
+  }, [book, mode, chapters])
+
+  // 2) Apply theme + font-size whenever they change
+  useEffect(() => {
+    if (!rendition) return;
+    applyCustomTheme(rendition, fontSize, theme); // register + select + base styles
+    rendition.themes?.fontSize(`${fontSize}px`);  // ensure text size is updated
+  }, [rendition, fontSize, theme]);
+
+
+  // 3) Highlight handler that always sees latest highlightColor
+  useEffect(() => {
+    if (!rendition) return;
+    const handleSelected = (arg: unknown) => {
+      const cfiRange = typeof arg === "string" ? arg : null;
+      if (!cfiRange) return;
+
+      rendition.annotations?.add(
+        "highlight",
+        cfiRange,
+        {},
+        null,
+        "epub-highlight",
+        {
+          fill: highlightColor,
+          "fill-opacity": 0.3,
+          "mix-blend-mode": "multiply",
+        }
+      );
+    };
+    rendition.on("selected", handleSelected);
+    return () => {
+      rendition.off?.("selected", handleSelected);
+    };
+  }, [rendition, highlightColor]);
+
 
   const handleNext = () => {
-    if (renditionRef.current) {
-        renditionRef.current.next();
-    }
+     rendition?.next?.();
   }
 
   const handlePrev = () => {
-    if (renditionRef.current) {
-      renditionRef.current.prev(); // Navigate to the previous page
-    } 
+    rendition?.prev?.();
   }
+
 
   // Inside Reader Component
 const handleCancel = useCallback(() => {
   setShowChapters(false);
 }, [setShowChapters]);
 
-const handleIncreaseFontSize = () => {
-  setFontSize((prev) => {
-    const newSize = Math.min(prev + 2, 32); // Limit max font size to 32px
-    if (renditionRef.current) {
-      applyCustomTheme(renditionRef.current, newSize);
-    }
-    localStorage.setItem(`fontSize-${id}`, newSize.toString()); // Save to localStorage
-    return newSize;
-  });
-};
+const increaseFont = () => setFontSize((prev) => Math.min(prev + 2, 32));
+const decreaseFont = () => setFontSize((prev) => Math.max(prev - 2, 12));
 
-const handleDecreaseFontSize = () => {
-  setFontSize((prev) => {
-    const newSize = Math.max(prev - 2, 12); // Limit min font size to 12px
-    if (renditionRef.current) {
-      applyCustomTheme(renditionRef.current, newSize);
-    }
-    localStorage.setItem(`fontSize-${id}`, newSize.toString()); // Save to localStorage
-    return newSize;
-  });
-};
+const toggleTheme = (next: "dark" | "light") => {
+  setTheme(next);
+}
 
-const isBookmarked = bookmark === JSON.stringify(location);
-
+const toggleMode = (next: "paginated" | "scrolled-doc") => {
+  setMode(next)  
+}
  
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -151,27 +142,29 @@ const isBookmarked = bookmark === JSON.stringify(location);
            title={metadata?.title}
            setShowChapters={setShowChapters}
            showChapters={showChapters}
-           onBookmark={handleBookmark} // Pass the bookmark handler
-           isBookmarked={isBookmarked}
            bookId={id}
+           theme={theme}
          />
        </div>
 
-       <div className="flex flex-col bg-[#1e1e1e] rounded-xl w-full h-full">
-          <div className=" relative flex w-full h-full bg-[#1e1e1e] px-2 ">
-            <div ref={containerRef} className="w-full h-full bg-[#1e1e1e]"></div>
-          
+       <div className={`flex flex-col bg-[#1e1e1e] ${theme === "light" && "bg-white"} rounded-xl w-full h-full`}>
+          <div className={`relative flex w-full h-full bg-[#1e1e1e] ${theme === "light" && "bg-white"} px-2`}>
+            <div ref={viewerRef} className={`w-full h-full bg-[#1e1e1e] ${theme === "light" && "bg-white"}`}></div>
           </div>
 
           <div className="flex z-10 basis-1/12 py-2 bottom-0 w-full h-full">
             <Footer 
-              highlightColor={highlightColor}
-              setHighlightColor={setHighlightColor}
               setShowChat={setShowChat}
               handlePrev={handlePrev}
               handleNext={handleNext}
-              handleIncreaseFontSize={handleIncreaseFontSize}
-              handleDecreaseFontSize={handleDecreaseFontSize}
+              handleIncreaseFontSize={increaseFont}
+              handleDecreaseFontSize={decreaseFont}
+              highlightColor={highlightColor}
+              setHighlightColor={setHighlightColor}
+              toggleTheme={toggleTheme}
+              theme={theme}
+              toggleMode={toggleMode}
+              page={mode}
             />
           
           </div>
@@ -183,15 +176,14 @@ const isBookmarked = bookmark === JSON.stringify(location);
      
       {showChapters && (
         <PopOut 
+          currentHref={currentHref}
           chapters={chapters}
           onCancel={handleCancel}
           isOpen={showChapters}
           handleChapterChange={(href) => {
-            if(renditionRef.current){
-              renditionRef.current.display(href).catch((error) => {
-                console.error("Error navigating to chapter:", error); 
-              })
-            }
+            if (!rendition) return;
+              rendition.display(href);
+              setCurrentHref(href);
             setShowChapters(false);
           }}
         />

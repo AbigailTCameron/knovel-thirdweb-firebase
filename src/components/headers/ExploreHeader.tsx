@@ -9,12 +9,13 @@ import { client } from '@/lib/client';
 import { defineChain } from 'thirdweb'
 import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login';
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
+import Image from 'next/image';
 
 
 type Props = {
   userId?: string;
   profileUrl : string;
-  setLoading: Function
+  setLoading: (value: boolean) => void;
 }
 
 function ExploreHeader({profileUrl, setLoading, userId}: Props) {
@@ -66,14 +67,14 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
   return (
     <div className="relative flex justify-between z-40 w-full backdrop-blur-md text-white items-center font-mono text-sm py-2 px-6 md:p-4 sm:px-2 xs:px-1">
         <div className="flex w-[60px] h-fit hover:cursor-pointer">
-
-          <img 
+          <Image 
             onClick={handleExploreClick}
             className="w-full h-full"
             src="/knovel-logo-white.png"
-            alt="knovel community"                
+            alt="knovel community"        
+            width={"500"}
+            height={"500"}   
           />
-
         </div>
 
 
