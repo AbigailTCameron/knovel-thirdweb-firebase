@@ -7,9 +7,10 @@ type Props = {
   chapters?: BookChapters[];
   isOpen: boolean;
   handleChapterChange: (href: string) => void;
+  currentHref: any;
 };
 
-function PopOut({ onCancel, chapters, isOpen, handleChapterChange }: Props) {
+function PopOut({ onCancel, chapters, isOpen, handleChapterChange, currentHref }: Props) {
   const popOutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ function PopOut({ onCancel, chapters, isOpen, handleChapterChange }: Props) {
             {chapters?.map((chapter, index) => (
               <div
                 onClick={() => handleChapterChange(chapter.href)}
-                className="flex flex-col w-full h-full justify-center hover:cursor-pointer px-4"
+                className={`flex flex-col w-full h-full justify-center hover:cursor-pointer px-4 ${currentHref === chapter.href && "font-bold text-cyan-400"} `}
                 key={index}
               >
                 <p>{chapter.title}</p>

@@ -3,12 +3,19 @@ import { doc, getDoc } from "firebase/firestore";
 import { pinata } from "../../utils/config";
 import ePub, { NavItem, type Rendition } from 'epubjs';
 import { notFound } from "next/navigation";
+import { BookChapters, BookMetadata, EpubBook, EpubRendition } from "../..";
 
 
 
 const { db } = initializeFirebaseClient();
 
-export const fetchBookInfo = async (id: string, setChapters: Function, setBook: Function, setMetadata: Function, setAuthorId: Function) => {
+export const fetchBookInfo = async (
+  id: string, 
+  setChapters: (chapters: BookChapters[]) => void, 
+  setBook: (book: EpubBook) => void, 
+  setMetadata: (metadata: BookMetadata) => void, 
+  setAuthorId: (authorId: string) => void
+) => {
   try{
     // Reference to the specific book document in the Firestore "books" collection
     const bookRef = doc(db, 'books', id);
@@ -41,32 +48,52 @@ export const fetchBookInfo = async (id: string, setChapters: Function, setBook: 
   }
 }
 
-async function fetchEpub(response:any, setChapters: Function, setBook: Function, setMetadata: Function) {
+async function fetchEpub(
+  response:Blob, 
+  setChapters: (chapters: BookChapters[]) => void, 
+  setBook: (book: EpubBook) => void, 
+  setMetadata: (metadata: BookMetadata) => void
+) {
   try {
-    const arrayBuffer = await response.arrayBuffer();
-    const epubBook = ePub(arrayBuffer); 
 
-    // Wait for the book to fully load
-    await epubBook.loaded.navigation;
-    await epubBook.ready;
-    await epubBook.loaded.spine;
+    // 🔧 Convert Blob -> ArrayBuffer so it matches the ePub typing
+    const arrayBuffer = await response.arrayBuffer();
+    const epubBook = ePub(arrayBuffer) as unknown as EpubBook;
+
+    // Wait for core things to be ready
+    await Promise.all([
+      epubBook.ready,
+      epubBook.loaded.metadata,
+      epubBook.loaded.navigation,
+    ]);
 
     // Set Book Metadata
     const metadata = await epubBook.loaded.metadata;
-    setMetadata(metadata);
+    // Optionally attach cover
+    let coverUrl: string | null = null;
+    try {
+      const maybeCover = await epubBook.coverUrl?.(); 
+      coverUrl = maybeCover ?? null;      
+    } catch {}
 
-    // Set Chapter Info (TOC from epubjs directly)
-    const toc = epubBook.navigation ? epubBook.navigation.toc : [];
-    if (toc && toc.length > 0) {
-      const chapters = toc.map((item: NavItem) => ({
-        title: item.label, // Title of the chapter
-        href: item.href,   // The href to the chapter (relative path)
+    setMetadata({
+      ...metadata,
+      cover: coverUrl ?? metadata.cover, // if your BookMetadata has this field
+    } as BookMetadata);
+
+    // 2) TOC / chapters
+    const nav = await epubBook.loaded.navigation;
+    const toc = nav?.toc ?? epubBook.navigation?.toc ?? [];
+    if (Array.isArray(toc) && toc.length > 0) {
+      const chapters: BookChapters[] = toc.map((item: NavItem) => ({
+        title: item.label,
+        href: item.href, 
       }));
-      setChapters(chapters); // Set chapters in your state
+      setChapters(chapters);
     } else {
       console.log('No TOC found in the EPUB');
     }
-  
+
     setBook(epubBook); // Store the book
 
   } catch (error) {
@@ -83,41 +110,29 @@ export const calculateFontSize = (screenWidth: number) => {
 };
 
 
-export const applyCustomTheme = (rendition: Rendition, fontSize: number) => {
+export const applyCustomTheme = (r: EpubRendition, fontSize: number, theme: string) => {
+   // Register themes
+    r.themes?.register("dark", {
+      "body": {
+        background: "#1e1e1e",
+        color: "#f9fafb",
+      },
+      "p": {
+        "line-height": "1.6",
+      },
+    });
+
+    r.themes?.register("light", {
+      body: {
+        background: "#f9fafb",
+        color: "#111827",
+      },
+      p: {
+        "line-height": "1.6",
+      },
+    });
+
+    r.themes?.select(theme);
+    r.themes?.fontSize(`${fontSize}px`);
   
-  rendition.themes.register("customTheme", {
-    body: {
-      background: "#1e1e1e",
-      color: "#ffffff !important",
-      "font-size": `${fontSize}px`,
-      "font-family": "Baskerville, monospace",
-      "line-height": "1.6",
-      padding: "10px",
-      backgroundColor: "#1e1e1e",
-      "background-color": "#1e1e1e",
-      border:"0"
-    },
-    div: {
-      background: "#1e1e1e",
-      color: "#ffffff !important",
-      "font-size": `${fontSize}px`,
-      "font-family": "Baskerville, monospace",
-      "line-height": "1.6",
-      padding: "10px",
-      backgroundColor: "#1e1e1e",
-      "background-color": "#1e1e1e",
-      border:"0"
-    },
-
-    "*": {
-      color: "#ffffff !important",
-      background: "#1e1e1e",
-    },
-    a: {
-      "text-decoration": "none",
-    },
-  });
-
-  // Apply the custom theme
-  rendition.themes.select("customTheme");
 };

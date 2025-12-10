@@ -4,6 +4,7 @@ import EmptyHeart from '../icons/EmptyHeart';
 import { timeAgo } from '../../../tools/timeago';
 import { deleteComment, fetchCommenterImageAndName, fetchLikesCount, toggleLikeComment } from '../../../functions/comments/fetch';
 import Profile from '../icons/Profile';
+import Image from 'next/image';
 
 
 
@@ -17,9 +18,10 @@ type Props = {
   authorId: string
   onDeleteComment: (commentId: string) => void; 
   onRequireWalletConnect?: () => void;
+  theme: string;
 }
 
-function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment, authorId, onRequireWalletConnect}: Props) {
+function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onDeleteComment, authorId, onRequireWalletConnect, theme}: Props) {
   const [profileUrl, setProfileUrl] = useState('');
   const [fullname, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -65,10 +67,13 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
     <div className="flex space-x-3 w-full">
         <div className="flex-none">
           {profileUrl ? (
-             <img 
-              className="w-[30px] h-[30px] rounded-full"
-              src={profileUrl}
-             />
+              <Image 
+                className="w-[30px] h-[30px] rounded-full"
+                src={profileUrl}
+                alt=""
+                width="500"
+                height="500"
+              />
           ) : (
             <Profile 
               className="w-[30px] h-[30px] rounded-full stroke-white"
@@ -96,13 +101,13 @@ function CommentInfo({commenterId, comment, date, userId, commentId, bookId, onD
             {liked ?  (
               <SolidHeart 
                 onClick={handleToggleLike} 
-                className="stroke-white fill-white size-4 hover:cursor-pointer"
+                className={`${theme == "light" ? "stroke-red-500 fill-red-500" : "stroke-light fill-white"} size-4 hover:cursor-pointer`}
               />
 
             ) : (
               <EmptyHeart
                 onClick={handleToggleLike} 
-                className="stroke-white size-4 hover:cursor-pointer"
+                className={`${theme === "light" ? "stroke-black" : "stroke-white"} size-4 hover:cursor-pointer`}
               />
             )}
             <p>{likesCount}</p>

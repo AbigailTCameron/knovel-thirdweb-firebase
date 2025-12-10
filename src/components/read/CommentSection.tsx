@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Comment } from '../../..';
-import FlowButton from '../buttons/FlowButton';
 import XMark from '../icons/XMark';
 import CommentInfo from './CommentInfo';
 import { addComment, fetchbookComments } from '../../../functions/comments/fetch';
 import Profile from '../icons/Profile';
+import Image from 'next/image';
 
 
 type Props = {
@@ -12,27 +12,30 @@ type Props = {
   userId : string;
   bookId : string;
   authorId: string;
-  setShowChat : Function;
+  setShowChat : React.Dispatch<React.SetStateAction<boolean>>;
   title : string;
   username: string;
   name: string;
-  setUsernamePopup: Function;
+  setUsernamePopup: React.Dispatch<React.SetStateAction<boolean>>;
   onRequireWalletConnect?: () => void;
+  theme: string;
 }
 
-function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title, username, name, setUsernamePopup, onRequireWalletConnect}: Props) {
+function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, title, username, name, setUsernamePopup, onRequireWalletConnect, theme}: Props) {
   const [commentText, setCommentText] = useState(''); 
   const [comments, setComments] = useState<Comment[]>([]);
-  
-  useEffect(() => {
-    grabComments()
-  }, [userId, bookId])
 
-  const grabComments = async() => {
+
+  const grabComments = useCallback(async() => {
     if(authorId){
       await fetchbookComments(authorId, bookId, setComments);
     }
-  }
+  }, [authorId, bookId])
+
+  
+  useEffect(() => {
+    grabComments()
+  }, [userId, grabComments])
 
   const handlePostComment = async () => {
     if(!userId){
@@ -68,12 +71,12 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
 
 
   return (
-    <div className="relative flex flex-col rounded-xl bg-[#111111] w-full h-full text-white px-2 overflow-hidden">
-        <div className="relative text-lg font-semibold flex items-center justify-center p-4">
+    <div className={`relative flex flex-col rounded-xl ${theme === "light" ? "bg-white text-black" : "bg-[#111111] text-white"} w-full h-full px-2 overflow-hidden`}>
+        <div className={`relative text-lg font-semibold flex items-center justify-center p-4`}>
           <p>{comments.length} Comments</p>
           
         
-          <XMark onClick={() => setShowChat((prev: boolean) => !prev)} className="hover:cursor-pointer stroke-white absolute right-2 size-6"/>
+          <XMark onClick={() => setShowChat((prev: boolean) => !prev)} className={`hover:cursor-pointer ${theme === "light" ? "stroke-black" : "stroke-white"} absolute right-2 size-6`}/>
          
         </div>
 
@@ -92,6 +95,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
                   bookId={bookId}
                   onDeleteComment={handleDeleteComment} // Pass delete handler
                   onRequireWalletConnect={onRequireWalletConnect}
+                  theme={theme}
                 />
       
             </div>
@@ -101,11 +105,14 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
 
   
 
-        <div className="absolute backdrop-blur-lg flex w-full h-fit items-center justify-center bottom-0 border-t border-[#282828] px-4 py-4 space-x-2">
+        <div className={`absolute backdrop-blur-lg flex w-full h-fit items-center justify-center bottom-0 ${theme === "dark" && "border-t border-[#282828]"} px-4 py-4 space-x-2`}>
             {profileUrl ? (
-                <img 
+                <Image 
                   className="rounded-full w-[40px] h-[40px]"
                   src={profileUrl}
+                  alt=""
+                  width="500"
+                  height="500"
                 />
             ) : (
                 <Profile 
@@ -115,7 +122,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
         
         
             <textarea
-              className="flex items-center field-sizing:content focus:outline-none bg-[#303030] w-full h-full rounded-3xl px-3 py-2 font-normal resize-none"
+              className={`flex items-center field-sizing:content focus:outline-none ${theme === "light" ? "bg-slate-200" : "bg-[#303030]"} w-full h-full rounded-3xl px-3 py-2 font-normal resize-none`}
               placeholder='Add a comment...'
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
@@ -123,12 +130,9 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
 
                 
             <div onClick={handlePostComment}>
-                <FlowButton 
-                  title="post"
-                  buttonRadius='rounded-3xl'
-                  buttonWidth='w-fit'
-                />
-
+                <div className={`relative w-fit text-center rounded-xl px-10 py-4 sm:py-1 sm:text-sm ${theme === "light" ? "text-black border-2 border-black" : "bg-white/30 text-white"} overflow-hidden font-semibold group hover:cursor-pointer `}>
+                  <p>post</p>
+                </div>
             </div>
            
         </div>

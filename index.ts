@@ -1,5 +1,72 @@
 
 // types/index.ts
+import { NavItem } from "epubjs";
+
+export interface EpubLocations {
+  generate: (chars?: number) => Promise<void> | void;
+  percentageFromCfi: (cfi: string) => number;
+}
+
+export interface EpubThemes {
+  register: (name: string, styles: Record<string, unknown>) => void;
+  select: (name: string) => void;
+  fontSize: (size: string) => void;
+}
+export interface EpubNavigation {
+  toc?: NavItem[];
+  // other fields we don't care about can be left as unknown
+  [key: string]: unknown;
+}
+export interface EpubLoaded {
+  metadata: Promise<Record<string, unknown>>;
+  navigation: Promise<EpubNavigation>;
+  spine?: Promise<unknown>;
+  // other keys we don't use:
+  [key: string]: unknown;
+}
+
+export interface EpubRenderOptions {
+  width?: number | string;
+  height?: number | string;
+  flow?: "paginated" | "scrolled-doc" | "scrolled-continuous";
+  spread?: "auto" | "none" | "always";
+  [key: string]: unknown;
+}
+
+export interface EpubAnnotations {
+  add: (
+    type: string,
+    cfiRange: string,
+    data?: unknown,
+    cb?: ((e: unknown) => void) | null,
+    className?: string,
+    styles?: Record<string, unknown>
+  ) => void;
+}
+
+export interface EpubRendition {
+  display(target?: string): Promise<void> | void;
+  next(): Promise<void> | void;
+  prev(): Promise<void> | void;
+  on(event: string, cb: (...args: unknown[]) => void): void;
+  off?: (event: string, cb: (...args: unknown[]) => void) => void;
+  destroy?(): void;
+  themes?: EpubThemes;
+  annotations?: EpubAnnotations;
+  [key: string]: unknown;
+}
+
+// types/EpubBook.ts
+export interface EpubBook {
+  ready: Promise<unknown>;
+  loaded: EpubLoaded;
+  navigation?: EpubNavigation;
+  locations?: EpubLocations;
+  renderTo?: (element: HTMLElement, options: EpubRenderOptions) => EpubRendition;
+  coverUrl?: () => Promise<string>;
+  destroy?: () => void;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -27,6 +94,7 @@ export interface BookMetadata {
   rights: string;
   description: string;
   pubdate:string;
+  cover: string;
 }
 
 export interface BookChapters {
