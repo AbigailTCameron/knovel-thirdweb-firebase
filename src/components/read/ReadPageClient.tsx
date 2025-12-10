@@ -1,9 +1,9 @@
 "use client"
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { useParams, useRouter } from 'next/navigation';
-import { BookChapters, BookMetadata } from '../../..';
+import { BookChapters, BookMetadata, EpubBook } from '../../..';
 import { fetchBookInfo } from '../../../functions/read/fetch';
 import { getUserProfile } from '../../../functions/explore/fetch';
 import PageAnalytics from '../analytics/PageAnalytics';
@@ -20,10 +20,8 @@ import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import XMark from '../icons/XMark';
 
 
-type Props = {}
-
 const { auth } = initializeFirebaseClient();
-function ReadPageClient({}: Props) {
+function ReadPageClient({}) {
   const router = useRouter();
   
   const camp = defineChain({
@@ -40,7 +38,7 @@ function ReadPageClient({}: Props) {
   const [profileUrl, setProfileUrl] = useState<string>(''); 
   
   const [chapters, setChapters] = useState<BookChapters[]>([])
-  const [book, setBook] = useState();
+  const [book, setBook] = useState<EpubBook>();
   const [metadata, setMetadata] = useState<BookMetadata>(); 
   const [authorId, setAuthorId] = useState<string>('');
 
@@ -48,6 +46,7 @@ function ReadPageClient({}: Props) {
   const [usernamePopup, setUsernamePopup] = useState<boolean>(false);
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -87,7 +86,7 @@ function ReadPageClient({}: Props) {
         (chs: BookChapters[]) => {
           if (alive) setChapters(chs);
         },
-        (bk: any) => {
+        (bk: EpubBook) => {
           if (alive) setBook(bk);
         },
         (md: BookMetadata) => {
@@ -133,7 +132,8 @@ function ReadPageClient({}: Props) {
                 metadata={metadata}
                 id={params.id}
                 setShowChat={setShowChat}
-                showChat={showChat}
+                theme={theme}
+                setTheme={setTheme}
             />
           </div>
 
@@ -157,6 +157,7 @@ function ReadPageClient({}: Props) {
                 name={name}
                 setUsernamePopup={setUsernamePopup}
                 onRequireWalletConnect={onRequireWalletConnect}
+                theme={theme}
               />
           </div>
           )}
