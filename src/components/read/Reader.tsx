@@ -109,6 +109,26 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
       };
   }, [book])
 
+  // 💡 NEW: recompute progress whenever we know more (locations or current pos)
+useEffect(() => {
+  if (!book) return;
+
+  // Prefer precise CFI-based progress when locations are ready
+  if (currentCfi && book.locations?.percentageFromCfi && locationsReady) {
+    const pct = book.locations.percentageFromCfi(currentCfi);
+    setProgress(pct);
+    return;
+  }
+
+  // Fallback: chapter-based progress by href
+  if (currentHref && chapters.length > 0) {
+    const idx = chapters.findIndex((ch) => ch.href === currentHref);
+    if (idx >= 0) {
+      setProgress((idx + 1) / chapters.length);
+    }
+  }
+}, [locationsReady, currentCfi, currentHref, book, chapters]);
+
 
   // Initialize/recreate rendition when book or mode changes
   useEffect(() => {
@@ -142,17 +162,6 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
 
       setCurrentHref(href);      
       if (cfi) setCurrentCfi(cfi);
-
-      // 🎯 precise progress if locations exist
-      if(cfi && book?.locations?.percentageFromCfi && locationsReadyRef.current){
-        const pct = book.locations.percentageFromCfi(cfi);
-        setProgress(pct);
-      } else if (href && chapters.length > 0){
-          const idx = chapters.findIndex(ch => ch.href === href);
-          if (idx >= 0) {
-            setProgress((idx + 1) / chapters.length);
-          }
-      }
     };
 
     r.on("relocated", handleRelocated);
@@ -258,7 +267,11 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
 
        <div className={`flex-1 min-h-0 flex flex-col 
           rounded-xl w-full ${theme === "light" && "bg-white"}`}>
-          <div className={` flex-1 min-h-0 relative w-full ${theme === "light" && "bg-[#f9fafb]"}`}>
+          <div 
+            onCopyCapture={(e) => e.preventDefault()}
+            onCutCapture={(e) => e.preventDefault()}
+            onContextMenuCapture={(e) => e.preventDefault()}
+            className={` flex-1 min-h-0 relative w-full select-none ${theme === "light" && "bg-[#f9fafb]"}`}>
             <div ref={viewerRef} className={`w-full h-full bg-[#1e1e1e] overflow-y-auto ${theme === "light" && "bg-[#f9fafb]"}`}></div>
           </div>
 
