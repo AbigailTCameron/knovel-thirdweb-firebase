@@ -2,6 +2,11 @@
 // types/index.ts
 import { NavItem } from "epubjs";
 
+export interface EpubLocations {
+  generate: (chars?: number) => Promise<void> | void;
+  percentageFromCfi: (cfi: string) => number;
+}
+
 export interface EpubThemes {
   register: (name: string, styles: Record<string, unknown>) => void;
   select: (name: string) => void;
@@ -56,6 +61,7 @@ export interface EpubBook {
   ready: Promise<unknown>;
   loaded: EpubLoaded;
   navigation?: EpubNavigation;
+  locations?: EpubLocations;
   renderTo?: (element: HTMLElement, options: EpubRenderOptions) => EpubRendition;
   coverUrl?: () => Promise<string>;
   destroy?: () => void;

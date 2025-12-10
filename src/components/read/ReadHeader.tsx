@@ -1,6 +1,4 @@
-import React from "react";
 import Menu from "../icons/Menu";
-import BookmarkPage from "../icons/BookmarkPage";
 import { useRouter } from "next/navigation";
 import ArrowLeft from "../icons/ArrowLeft";
 
@@ -16,7 +14,7 @@ function ReadHeader({ setShowChapters, showChapters, title, bookId, theme}: Prop
   const router = useRouter(); 
 
   return (
-    <div className={`relative bg-[#1e1e1e] ${theme === "light" && "bg-white"} rounded-t-xl flex w-full h-full text-white px-4 py-2`}>
+    <div className={`relative bg-[#1e1e1e] ${theme === "light" && "bg-[#f9fafb]"} rounded-t-xl flex w-full h-full text-white px-4 py-2`}>
       <div onClick={() => router.push(`/book/${bookId}`)} className="flex self-center items-center text-white hover:cursor-pointer">
           <ArrowLeft 
             className={`stroke-white size-6 hover:stroke-slate-400  ${theme === "light" && "stroke-black"}`}
@@ -31,17 +29,6 @@ function ReadHeader({ setShowChapters, showChapters, title, bookId, theme}: Prop
           className={`size-8 stroke-2 hover:cursor-pointer hover:stroke-slate-400  ${theme === "light" && "stroke-black"}`}
         />
       </div>
-
-      {/* <div className="absolute flex right-1 top-0 z-10">
-
-          <BookmarkPage          
-            onClick={onBookmark} // Call the onBookmark handler
-            className={`sm:hidden ${isBookmarked ? 'stroke-[#FA0000]' : 'stroke-white'}`}
-            fill={`${isBookmarked ? '#FA0000' : 'none'}`}
-          />
-
-
-      </div> */}
     </div>
   );
 }

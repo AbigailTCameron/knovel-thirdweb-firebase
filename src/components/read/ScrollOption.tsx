@@ -3,7 +3,7 @@ import Paginated from '../icons/Paginated';
 
 type Props = {
   page: string;
-  toggleMode: (page: "paginated" | "scrolled-doc") => void;
+  toggleMode: (page: "paginated" | "scrolled-continuous") => void;
   theme: string;
 }
 
@@ -35,11 +35,11 @@ function ScrollOption({toggleMode, page, theme}: Props) {
             
             
             <div className="relative z-30 flex items-center gap-1 px-3 py-1 text-xs font-medium">
-              <Paginated className={`size-4 ${(page === "scrolled-doc" && theme === "light") ? "stroke-black" : "stroke-white"}`}/>
+              <Paginated className={`size-4 ${(page === "scrolled-continuous" && theme === "light") ? "stroke-black" : "stroke-white"}`}/>
               <span className={`${(page === "paginated" && theme === "light") && "text-white font-bold"}
               ${(page === "paginated" && theme === "dark") && "text-white font-bold"}
-              ${(page === "scrolled-doc" && theme === "dark") && "text-white"}
-              ${(page === "scrolled-doc" && theme === "light") && "text-black"}
+              ${(page === "scrolled-continuous" && theme === "dark") && "text-white"}
+              ${(page === "scrolled-continuous" && theme === "light") && "text-black"}
 
               `}>
                 Page
@@ -49,11 +49,11 @@ function ScrollOption({toggleMode, page, theme}: Props) {
 
     
           <div
-            onClick={() => toggleMode("scrolled-doc")}
+            onClick={() => toggleMode("scrolled-continuous")}
             className={`
               relative flex flex-1 items-center justify-center
               transition-all duration-200 ease-out cursor-pointer
-              ${page === "scrolled-doc" ? "z-20 scale-110" : "z-10 scale-100"}
+              ${page === "scrolled-continuous" ? "z-20 scale-110" : "z-10 scale-100"}
             `}
           >
           
@@ -61,8 +61,8 @@ function ScrollOption({toggleMode, page, theme}: Props) {
               className={`
                 absolute inset-0 rounded-full
                 transition-all duration-200 ease-out
-                ${(page === "scrolled-doc" && theme === "dark") ? "bg-white/20 shadow-lg" : "bg-none"}
-                ${(page === "scrolled-doc" && theme === "light") ? "bg-[#7F60F9]" : "bg-none"}
+                ${(page === "scrolled-continuous" && theme === "dark") ? "bg-white/20 shadow-lg" : "bg-none"}
+                ${(page === "scrolled-continuous" && theme === "light") ? "bg-[#7F60F9]" : "bg-none"}
               `}
             />
 
@@ -72,8 +72,8 @@ function ScrollOption({toggleMode, page, theme}: Props) {
               
               />
               <span className={`${(page === "paginated" && theme === "light") ? "text-black": "text-white"}
-              ${(page === "scrolled-doc" && theme === "light") && "text-white font-bold"}
-              ${(page === "scrolled-doc" && theme === "dark") && "text-white font-bold"}
+              ${(page === "scrolled-continuous" && theme === "light") && "text-white font-bold"}
+              ${(page === "scrolled-continuous" && theme === "dark") && "text-white font-bold"}
               `}>
                 Scroll
               </span>

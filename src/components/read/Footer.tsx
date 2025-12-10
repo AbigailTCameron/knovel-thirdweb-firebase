@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ArrowLeft from '../icons/ArrowLeft';
 import ArrowRight from '../icons/ArrowRight';
 import Chat from '../icons/Chat';
 import WrenchIcon from '../icons/WrenchIcon';
 import Mode from './Mode';
 import ScrollOption from './ScrollOption';
+import ProgressBar from './ProgressBar';
 
 type Props = {
   handlePrev?: () => void;
@@ -15,28 +16,56 @@ type Props = {
   setHighlightColor: (value: string) => void;
   highlightColor: string;
   toggleTheme: (theme: "light" | "dark") => void;
-  toggleMode: (page: "paginated" | "scrolled-doc") => void;
+  toggleMode: (page: "paginated" | "scrolled-continuous") => void;
   theme: string;
   page: string;
+  progressPercent: number;
+  showSettings: boolean;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function Footer({handlePrev, handleNext, setShowChat, handleIncreaseFontSize, handleDecreaseFontSize, setHighlightColor, highlightColor, toggleTheme, theme, toggleMode, page}: Props) {
-  const [showSettings, setShowSettings] = useState(false);
+function Footer({handlePrev, handleNext, setShowChat, handleIncreaseFontSize, handleDecreaseFontSize, setHighlightColor, highlightColor, toggleTheme, theme, toggleMode, page, progressPercent, showSettings, setShowSettings}: Props) {
+  const settingsRef = useRef<HTMLDivElement | null>(null);
 
-  
+  useEffect(() => {
+    if (!showSettings) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!settingsRef.current) return;
+      const target = event.target as Node;
+      if (!settingsRef.current.contains(target)) {
+        setShowSettings(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSettings, setShowSettings]);
+
+
   return (
-    <div className="relative flex w-full items-center justify-center space-x-4 h-fit">
+    <div       
+    className="relative flex w-full items-center justify-center space-x-4 h-fit">
         {showSettings && (
-            <div className={`absolute bottom-10 left-10 rounded-xl bg-[#1d242e] shadow-xl text-white p-6 space-y-4  ${theme === "light" && "bg-white"}`}>
-              <div className={`flex items-center rounded-xl ${theme === "light" ? "bg-[#7F60F9]": "bg-slate-500 "}`}>
+            <div 
+            ref={settingsRef}
+            className={`flex flex-col items-center absolute bottom-10 left-10 rounded-xl bg-[#1d242e] shadow-xl text-white p-6 space-y-4  ${theme === "light" && "bg-white"}`}>
+              <ProgressBar 
+                progressPercent={progressPercent}
+                theme={theme}
+              />
+              <div className={`flex items-center rounded-xl backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.4)] ${theme === "light" ? "": "bg-slate-500 "}`}>
 
                 <div 
                 onClick={handleDecreaseFontSize}
-                className="px-8 h-[30px] flex items-center justify-center hover:cursor-pointer hover:bg-slate-800 rounded-l-xl">
-                  <p className="text-base font-bold">-A</p>
+                className={`px-8 h-[30px] flex items-center justify-center hover:cursor-pointer ${theme === "light" ? "hover:bg-[#7F60F9] hover:text-white text-slate-600" : "hover:bg-slate-800"} rounded-l-xl`}>
+                  <p className={`text-base font-bold`}>-A</p>
                 </div>
 
-                <div onClick={handleIncreaseFontSize} className="px-8 h-[30px] flex items-center justify-center hover:cursor-pointer hover:bg-slate-800 rounded-r-xl">
+                <div onClick={handleIncreaseFontSize} 
+                className={`px-8 h-[30px] flex items-center justify-center hover:cursor-pointer ${theme === "light" ? "hover:bg-[#7F60F9] hover:text-white text-slate-600" : "hover:bg-slate-800"} rounded-r-xl`}>
                   <p className="text-2xl font-bold">A+</p>
                 </div>
 

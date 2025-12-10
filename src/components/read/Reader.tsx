@@ -17,22 +17,97 @@ type Props = {
 }
 
 function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Props) {
-  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const STORAGE_KEY = `reader:${id}`; // optionally include userId too
 
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const [locationHref, setLocationHref] = useState<string | null>(null);
+  const [rendition, setRendition] = useState<EpubRendition | null>(null);
+  const [currentHref, setCurrentHref] = useState<string | null>(null);
+  const [mode, setMode] = useState<"paginated" | "scrolled-continuous">("paginated");
+  const [highlightColor, setHighlightColor] = useState('yellow');
   const [showChapters, setShowChapters] = useState(false);
   const [fontSize, setFontSize] = useState(() => {
     if (typeof window !== 'undefined') {
       return calculateFontSize(window.innerWidth);
     }
-    // Fallback for SSR
     return 20;
   });
 
-  const [rendition, setRendition] = useState<EpubRendition | null>(null);
-  const [currentHref, setCurrentHref] = useState<string | null>(null);
-  const [mode, setMode] = useState<"paginated" | "scrolled-doc">("paginated");
-  const [highlightColor, setHighlightColor] = useState('yellow');
+  const [currentCfi, setCurrentCfi] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0); // 0–1 accurate progress
+  const [locationsReady, setLocationsReady] = useState(false);
+  const locationsReadyRef = useRef(false);
+  const [showSettings, setShowSettings] = useState(false);
+  
 
+  // Load saved reader settings once on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    try {
+      const saved = JSON.parse(raw) as {
+        fontSize?: number;
+        mode?: "paginated" | "scrolled-continuous";
+        theme?: "dark" | "light";
+        currentHref?: string | null;
+        currentCfi?: string | null;
+        highlightColor?: string;
+        progress?: number;
+      };
+
+      if (saved.fontSize) setFontSize(saved.fontSize);
+      if (saved.mode) setMode(saved.mode);
+      if (saved.theme) setTheme(saved.theme);
+      if (saved.highlightColor) setHighlightColor(saved.highlightColor);
+      if (saved.currentHref) setLocationHref(saved.currentHref);
+      if (saved.currentCfi) setCurrentCfi(saved.currentCfi);
+      if (typeof saved.progress === "number") setProgress(saved.progress);
+    } catch (e) {
+      console.warn("Failed to parse reader settings", e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [STORAGE_KEY, setTheme]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const payload = {
+      fontSize,
+      mode,
+      theme,
+      currentHref,
+      currentCfi,
+      highlightColor,
+      progress
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [fontSize, mode, theme, currentHref, currentCfi, highlightColor, progress, STORAGE_KEY]);
+
+  // 📍 Generate locations for accurate percentage
+  useEffect(() => {
+      if (!book?.locations) return;
+      let cancelled = false;
+
+      (async() => {
+        try{
+           await book.locations!.generate(1024);
+           if(!cancelled){
+            setLocationsReady(true);
+            locationsReadyRef.current = true;
+           }
+        }catch(e){
+          console.error("Failed to generate locations", e);
+        }
+      })();
+
+      return () => {
+        cancelled = true;
+      };
+  }, [book])
 
 
   // Initialize/recreate rendition when book or mode changes
@@ -46,23 +121,41 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
       flow: mode, 
       spread: "auto",
     }) as EpubRendition;
+
+    // Decide initial display target once
+    const initialTarget =
+      currentCfi ??
+      locationHref ??
+      (chapters.length > 0 ? chapters[0].href : undefined);
   
-    // Display first chapter or default
-    if (chapters.length > 0 && chapters[0].href) {
-      r.display(chapters[0].href);
-      //setCurrentHref(chapters[0].href);
+    // If we have a saved href, go there first
+    if(initialTarget) {
+      r.display(initialTarget);
     } else {
       r.display();
     }
 
     const handleRelocated = (...args: unknown[]) => {
-      const location = args[0] as { start?: { href?: string } } | undefined;
+      const location = args[0] as { start?: { href?: string; cfi?: string } } | undefined;
       const href = location?.start?.href ?? null;
-      setCurrentHref(href);               // ✅ OK: this is in a callback from epub.js
+      const cfi = location?.start?.cfi ?? null;
+
+      setCurrentHref(href);      
+      if (cfi) setCurrentCfi(cfi);
+
+      // 🎯 precise progress if locations exist
+      if(cfi && book?.locations?.percentageFromCfi && locationsReadyRef.current){
+        const pct = book.locations.percentageFromCfi(cfi);
+        setProgress(pct);
+      } else if (href && chapters.length > 0){
+          const idx = chapters.findIndex(ch => ch.href === href);
+          if (idx >= 0) {
+            setProgress((idx + 1) / chapters.length);
+          }
+      }
     };
 
     r.on("relocated", handleRelocated);
-
     setRendition(r);
 
     // Cleanup when component unmounts or dependencies change
@@ -72,7 +165,7 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
       setRendition(null);
     };
 
-  }, [book, mode, chapters])
+  }, [book, mode, chapters, locationHref])
 
   // 2) Apply theme + font-size whenever they change
   useEffect(() => {
@@ -108,6 +201,20 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
     };
   }, [rendition, highlightColor]);
 
+  useEffect(() => {
+    if (!rendition) return;
+    const handleReaderClick = () => {
+      setShowSettings(false);
+    };
+
+    // epub.js will call this for clicks inside the iframe content
+    rendition.on("click", handleReaderClick);
+
+    return () => {
+      rendition.off?.("click", handleReaderClick);
+    };
+  }, [rendition, setShowSettings]);
+
 
   const handleNext = () => {
      rendition?.next?.();
@@ -119,25 +226,27 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
 
 
   // Inside Reader Component
-const handleCancel = useCallback(() => {
-  setShowChapters(false);
-}, [setShowChapters]);
+  const handleCancel = useCallback(() => {
+    setShowChapters(false);
+  }, [setShowChapters]);
 
-const increaseFont = () => setFontSize((prev) => Math.min(prev + 2, 32));
-const decreaseFont = () => setFontSize((prev) => Math.max(prev - 2, 12));
+  const increaseFont = () => setFontSize((prev) => Math.min(prev + 2, 32));
+  const decreaseFont = () => setFontSize((prev) => Math.max(prev - 2, 12));
 
-const toggleTheme = (next: "dark" | "light") => {
-  setTheme(next);
-}
+  const toggleTheme = (next: "dark" | "light") => {
+    setTheme(next);
+  }
 
-const toggleMode = (next: "paginated" | "scrolled-doc") => {
-  setMode(next)  
-}
- 
+  const toggleMode = (next: "paginated" | "scrolled-continuous") => {
+    setMode(next)  
+  }
+
+  const progressPercent = Math.round(progress * 100);
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
 
-      <div className="h-[60px] flex transition-opacity duration-300 w-full">
+      <div className="flex-none h-[60px] transition-opacity duration-300 w-full">
          <ReadHeader 
            title={metadata?.title}
            setShowChapters={setShowChapters}
@@ -147,12 +256,13 @@ const toggleMode = (next: "paginated" | "scrolled-doc") => {
          />
        </div>
 
-       <div className={`flex flex-col bg-[#1e1e1e] ${theme === "light" && "bg-white"} rounded-xl w-full h-full`}>
-          <div className={`relative flex w-full h-full bg-[#1e1e1e] ${theme === "light" && "bg-white"} px-2`}>
-            <div ref={viewerRef} className={`w-full h-full bg-[#1e1e1e] ${theme === "light" && "bg-white"}`}></div>
+       <div className={`flex-1 min-h-0 flex flex-col 
+          rounded-xl w-full ${theme === "light" && "bg-white"}`}>
+          <div className={` flex-1 min-h-0 relative w-full ${theme === "light" && "bg-[#f9fafb]"}`}>
+            <div ref={viewerRef} className={`w-full h-full bg-[#1e1e1e] overflow-y-auto ${theme === "light" && "bg-[#f9fafb]"}`}></div>
           </div>
 
-          <div className="flex z-10 basis-1/12 py-2 bottom-0 w-full h-full">
+          <div className={`flex-none z-10 py-2 w-full rounded-b-xl ${theme === "light" ? "bg-[#f9fafb]" : "bg-[#1e1e1e]"}`}>
             <Footer 
               setShowChat={setShowChat}
               handlePrev={handlePrev}
@@ -165,6 +275,9 @@ const toggleMode = (next: "paginated" | "scrolled-doc") => {
               theme={theme}
               toggleMode={toggleMode}
               page={mode}
+              progressPercent={progressPercent}
+              showSettings={showSettings}
+              setShowSettings={setShowSettings}
             />
           
           </div>
