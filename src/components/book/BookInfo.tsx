@@ -8,7 +8,7 @@ import FlowButton from '../buttons/FlowButton';
 import FillBookmark from '../icons/FillBookmark';
 import Bookmark from '../icons/Bookmark';
 import { formatDate } from '../../../tools/formatDate';
-import { fetchBookData, fetchBookmark, fetchFinishedList, fetchLiked, incrementBookViews, updateBookmarkData, updateFinishedBookData, updateLikedBookData, updateRating } from '../../../functions/book/fetch';
+import { fetchBookData, fetchBookmark, fetchFinishedList, fetchLiked, updateBookmarkData, updateFinishedBookData, updateLikedBookData, updateRating } from '../../../functions/book/fetch';
 import {FaStar} from "react-icons/fa";
 import View from '../icons/View';
 import Liked from '../icons/Liked';
