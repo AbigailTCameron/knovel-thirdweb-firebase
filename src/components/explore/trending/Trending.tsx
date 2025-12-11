@@ -5,9 +5,8 @@ import TrendingBooks from './TrendingBooks';
 import { Book } from '../../../..';
 import { fetchBooks, fetchTopRated } from '../../../../functions/explore/fetch';
 
-type Props = {}
 
-function Trending({}: Props) {
+function Trending({}) {
   const [currentPage, setCurrentPage] = useState(0); // 0 = Newest, 1 = Top Rated
   const [books, setBooks] = useState<Book[]>([]);
 

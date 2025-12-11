@@ -131,41 +131,49 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications, setS
 
       </div>
 
-      <div className='group w-full bg-[#1e1f21] flex flex-col items-center justify-center my-6 rounded-xl text-sm'>
+      <div className='w-full flex flex-col items-center justify-center my-6 rounded-xl text-sm'>
 
-        <div onClick={handleHomeClick} className="flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black">
-          <HomeIcon className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Home</p>
+        <div onClick={handleHomeClick} className="group relative flex w-full py-2 px-2 space-x-2 items-center justify-center rounded-xl hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 hover:font-black">
+          <HomeIcon className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Home</span>
+          {/* <p className='hidden flex-1 '>Home</p> */}
         </div>
 
-        <div onClick={handleCollectiblesClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <Dashboard className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Collection</p>
+        <div onClick={handleCollectiblesClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-black'>
+          <Dashboard className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-90">Collection</span>
         </div>
 
-        <div onClick={handleCreateClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <Pencil className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Create</p>
+        <div onClick={handleCreateClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-black'>
+          <Pencil className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Create</span>
         </div>
 
-        <div onClick={handleDraftsClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <NewPage className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Drafts</p>
+        <div onClick={handleDraftsClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
+          <NewPage className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Drafts</span>
         </div>
 
-        <div onClick={handlePublishClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <Lib className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Published</p>
+        <div onClick={handlePublishClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
+          <Lib className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Published</span>
         </div>
 
-        <div onClick={handleReadingClick} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <BookmarkIcon className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Saved</p>
+        <div onClick={handleReadingClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
+          <BookmarkIcon className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">To read list</span>
         </div>
 
-        <div onClick={() => setSearchResults(true)} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <People className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Users</p>
+        <div onClick={() => setSearchResults(true)} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
+          <People className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Users</span>
         </div> 
 
 
@@ -175,9 +183,10 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications, setS
             return;
           }
           setShowNotifications(true)
-        }} className='flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-black'>
-          <Notifications className='flex group-hover:basis-1/5'/>
-          <p className='hidden group-hover:block group-hover:basis-4/5'>Notifications</p>
+        }} className='group flex relative w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
+          <Notifications className='size-8'/>
+          <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Notifications</span>
         </div> 
 
 
@@ -187,9 +196,10 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications, setS
               return;
             }
             setSettingsPopup(true);
-            }} className="flex items-center space-x-2 absolute sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:border-white/50 p-1 hover:cursor-pointer">
-              <SettingsIcon/>
-              <p className='hidden group-hover:block group-hover:basis-4/5'>Settings</p>
+            }} className="group flex items-center space-x-2 absolute py-2 px-2 sm:relative bottom-10 sm:bottom-auto sm:flex  hover:border hover:rounded-xl hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border-[#7F60F9]/15 hover:font-bold p-1 hover:cursor-pointer">
+              <SettingsIcon />
+              <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
+              rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">Settings</span>
           </div>
         </div>
 
