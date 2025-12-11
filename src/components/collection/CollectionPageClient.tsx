@@ -63,7 +63,7 @@ function CollectionPageClient({}) {
     <div className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
         <PageAnalytics pageTitle="Collection" pagePath="/collection"/>
 
-        <div className='flex md:hidden w-fit border-r-[0.5px] border-white/50'>
+        <div className='flex md:hidden w-fit border-r-[0.5px] z-50 border-white/50'>
             <Sider 
               setLoading={setLoading}
               userId={currentUser}

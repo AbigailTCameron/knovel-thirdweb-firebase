@@ -114,7 +114,7 @@ function DraftList({chapters, draftId, setLoading, userId, setChapters, setChapt
               onMouseEnter={() => draftId && router.prefetch(`${baseHref}/${index}`)}
               onClick={() => handleBookClick(index)}  
               key={index} 
-              className={`p-4 rounded-xl hover:cursor-pointer hover:bg-[#1b1c22] ${
+              className={`p-4 rounded-xl hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 ${
                 isNav ? 'opacity-60 pointer-events-none' : ''
               }`}>
                 {/* <div className="text-slate-500 font-light text-xs">

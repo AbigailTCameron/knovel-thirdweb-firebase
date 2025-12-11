@@ -167,7 +167,7 @@ function Sider({setLoading, userId, setSearchResults, setShowNotifications, setS
         <div onClick={handleReadingClick} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>
           <BookmarkIcon className='size-8'/>
           <span className="pointer-events-none hidden group-hover:inline-block absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap 
-          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">To read list</span>
+          rounded-md px-2 py-1 text-xs bg-black/80 text-white shadow-lg z-50">To-read list</span>
         </div>
 
         <div onClick={() => setSearchResults(true)} className='group relative flex w-full py-2 px-2 space-x-2 items-center justify-center hover:cursor-pointer hover:bg-[#7F60F9]/10 hover:backdrop-blur-lg rounded-xl hover:border hover:border-[#7F60F9]/15 hover:font-bold'>

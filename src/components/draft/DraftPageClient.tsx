@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
-import { editDraftSynopsis, fetchChapterInfo } from '../../../functions/drafts/fetch';
+import { editDraftSynopsis, fetchChapterInfo, removeDraftGenre, updateDraftGenre } from '../../../functions/drafts/fetch';
 import Sider from '../headers/Sider';
 import Top from '../headers/Top';
 import MediumHeader from '../headers/MediumHeader';
@@ -16,6 +16,7 @@ import Notifications from '../community/Notifications';
 import SpinLoader from '../loading/SpinLoader';
 import DraftList from './DraftList';
 import NewSynopsis from './NewSynopsis';
+import GenrePopup from './GenrePopup';
 
 const { auth } = initializeFirebaseClient();
 
@@ -46,7 +47,11 @@ function DraftPageClient({}) {
     const [filePath, setFilePath] = useState<string>('');
     const [name, setName] = useState<string>('');
     const [username, setUsername] = useState<string>('');
-    const [booting, setBooting] = useState<boolean>(true);    
+    const [booting, setBooting] = useState<boolean>(true);  
+    const [genre, setGenre] = useState<string>('');
+    const [genrePopup, setGenrePopup] = useState(false);
+    
+      
 
     useEffect(() => { 
       setBooting(true);
@@ -135,9 +140,43 @@ function DraftPageClient({}) {
       }
     }
 
+  const handleGenreConfirm = async() => {
+    if (!genre.trim()) return;
+    const g = genre.trim();
+
+    setBookGenres(prev => {
+      const arr = prev ?? [];
+      return arr.includes(g) ? arr : [...arr, g];
+    });
+
+    try{
+      await updateDraftGenre(currentUser, params?.id, g);
+    }catch(e){
+      setBookGenres(prev => (prev ?? []).filter(x => x !== g));
+      console.error(e);
+      alert('Failed to add genre');
+    }
+  }
+
+  const handleRemoveGenre = async(selectedGenre:string) => {
+      setBookGenres(prev => (prev ?? []).filter(x => x !== selectedGenre));
+  
+      try{
+        await removeDraftGenre(currentUser, params?.id, selectedGenre);
+      }catch(e){
+        setBookGenres(prev => {
+          const arr = prev ?? [];
+          return arr.includes(selectedGenre) ? arr : [...arr, selectedGenre];
+        });
+        console.error(e);
+        alert('Failed to remove genre');
+      }
+    }
+  
+
   return (
-    <main className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+    <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
+      <div className='flex w-fit md:hidden border-r-[0.5px] z-50 border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -165,7 +204,7 @@ function DraftPageClient({}) {
           </div>
 
           <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
-              <div className="flex basis-1/4 halflg:basis-2/5 md:h-fit bg-[#171717] rounded-xl w-full h-full text-white">
+              <div className="flex basis-1/4 halflg:basis-2/5 md:h-fit bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15 rounded-xl w-full h-full text-white">
                 <DraftSider
                   draftId={params?.id}
                   chapterCount={chapterCount}
@@ -185,7 +224,8 @@ function DraftPageClient({}) {
                   setDeleting={setDeleting}
                   created_at={created}
                   setSynopsis={setSynopsis}
-                  setTitle={setTitle}             // 👈 NEW: lift title updates to the page
+                  setTitle={setTitle} 
+                  setGenrePopup={setGenrePopup}           
                 />
               </div>
 
@@ -227,6 +267,16 @@ function DraftPageClient({}) {
                   setValue={setNewSynopsis}
                   onCancel={() => setSynopsis(false)}
                   onConfirm={handleConfirm}
+                />
+              )}
+
+              {genrePopup && (
+                <GenrePopup 
+                  onCancel={() => setGenrePopup(false)}
+                  genres={genres}
+                  setGenre={setGenre}
+                  handleRemoveGenre={handleRemoveGenre}
+                  onConfirm={handleGenreConfirm}
                 />
               )}
           </div>
