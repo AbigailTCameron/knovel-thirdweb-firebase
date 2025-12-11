@@ -6,18 +6,18 @@ function FeaturedCollection({}) {
   const router = useRouter(); 
   
   return (
-    <div className="relative flex flex-col w-full h-full bg-halloween bg-cover bg-center bg-no-repeat items-center justify-center text-white">
+    <div className="relative flex flex-col w-full h-full bg-holiday bg-cover bg-center bg-no-repeat items-center justify-center text-white">
 
       <div className='flex flex-col items-center justify-center text-center space-y-1 z-10'>
-        <p className="font-semibold text-xl xs:text-lg bg-gradient-to-b from-white to-orange-200 inline-block text-transparent bg-clip-text">Collection of the Month</p>
-        <p className="text-6xl lg:text-4xl xs:text-2xl font-bold bg-gradient-to-b from-orange-200 via-orange-200/70 to-orange-200 inline-block text-transparent bg-clip-text" style={{ fontFamily: '"Old English Text MT", "Goudy Old Style", serif' }}>GOTHIC CLASSICS</p>
-        <p className="font-semibold text-2xl halflg:text-xl md:text-lg xs:text-base bg-gradient-to-b from-orange-200 to-white inline-block text-transparent bg-clip-text">{"Discover this month's curated collection of must read Gothic classics!"}</p>
+        <p className="font-semibold text-xl xs:text-lg bg-gradient-to-b from-white to-[#0080ff] inline-block text-transparent bg-clip-text">Collection of the Month</p>
+        <p className="text-6xl lg:text-4xl xs:text-2xl font-bold bg-gradient-to-b from-[#91bceb] via-[#0080ff]/70 to-[#0080ff] inline-block text-transparent bg-clip-text" style={{ fontFamily: '"Old English Text MT", "Goudy Old Style", serif' }}>HOLIDAY CLASSICS</p>
+        <p className="font-semibold text-2xl halflg:text-xl md:text-lg xs:text-base bg-gradient-to-b from-[#0080ff] to-white inline-block text-transparent bg-clip-text">{"Discover this season's curated collection of must read classics!"}</p>
       </div>
     
       <div className="flex space-x-3 xs:space-x-1 z-10">
           <Image 
               className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] md:hidden h-full'
-              src="/turn.png"
+              src="/snowy.png"
               alt=""
               width="500"
               height={"500"}
@@ -25,7 +25,7 @@ function FeaturedCollection({}) {
 
           <Image
               className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] xs:hidden h-full'
-              src="/sleepy.png"
+              src="/a-christmas-carol.png"
               alt=""
               width="500"
               height={"500"}
@@ -33,7 +33,7 @@ function FeaturedCollection({}) {
 
           <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
-            src="/vampyre.png"
+            src="/little-women.png"
             alt=""
             width="500"
             height={"500"}
@@ -41,7 +41,7 @@ function FeaturedCollection({}) {
         
           <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
-            src="/raven.png"
+            src="/holiday.png"
             alt=""
             width="500"
             height={"500"}
@@ -49,7 +49,7 @@ function FeaturedCollection({}) {
       
           <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
-            src="/frakenstein.png"
+            src="/adventuresofsanta.png"
             alt=""
             width="500"
             height={"500"}
@@ -57,7 +57,7 @@ function FeaturedCollection({}) {
           
           <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] h-full'
-            src="/carmilla.png"
+            src="/wuthering.png"
             alt=""
             width="500"
             height={"500"}
@@ -65,7 +65,7 @@ function FeaturedCollection({}) {
       
           <Image
             className='w-[180px] 2xl:w-[150px] xl:w-[140px] halfxl:w-[100px] lg:w-[80px] ss:w-[60px] sm:hidden h-full'
-            src="/strange.png"
+            src="/night.png"
             alt=""
             width="500"
             height={"500"}

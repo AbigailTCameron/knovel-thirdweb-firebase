@@ -16,9 +16,9 @@ function HalloweenLights({className}: Props) {
     *:after:border-b *:after:border-white *:after:rounded-[100%] *:after:content-['']
 
     last:*:after:hidden
-    even:*:bg-orange-500 even:*:shadow-[0_5px_24px_3px_rgba(247,173,35,1)] even:*:animate-pulse 
-    odd:*:bg-purple-600 odd:*:animate-[pulse_1.5s_ease-in-out_infinite] odd:*:shadow-[0_5px_24px_3px_rgba(219,20,250,1)]
-    [&>li:nth-child(3n)]:bg-green-600 [&>li:nth-child(3n)]:shadow-[0_5px_24px_3px_rgba(20,250,51,1)]
+    even:*:bg-[#0080ff] even:*:shadow-[0_5px_24px_3px_rgba(0,128,255,1)] even:*:animate-pulse 
+    odd:*:bg-red-600 odd:*:animate-[pulse_1.5s_ease-in-out_infinite] odd:*:shadow-[0_5px_24px_3px_rgba(220,38,38,1)]
+    [&>li:nth-child(3n)]:bg-white [&>li:nth-child(3n)]:shadow-[0_5px_24px_3px_rgba(255,255,255,1)]
   
     ${className}`}>
       {Array.from({ length: bulbCount }).map((_, i) => (
