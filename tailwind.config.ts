@@ -110,7 +110,8 @@ const config: Config = {
         'hero-pattern': "url('/bg.png')",
         'tech-bg': "url('/tech.png')",
         'halloween': "url('/halloween.png')",
-        'author': "url('/authorbg.png')"
+        'author': "url('/authorbg.png')",
+        "holiday": "url('/xmas.png')"
       },
       keyframes: {
         shine: {
