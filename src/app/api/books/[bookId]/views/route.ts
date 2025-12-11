@@ -5,11 +5,23 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 const { db } = initializeFirebaseServer();
 
+type RouteContext = {
+  params: Promise<{ bookId: string }>;
+};
+
+
 export async function POST(
   _req: Request,
-  { params }: any
+  { params }: RouteContext
 ) {
-  const { bookId } = params;
+  const { bookId } = await params;
+
+  if (!bookId || typeof bookId !== 'string') {
+    return NextResponse.json(
+      { error: 'Invalid or missing bookId' },
+      { status: 400 }
+    );
+  }
 
   // Try to read userId from body (optional)
   let userId: string | null = null;
