@@ -20,6 +20,7 @@
     "@tiptap/pm": "^2.11.0",
     "@tiptap/react": "^2.11.0",
     "@tiptap/starter-kit": "^2.11.0",
+    "dotenv": "^17.2.3",
     "epub-gen-memory": "^1.1.2",
     "epubjs": "^0.3.93",
     "firebase": "^11.1.0",
