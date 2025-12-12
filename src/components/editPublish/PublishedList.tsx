@@ -41,7 +41,7 @@ function PublishedList({chapters, bookId, userId}: Props) {
         <p className="text-gray-400">No chapters available.</p>
       ): (
         chapters.map((chapter, index) => (
-          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#171717]'} rounded-xl hover:cursor-not-allowed`}>
+          <div onClick={() => navigateToEditUnpublishedChapters(index, chapter.published)} key={index} className={`p-4 ${!chapter?.published && 'hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15'} rounded-xl hover:cursor-not-allowed`}>
               {/* <div className="text-slate-500 font-light text-xs">
                 {new Date(chapter.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -64,14 +64,23 @@ function PublishedList({chapters, bookId, userId}: Props) {
                 )}
                 
                 {!chapter?.published && (
-                  <div className="flex items-center space-x-2">
-                   <p>Incomplete</p>
-                   <div onClick={(event) => toggleComplete(index, event)} className={`${completionStates[index] ? 'bg-green-500 justify-end' : 'bg-white'} flex items-center border-1 border-white rounded-xl w-[60px] h-[22px]`}>
-                     <div className={`flex ${completionStates[index] ? 'bg-white' : 'bg-green-500'}  w-[20px] h-[20px] rounded-xl ml-0.5 mr-0.5`}>
-                     </div>
-                   </div>
-                   <p>Complete</p>
-                 </div>
+                  <div className="flex justify-between text-slate-500 space-x-4 text-sm items-center">
+                      <div className="flex items-center space-x-2">
+                          <p>Incomplete</p>
+                          <div onClick={(event) => toggleComplete(index, event)} className={`${completionStates[index] ? 'bg-green-500 justify-end' : 'bg-white'} flex items-center border-1 border-white rounded-xl w-[60px] h-[22px]`}>
+                          <div className={`flex ${completionStates[index] ? 'bg-white' : 'bg-green-500'}  w-[20px] h-[20px] rounded-xl ml-0.5 mr-0.5`}/>
+                      </div>
+                          <p>Complete</p>
+                      </div>
+
+                      <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { 
+                        e.stopPropagation();
+                        // setPendingDelete({ index, title: chapter.title });
+                      }} 
+                      className={`hover:text-red-600 hover:underline`}>
+                          <p>delete</p>
+                      </div>
+                  </div>
              
                 )}
                

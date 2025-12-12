@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
-import { deleteEntireDraft, editDraftSynopsis, editDraftTitle, fetchChapterInfo, removeDraftGenre, updateDraftGenre, uploadEpub } from '../../../functions/drafts/fetch';
+import { deleteEntireDraft, editDraftSynopsis, editDraftTitle, fetchChapterInfo, removeDraftGenre, reuploadBookImageToSupabase, updateDraftGenre, uploadEpub } from '../../../functions/drafts/fetch';
 import Sider from '../headers/Sider';
 import Top from '../headers/Top';
 import MediumHeader from '../headers/MediumHeader';
@@ -21,6 +21,8 @@ import EditTitlePopup from './EditTitlePopup';
 import PublishPopup from './PublishPopup';
 import { useActiveAccount } from 'thirdweb/react';
 import ConfirmDeleteDraft from './ConfirmDelete';
+import Cropper from 'react-easy-crop';
+import { Area, getCroppedImg } from '../../../tools/cropImage';
 
 const { auth } = initializeFirebaseClient();
 
@@ -61,6 +63,16 @@ function DraftPageClient({}) {
     const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
     const [publishPopup, setPublishPopup] = useState(false); 
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [imageSrc, setImageSrc] = useState<string>('');
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+    const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
+    
+    const [localPreview, setLocalPreview] = useState<string | null>(null);    // NEW: optimistic preview
+      const [filename, setFilename] = useState<string>('');
+    
+    
     
 
     useEffect(() => { setNewTitle(title); }, [title]);      
@@ -255,6 +267,44 @@ function DraftPageClient({}) {
     }
   }
 
+  const urlToFile = async (croppedImage: string) => {
+    const response = await fetch(croppedImage);
+    const blob = await response.blob();
+    
+    // Create a new File object
+    const file = new File([blob], "croppedImage.jpg", { type: blob.type });
+    
+    return file;
+  };
+
+  const onCropComplete = (_: Area, pixels: Area) => setCroppedAreaPixels(pixels);
+
+  const handleCropConfirm = async () => {
+      if (!croppedAreaPixels || !imageSrc || !currentUser) return;
+  
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels); 
+  
+      setLocalPreview(croppedImage);
+      setChooseCropped(false);
+  
+      // Start upload
+      setLoading?.(true);
+  
+      try{
+          const file = await urlToFile(croppedImage);
+          const result = await reuploadBookImageToSupabase(filename, file, currentUser, imagePath, params?.id);
+  
+          if (result) {
+            setImageUrl(result.downloadURL);
+            setImagePath(result.filePath);
+            //onUploaded?.(result.downloadURL, result.filePath); // tell parent to update
+          }
+      }finally {
+        setLoading?.(false);
+      }
+    };
+  
+
 
   return (
     <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
@@ -295,15 +345,17 @@ function DraftPageClient({}) {
                   userId={currentUser || ''}
                   setGenres={setBookGenres}  
                   setLoading={setLoading}
-                  setImageUrl={setImageUrl}          
-                  setImagePath={setImagePath} 
                   imagePath={imagePath}
                   created_at={created}
                   setSynopsis={setSynopsis}
                   setEditTitle={setEditTitle} 
                   setGenrePopup={setGenrePopup}   
                   setPublishPopup={setPublishPopup}    
-                  setConfirmDelete={setConfirmDelete}    
+                  setConfirmDelete={setConfirmDelete} 
+                  setFilename={setFilename}   
+                  setImageSrc={setImageSrc}
+                  setChooseCropped={setChooseCropped}
+                  localPreview={localPreview}
                 />
               </div>
 
@@ -419,6 +471,34 @@ function DraftPageClient({}) {
           bookTitle={title}
         />
       )}   
+
+      {chooseCropped && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 text-base">
+            <div className="flex flex-col w-1/3 h-3/4 bg-black/60 text-white rounded-xl shadow-lg p-6">
+                <div className="relative w-full h-full">    
+                  <Cropper 
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1/1.5} // 1:1.5 aspect ratio
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                  />
+                </div>
+                <div className="flex justify-center w-full space-x-2">
+                    <button
+                      onClick={handleCropConfirm}
+                      className="px-2 py-3 w-5/12 text-white font-semibold bg-zinc-800 rounded-xl"
+                    >
+                      Crop
+                    </button>
+                  
+                </div>
+            </div>
+        </div>
+      )} 
+        
       
 
       {/* One unified overlay */}

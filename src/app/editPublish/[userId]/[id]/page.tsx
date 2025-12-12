@@ -1,5 +1,4 @@
 import EditPublishPageClient from '@/components/editPublish/EditPublishPageClient'
-import React from 'react';
 import type { Metadata } from "next";
 import initializeFirebaseServer from "@/lib/initFirebaseAdmin";
 

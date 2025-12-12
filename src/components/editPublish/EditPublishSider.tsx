@@ -1,51 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import PublishUpload from './PublishUpload';
 import TrashIcon from '../icons/TrashIcon';
-import { deleteEntireBook, editPublishTitle, removePublishGenre, updatePublishGenre, updateUploadEpub } from '../../../functions/editPublish/fetch';
-import ConfirmDeletePublish from './ConfirmDeletePublish';
-import EditPublishedTitle from './EditPublishTitle';
-import UpdatePublish from './UpdatePublish';
 import Options from '../icons/Options';
 import Calendar from '../icons/Calendar';
 import { formatDate } from '../../../tools/formatDate';
 import Finger from '../icons/Finger';
-import GenrePopup from '../draft/GenrePopup';
 import OptionsPopup from '../draft/OptionsPopup';
-import { useActiveAccount } from 'thirdweb/react';
 
 type Props = {
   imageFile: string;
   title : string;
   chapterCount ?: number | null;
-  genres : string[];
   bookId : string;
   userId : string;
-  setLoading : Function; 
-  authorName : string;
-  synopsis : string;
-  chapters : any[]
-  ipfsHash : string;
-  bytesId : `0x${string}`;
+  setLoading: (value: boolean) => void;
   imageFilePath : string;
-  setPublishing: Function;
   created_at: any;
-  setSynopsis: Function;
-  setDeleting: Function;
+  setSynopsis: (value: boolean) => void;
+  setGenrePopup: (value: boolean) => void;
+  setEditTitle: (value: boolean) => void;
+  setPublishPopup: (value: boolean) => void;
+  setConfirmDelete: (value: boolean) => void;
 }
 
-function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, bookId, userId, setLoading, authorName, synopsis, chapters, ipfsHash, bytesId, imageFilePath, setPublishing, created_at, setSynopsis}: Props) {
+function EditPublishSider({imageFile, title, chapterCount, bookId, userId, setLoading, imageFilePath, created_at, setSynopsis, setGenrePopup, setEditTitle, setPublishPopup, setConfirmDelete}: Props) {
   const router = useRouter();
-  const account = useActiveAccount(); // This is the currently signed-in user
 
-  const [editTitle, setEditTitle] = useState<boolean>(false);
-  const [addGenre, setAddGenre] = useState<boolean>(false);
-  const [publishPopup, setPublishPopup] = useState(false); 
-  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const [genre, setGenre] = useState<string>('');
-  const [newTitle, setNewTitle] = useState<string>('');
   const [options, showOptions] = useState(false);
-  const [genrePopup, setGenrePopup] = useState(false);
   
 
   const handleNewChapter = () => {
@@ -53,57 +35,9 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
     router.push(`/newChapterPublished/${bookId}`)
   }
 
-  const handleRemoveGenre = async(selectedGenre:string) => {
-    await removePublishGenre(userId, bookId, selectedGenre);
-  }
-
   const handleDelete = () => {
     setConfirmDelete(true);
   }
-
-  const handleGenreConfirm = async() => {
-    if(genre){
-      await updatePublishGenre(userId, bookId, genre.trim()); 
-      setAddGenre(false); 
-    }
-  }
-
-  const handleConfirmTitle = async() => {
-    if(newTitle.trim() != title){
-      await editPublishTitle(userId, newTitle, bookId);
-    }
-    setEditTitle(false);
-  }
-
-  const handleConfirm = async() => {
-    if(bookId){
-      setDeleting(true);
-      router.push("/explore");
-  
-      const success = await deleteEntireBook(userId, bookId, imageFilePath, ipfsHash, bytesId, account);
-      if(!success){
-        console.log('could not delete book');
-      }
-    }
-  }
-
-  const publishedCount = chapters.filter((c) => c?.published).length; 
-  const totalChapters = chapters?.length ?? 0;
-
-  const handlePublish = async (upto: number) => {
-    if (upto < publishedCount || upto > chapters.length) return;
-
-    const selectedChapters = chapters.slice(0, upto); // prefix only
-
-    setPublishing(true);
-    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, userId, genres, imageFile, ipfsHash, bytesId, bookId, upto, account).then(success => {
-      if(success){
-        router.push("/explore");
-      }else{
-        alert("Error trying to your draft!")
-      }
-    })
-  };
 
 
   return (
@@ -135,15 +69,15 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
             </div>
 
             <div className='flex flex-col md:hidden'>
-                <div onClick={handleNewChapter} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                <div onClick={handleNewChapter} className="flex hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 rounded-lg w-full py-3 px-2 font-semibold">
                         <p>Add New Chapter</p>
                 </div>
 
-                <div onClick={() => setSynopsis(true)} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                <div onClick={() => setSynopsis(true)} className="flex hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 rounded-lg w-full py-3 px-2 font-semibold">
                         <p>Add/Update Synopsis</p>
                 </div>
 
-                <div onClick={() => setGenrePopup(true)} className="flex hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg w-full py-3 px-2 font-semibold">
+                <div onClick={() => setGenrePopup(true)} className="flex hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 rounded-lg w-full py-3 px-2 font-semibold">
                       <p>Add/Update Genres</p>
                 </div>
             </div>
@@ -151,12 +85,12 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
         </div>
 
         <div className="absolute bottom-0 flex-shrink-0 md:flex md:p-1 md:justify-center md:items-center p-4 lg:p-2 mb-2 w-full border-t border-[#272831] tall:p-1 tall:text-sm">
-          <div onClick={() => setPublishPopup(true)} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg text-center w-full py-3 tall:py-1 font-semibold">
+          <div onClick={() => setPublishPopup(true)} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 rounded-lg text-center w-full py-3 tall:py-1 font-semibold">
             <Finger className='size-7 group-hover:stroke-[#5D3FD3] tall:size-4'/>
             <p>Publish</p>
           </div>
 
-          <div onClick={handleDelete} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#1b1c22] rounded-lg text-center w-full py-3 tall:py-1 font-semibold">
+          <div onClick={handleDelete} className="group flex items-center justify-center space-x-2 hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 rounded-lg text-center w-full py-3 tall:py-1 font-semibold">
             <TrashIcon className='size-7 group-hover:stroke-red-600 tall:size-4'/>
             <p>Delete</p>
           </div>
@@ -169,44 +103,6 @@ function EditPublishSider({imageFile, setDeleting, title, chapterCount, genres, 
             handleNewChapter={handleNewChapter}
             setSynopsis={setSynopsis}
             setGenrePopup={setGenrePopup}
-          />
-        )}
-
-        {genrePopup && (
-          <GenrePopup
-            genres={genres}
-            setGenre={setGenre}
-            onCancel={() => setGenrePopup(false)}
-            onConfirm={handleGenreConfirm}
-            handleRemoveGenre={handleRemoveGenre}
-          />
-        )}
-
-        {confirmDelete && (
-          <ConfirmDeletePublish 
-            onConfirm={handleConfirm}
-            onCancel={() => setConfirmDelete(false)}
-            bookTitle={title}
-          />
-        
-        )}
-
-        {editTitle && (
-          <EditPublishedTitle 
-            onCancel={() => setEditTitle(false)}
-            setTitle={setNewTitle}
-            onConfirm={handleConfirmTitle}
-          />
-        )}
-
-
-        {publishPopup && (
-          <UpdatePublish 
-            title={title}
-            onConfirm={handlePublish}
-            onCancel={() => setPublishPopup(false)}
-            publishedCount={publishedCount}  
-            chaptersCount={totalChapters}   
           />
         )}
 
