@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
-import { deleteEntireBook, editBookSynopsis, editPublishTitle, fetchPublishInfo, removePublishGenre, updatePublishGenre, updateUploadEpub } from '../../../functions/editPublish/fetch';
+import { deleteEntireBook, editBookSynopsis, editPublishTitle, fetchPublishInfo, removePublishGenre, reuploadBookImage, updatePublishGenre, updateUploadEpub } from '../../../functions/editPublish/fetch';
 import Sider from '../headers/Sider';
 import Top from '../headers/Top';
 import MediumHeader from '../headers/MediumHeader';
@@ -20,6 +20,8 @@ import EditPublishedTitle from './EditPublishTitle';
 import UpdatePublish from './UpdatePublish';
 import { useActiveAccount } from 'thirdweb/react';
 import ConfirmDeletePublish from './ConfirmDeletePublish';
+import Cropper from 'react-easy-crop';
+import { Area, getCroppedImg } from '../../../tools/cropImage';
 
 
 const { auth } = initializeFirebaseClient();
@@ -66,7 +68,18 @@ function EditPublishPageClient({}) {
 
     const [publishPopup, setPublishPopup] = useState(false); 
     const [confirmDelete, setConfirmDelete] = useState<boolean>(false);  
+
+
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+
+    const [imageSrc, setImageSrc] = useState<string>('');
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);    
        
+    const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
+    const [filename, setFilename] = useState(''); 
+    
+    
 
     useEffect(() => { 
   
@@ -165,6 +178,37 @@ function EditPublishPageClient({}) {
     }
   }
 
+  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const urlToFile = async (croppedImage: string) => {
+    const response = await fetch(croppedImage);
+    const blob = await response.blob();
+    
+    // Create a new File object
+    const file = new File([blob], "croppedImage.jpg", { type: blob.type });
+    
+    return file;
+  };
+
+  const handleCropConfirm = async () => {
+    if (croppedAreaPixels && imageSrc) {
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels); 
+
+      setChooseCropped(false); 
+
+      urlToFile(croppedImage).then((file) => { 
+        if(currentUser){
+          reuploadBookImage(filename, file, currentUser, imagePath, params.id); 
+        }
+        
+      })
+
+    }
+  };
+
+
 
   return (
     <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
@@ -202,15 +246,16 @@ function EditPublishPageClient({}) {
                     title={title}
                     chapterCount={chapterCount}
                     bookId={params.id}
-                    userId={currentUser || ''}
                     setLoading={setLoading}
-                    imageFilePath={imagePath}
                     created_at={created}
                     setSynopsis={setSynopsis}
                     setGenrePopup={setGenrePopup}
                     setEditTitle={setEditTitle}
                     setPublishPopup={setPublishPopup}
                     setConfirmDelete={setConfirmDelete}
+                    setFilename={setFilename}
+                    setImageSrc={setImageSrc}
+                    setChooseCropped={setChooseCropped}
                   />
               </div>
 
@@ -238,6 +283,9 @@ function EditPublishPageClient({}) {
                         chapters={chapters}
                         bookId={params?.id} 
                         userId={currentUser || ''}
+                        setLoading={setLoading}
+                        setChapters={setChapters}
+                        setChapterCount={setChapterCount}
                       />
                     )}
               </div>
@@ -261,6 +309,33 @@ function EditPublishPageClient({}) {
             userId={currentUser || ''}
           />
         )}
+
+      {chooseCropped && (
+            <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 text-base">
+                <div className="flex flex-col w-1/3 h-3/4 bg-black/60 text-white rounded-xl shadow-lg p-6">
+                    <div className="relative w-full h-full">    
+                      <Cropper 
+                        image={imageSrc}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1/1.6} // 1:1.5 aspect ratio
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={onCropComplete}
+                      />
+                    </div>
+                    <div className="flex justify-center w-full space-x-2">
+                        <button
+                          onClick={handleCropConfirm}
+                          className="px-2 py-3 w-5/12 text-white font-semibold bg-zinc-800 rounded-xl"
+                        >
+                          Crop
+                        </button>
+                      
+                    </div>
+                </div>
+            </div>
+        )} 
 
 
       {publishPopup && (
