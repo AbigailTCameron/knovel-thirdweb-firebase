@@ -79,14 +79,14 @@ function ExploreHeader({profileUrl, setLoading, userId}: Props) {
 
 
         <div className="relative w-1/2 items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
-          <form onSubmit={handleSearch} className="flex items-center w-full bg-[#272831] rounded-3xl p-0.5">
-              <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
+          <form onSubmit={handleSearch} className="flex items-center w-full bg-[#7F60F9]/20 backdrop-blur-lg border border-[#7F60F9]/15 rounded-3xl p-0.5">
+              <div className="w-full flex rounded-3xl items-center px-2">
                   <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
                   <input 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex justify-between py-2 bg-[#272831] text-white px-3 w-full h-full rounded-3xl focus:outline-none"
+                    className="flex justify-between py-2 bg-inherit text-white px-3 w-full h-full rounded-3xl focus:outline-none"
                     placeholder="Search books by title, genres, author..."
                   />
 

@@ -71,7 +71,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
 
 
   return (
-    <div className={`relative flex flex-col rounded-xl ${theme === "light" ? "bg-white text-black" : "bg-[#111111] text-white"} w-full h-full px-2 overflow-hidden`}>
+    <div className={`relative flex flex-col rounded-xl ${theme === "light" ? "bg-white text-black" : "bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15 text-white"} w-full h-full px-2 overflow-hidden`}>
         <div className={`relative text-lg font-semibold flex items-center justify-center p-4`}>
           <p>{comments.length} Comments</p>
           
@@ -122,7 +122,7 @@ function CommentSection({profileUrl, userId, bookId, authorId, setShowChat, titl
         
         
             <textarea
-              className={`flex items-center field-sizing:content focus:outline-none ${theme === "light" ? "bg-slate-200" : "bg-[#303030]"} w-full h-full rounded-3xl px-3 py-2 font-normal resize-none`}
+              className={`flex items-center field-sizing:content focus:outline-none ${theme === "light" ? "bg-slate-200" : "bg-[#7F60F9]/20 backdrop-blur-lg border border-[#7F60F9]/15"} w-full h-full rounded-3xl px-3 py-2 font-normal resize-none`}
               placeholder='Add a comment...'
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}

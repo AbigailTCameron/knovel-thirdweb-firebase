@@ -14,10 +14,9 @@ import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 import MediumHeader from '@/components/headers/MediumHeader';
 
 
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function Edit({}: Props) {
+function Edit({}) {
   const router = useRouter();
   
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
@@ -64,8 +63,8 @@ function Edit({}: Props) {
 
 
   return (
-    <div className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+    <div className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
+      <div className='flex w-fit md:hidden border-r-[0.5px] z-50 border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}

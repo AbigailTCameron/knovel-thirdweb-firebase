@@ -58,7 +58,7 @@ function PublishPageClient({}) {
     }, []);
     
   return (
-    <main className="flex w-screen h-screen overflow-hidden">
+    <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
       <PageAnalytics pageTitle="Publish" pagePath="/publish" />
 
       <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>

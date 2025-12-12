@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation';
 import StarRating from '../../StarRating';
 import TrendBookImage from './TrendBookImage';
 import { Book } from '../../../..';
+import Image from 'next/image';
 
 type Props = {
   books: Book[]; 
@@ -25,10 +25,10 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
           <div 
             onMouseEnter={() => handleMouseEnter(book.id)}
             key={book.id} 
-            className="flex w-full hover:cursor-pointer hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF] rounded-full p-0.5"
+            className="flex w-full hover:cursor-pointer rounded-full hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 p-0.5"
             onClick={() => handleBookClick(book.id)} 
           >
-            <div className="flex space-x-2 rounded-full w-full bg-[#101014] items-center px-4 xl:px-8 lg:px-4 py-2">
+            <div className="flex space-x-2 rounded-full w-full  items-center px-4 xl:px-8 lg:px-4 py-2">
               <div className="flex basis-2/12 lg:basis-full xs:basis-full space-x-3 ">
                   <p className="font-bold self-center"> {currentPagination * booksPerPage + index + 1}.</p>
                     <TrendBookImage 
@@ -42,13 +42,14 @@ function TrendingBooks({books, currentPagination, booksPerPage}: Props) {
                     <div className="flex space-x-1">
                           <p className="text-sm halfxl:text-xs">{book.author}</p>
                           {book.verified && (
-                            <img 
+                            <Image 
                               className="w-[15px] h-[15px] halfxl:w-[15px] halfxl:h-[15px]"
                               src="/verified.png"
                               alt="verified"
-                              width={"20"}
-                              height={"20"}
-                            />)}
+                              width={"500"}
+                              height={"500"}
+                            />
+                          )}
                     </div>
 
                     <StarRating rating={book.rating}/>

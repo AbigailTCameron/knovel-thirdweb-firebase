@@ -49,14 +49,14 @@ function Top({profileUrl}: Props) {
   return (
     <div className='flex w-full justify-between items-center backdrop-blur-md px-4 py-2 z-30'>
          <div className="relative items-center basis-2/4 lg:basis-3/4 md:basis-full md:w-full">
-            <form onSubmit={handleSearch} className="flex items-center bg-[#272831] w-full rounded-3xl p-0.5">
-                <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
+            <form onSubmit={handleSearch} className="flex items-center bg-[#7F60F9]/20 backdrop-blur-lg border border-[#7F60F9]/15 w-full rounded-3xl p-0.5">
+                <div className="w-full flex rounded-3xl items-center px-2">
                     <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
                     <input 
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="flex justify-between py-2 bg-[#272831] text-white px-3 w-full h-full rounded-3xl focus:outline-none" 
+                      className="flex justify-between py-2 bg-inherit text-white px-3 w-full h-full rounded-3xl focus:outline-none" 
                       placeholder="Search books by title, genres, author..."
                     />
 
@@ -67,7 +67,7 @@ function Top({profileUrl}: Props) {
             </form>
 
             {searchQuery && searchResults.length > 0 && (
-              <div className="absolute top-full w-full rounded-xl shadow-md bg-[#1d242e] mt-2">
+              <div className="absolute top-full left-0 w-full mt-2 z-50 bg-[#1d242e] rounded-xl">
                 <SearchResults results={searchResults}/>
               </div>
             )}

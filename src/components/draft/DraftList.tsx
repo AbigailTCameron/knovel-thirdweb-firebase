@@ -2,13 +2,12 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react'
 import { DraftChapters } from '../../..';
 import { deleteDraftChapter, updateCompletedChapter } from '../../../functions/drafts/fetch';
-import { formatDate } from '../../../tools/formatDate';
 import DeleteChapter from './DeleteChapter';
 
 type Props = {
   chapters: DraftChapters[];
   draftId ?: string;
-  setLoading : Function;
+  setLoading : (value: boolean) => void;
   userId: string;
   setChapters: React.Dispatch<React.SetStateAction<DraftChapters[]>>;
   setChapterCount?: React.Dispatch<React.SetStateAction<number | null>>;
@@ -114,7 +113,7 @@ function DraftList({chapters, draftId, setLoading, userId, setChapters, setChapt
               onMouseEnter={() => draftId && router.prefetch(`${baseHref}/${index}`)}
               onClick={() => handleBookClick(index)}  
               key={index} 
-              className={`p-4 rounded-xl hover:cursor-pointer hover:bg-[#1b1c22] ${
+              className={`p-4 rounded-xl hover:cursor-pointer hover:bg-[#7F60F9]/5 hover:backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 ${
                 isNav ? 'opacity-60 pointer-events-none' : ''
               }`}>
                 {/* <div className="text-slate-500 font-light text-xs">
@@ -154,19 +153,19 @@ function DraftList({chapters, draftId, setLoading, userId, setChapters, setChapt
               
                 
                 </div>
-
-              {pendingDelete && (
-                <DeleteChapter 
-                  onConfirm={() => handleDeleteChapter(pendingDelete.index)}
-                  onCancel={() => setPendingDelete(null)}
-                  chapterTitle={pendingDelete.title}
-                />
-              )}
-
             </div>
           )
         })
       )}  
+
+      {pendingDelete && (
+        <DeleteChapter 
+          onConfirm={() => handleDeleteChapter(pendingDelete.index)}
+          onCancel={() => setPendingDelete(null)}
+          chapterTitle={pendingDelete.title}
+        />
+      )}
+
     </div>
   )
 }

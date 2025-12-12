@@ -110,24 +110,24 @@ function Reader({chapters, book, metadata, id, setShowChat, theme, setTheme}: Pr
   }, [book])
 
   // 💡 NEW: recompute progress whenever we know more (locations or current pos)
-useEffect(() => {
-  if (!book) return;
+  useEffect(() => {
+    if (!book) return;
 
-  // Prefer precise CFI-based progress when locations are ready
-  if (currentCfi && book.locations?.percentageFromCfi && locationsReady) {
-    const pct = book.locations.percentageFromCfi(currentCfi);
-    setProgress(pct);
-    return;
-  }
-
-  // Fallback: chapter-based progress by href
-  if (currentHref && chapters.length > 0) {
-    const idx = chapters.findIndex((ch) => ch.href === currentHref);
-    if (idx >= 0) {
-      setProgress((idx + 1) / chapters.length);
+    // Prefer precise CFI-based progress when locations are ready
+    if (currentCfi && book.locations?.percentageFromCfi && locationsReady) {
+      const pct = book.locations.percentageFromCfi(currentCfi);
+      setProgress(pct);
+      return;
     }
-  }
-}, [locationsReady, currentCfi, currentHref, book, chapters]);
+
+    // Fallback: chapter-based progress by href
+    if (currentHref && chapters.length > 0) {
+      const idx = chapters.findIndex((ch) => ch.href === currentHref);
+      if (idx >= 0) {
+        setProgress((idx + 1) / chapters.length);
+      }
+    }
+  }, [locationsReady, currentCfi, currentHref, book, chapters]);
 
 
   // Initialize/recreate rendition when book or mode changes
@@ -255,7 +255,7 @@ useEffect(() => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
 
-      <div className="flex-none h-[60px] transition-opacity duration-300 w-full">
+      <div className="flex-none h-fit transition-opacity duration-300 w-full">
          <ReadHeader 
            title={metadata?.title}
            setShowChapters={setShowChapters}
@@ -265,17 +265,17 @@ useEffect(() => {
          />
        </div>
 
-       <div className={`flex-1 min-h-0 flex flex-col 
-          rounded-xl w-full ${theme === "light" && "bg-white"}`}>
+       <div className={`flex-1 min-h-0 flex flex-col
+          rounded-xl w-full ${theme === "light" ? "bg-white" : "bg-transparent"}`}>
           <div 
             onCopyCapture={(e) => e.preventDefault()}
             onCutCapture={(e) => e.preventDefault()}
             onContextMenuCapture={(e) => e.preventDefault()}
-            className={` flex-1 min-h-0 relative w-full select-none ${theme === "light" && "bg-[#f9fafb]"}`}>
-            <div ref={viewerRef} className={`w-full h-full bg-[#1e1e1e] overflow-y-auto ${theme === "light" && "bg-[#f9fafb]"}`}></div>
+            className={` flex-1 min-h-0 relative w-full select-none ${theme === "light" ? "bg-[#f9fafb]": "bg-transparent"}`}>
+            <div ref={viewerRef} className={`w-full h-full overflow-y-auto ${theme === "light" ? "bg-[#f9fafb]": "bg-[#7F60F9]/5 backdrop-blur-lg border-r border-l border-[#7F60F9]/15 shadow-[0_0_40px_rgba(0,0,0,0.5)]"}`}></div>
           </div>
 
-          <div className={`flex-none z-10 py-2 w-full rounded-b-xl ${theme === "light" ? "bg-[#f9fafb]" : "bg-[#1e1e1e]"}`}>
+          <div className={`flex-none z-10 py-2 w-full rounded-b-xl ${theme === "light" ? "bg-[#f9fafb]" : "bg-[#7F60F9]/10 border-b border-r border-l border-[#7F60F9]/15"}`}>
             <Footer 
               setShowChat={setShowChat}
               handlePrev={handlePrev}

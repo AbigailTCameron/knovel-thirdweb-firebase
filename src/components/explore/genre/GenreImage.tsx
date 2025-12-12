@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react'
 
 type Props = {
   imageFile : string;

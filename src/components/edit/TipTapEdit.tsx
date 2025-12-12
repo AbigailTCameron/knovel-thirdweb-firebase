@@ -27,7 +27,7 @@ type Props = {
   userId : string;
   draftId : string;
   index : number;
-  setLoading: Function
+  setLoading: (value: boolean) => void;
 }
 
 function TipTapEdit({index, userId, draftId, setLoading}: Props) {
@@ -76,7 +76,7 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
     localStorage.removeItem('unsavedContent');
     localStorage.removeItem('unsavedTitleContent');
     await handleEditChapter(userId, titleContent, content, index, draftId); 
-    router.push(`/draft/${draftId}`);
+    router.push(`/draft/${userId}/${draftId}`);
   }
 
   const editor = useEditor({
@@ -137,63 +137,63 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
 
   return (
     <main className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 ${inter.className}`}> 
-      <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#171717] rounded-2xl text-white">
+      <div className="relative flex flex-col w-full h-full basis-1/4 bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15 rounded-2xl text-white">
 
         <div className="flex flex-col md:flex-row md:w-full ss:hidden">
             <div className="flex w-full space-x-1 px-2 mt-2 md:px-1 md:mt-0">
               <p 
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-semibold font-mono ${editor?.isActive('heading', { level: 1 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md text-slate-500'}`}
+                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-semibold font-mono ${editor?.isActive('heading', { level: 1 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md text-slate-500'}`}
               >H1</p>
 
               <p 
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-semibold font-mono ${editor?.isActive('heading', { level: 2 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md text-slate-500'}`}
+                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-semibold font-mono ${editor?.isActive('heading', { level: 2 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md text-slate-500'}`}
               >H2</p>
 
               
               <p 
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-mono font-semibold ${editor?.isActive('heading', { level: 3 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md text-slate-500'}`}
+                className={`flex text-2xl md:text-base sm:text-sm items-center justify-center font-mono font-semibold ${editor?.isActive('heading', { level: 3 }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md text-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md text-slate-500'}`}
               >H3</p>
 
             </div>
 
             <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <BoldButton  
-                className={`${editor?.isActive('bold') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('bold') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleBold().run()}
               />
 
               <ItalicsButton 
-                className={`${editor?.isActive('italic') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('italic') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleItalic().run()}
               />
 
               <UnderlineButton 
-                className={`${editor?.isActive('underline') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('underline') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleUnderline().run()}
               />
 
               <Strikethrough
-                className={`${editor?.isActive('strike') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('strike') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleStrike().run()}
               />
             </div>
 
             <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <Alignleft 
-                className={`${editor?.isActive({ textAlign: 'left' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive({ textAlign: 'left' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().setTextAlign('left').run()}
               />
 
               <Aligncenter 
-                className={`${editor?.isActive({ textAlign: 'center' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive({ textAlign: 'center' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().setTextAlign('center').run()}
               />
 
               <Alignright
-                className={`${editor?.isActive({ textAlign: 'right' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive({ textAlign: 'right' }) ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().setTextAlign('right').run()}
               />
 
@@ -201,12 +201,12 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
 
             <div className="flex w-full space-x-1 px-2 mt-2 md:mt-0 md:text-base sm:text-sm">
               <BulletListButton 
-                className={`${editor?.isActive('bulletList') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('bulletList') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
               />
 
               <OrderedListButton 
-                className={`${editor?.isActive('orderedList') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#262626] rounded-md stroke-slate-500'}`}
+                className={`${editor?.isActive('orderedList') ? 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-white rounded-md stroke-slate-500' : 'hover:cursor-pointer w-1/4 p-2 size-14 md:size-10 sm:size-8 bg-[#7F60F9]/5 backdrop-blur-lg rounded-md stroke-slate-500'}`}
                 onClick={() => editor?.chain().focus().toggleOrderedList().run()}
               />
             </div>
@@ -230,10 +230,10 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
       </div>
 
       <div className="flex flex-col space-y-1 w-full h-full basis-3/4  rounded-2xl text-white">
-        <div className="flex basis-1/12 rounded-2xl bg-[#2a2929]">
+        <div className="flex basis-1/12 rounded-2xl bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15">
           <EditorContent editor={titleEditor} className="self-center w-full"/>
         </div>
-        <div className="flex basis-11/12 overflow-hidden w-full h-full rounded-2xl bg-[#2a2929]">
+        <div className="flex basis-11/12 overflow-hidden w-full h-full rounded-2xl bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15">
             {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
                 <div className="flex p-1 bg-white border border-gray-500 text-sm space-x-1 rounded-lg text-black">
                   <button
