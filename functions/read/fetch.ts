@@ -114,8 +114,8 @@ export const applyCustomTheme = (r: EpubRendition, fontSize: number, theme: stri
    // Register themes
     r.themes?.register("dark", {
       "body": {
-        background: "#1e1e1e",
-        color: "#f9fafb",
+        "background": "#0c0a15",
+        "color": "#f9fafb",
       },
       "p": {
         "line-height": "1.6",

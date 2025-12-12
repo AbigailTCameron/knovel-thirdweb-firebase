@@ -4,6 +4,7 @@ import { Book } from '../../../..';
 import GenreImage from './GenreImage';
 import { useRouter } from 'next/navigation';
 import StarRating from '@/components/StarRating';
+import Image from 'next/image';
 
 type Props = {
   title ?: string;
@@ -98,7 +99,7 @@ function GenreBooks({title, genre, likedIds, finishedIds, followedAuthorIds}: Pr
             onClick={() => handleBookClick(book.id)}
             className="group flex-shrink-0 flex h-fit md:h-full items-center hover:cursor-pointer"  
           >
-            <div className="flex bg-black h-full rounded-xl space-x-4 halflg:space-x-2 items-center">
+            <div className="flex bg-[#7F60F9]/5 backdrop-blur-lg hover:border hover:border-[#7F60F9]/15 h-full rounded-xl space-x-4 halflg:space-x-2 items-center">
               <div className="w-fit h-fit rounded-xl group-hover:bg-gradient-to-r from-[#7F60F9] to-[#6DDCFF]">
                   <GenreImage 
                     imageFile={book.book_image}
@@ -106,12 +107,12 @@ function GenreBooks({title, genre, likedIds, finishedIds, followedAuthorIds}: Pr
               </div>
 
               <div className='hidden group-hover:block w-[400px] halflg:max-h-[240px] space-y-2'>
-                  <p className='text-3xl md:text-2xl sm:text-xl font-bold'>{book.title}</p>
+                  <p title={book.title} className='text-3xl md:text-2xl sm:text-xl font-bold line-clamp-2'>{book.title}</p>
 
                   <div className="flex items-center space-x-1">
                       <p className='text-xl md:text-lg sm:text-base font-bold'>{book.author}</p>
                       {book.verified && (
-                        <img 
+                        <Image 
                           src="/verified.png"
                           alt="verified"
                           width={"20"}

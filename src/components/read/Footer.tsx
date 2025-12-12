@@ -94,19 +94,19 @@ function Footer({handlePrev, handleNext, setShowChat, handleIncreaseFontSize, ha
         <div onClick={() => setShowSettings((prev) => !prev)} className="p-2 absolute left-2 rounded-xl hover:cursor-pointer">
           <WrenchIcon className={`size-6 fill-none ${theme === "light" ? "stroke-black" : "stroke-white"}`}/>
         </div>
-        <div onClick={handlePrev} className={`p-2 ${theme === "light" ? "border border-black" : "bg-[#333438]"} rounded-xl hover:cursor-pointer`}>
+        <div onClick={handlePrev} className={`p-2 ${theme === "light" ? "border border-black" : "border-[#7F60F9]/15 border"} rounded-xl hover:cursor-pointer`}>
           <ArrowLeft
-            className={`size-6 ${theme === "light" ? "stroke-black" : "stroke-white"}`}
+            className={`size-5 ${theme === "light" ? "stroke-black" : "stroke-white"}`}
           />
         </div>
 
-        <div onClick={handleNext} className={`p-2 ${theme === "light" ? "border border-black" : "bg-[#333438]"} rounded-xl hover:cursor-pointer`}>
+        <div onClick={handleNext} className={`p-2 ${theme === "light" ? "border border-black" : "border border-[#7F60F9]/15"} rounded-xl hover:cursor-pointer`}>
           <ArrowRight
-            className={` ${theme === "light" ? "stroke-black" : "stroke-white"} size-6`}
+            className={`size-5 ${theme === "light" ? "stroke-black" : "stroke-white"}`}
           />
         </div>
 
-        <div onClick={() => setShowChat((prev: boolean) => !prev)} className={`p-2 absolute right-2 ${theme === "light" ? "bg-white" : "bg-[#333438]"} rounded-xl hover:cursor-pointer`}>
+        <div onClick={() => setShowChat((prev: boolean) => !prev)} className={`p-2 absolute right-2 ${theme === "light" ? "bg-white" : "border border-[#7F60F9]/15"} rounded-xl hover:cursor-pointer`}>
             <Chat 
               className={`${theme === "light" ? "stroke-[#7F60F9] fill-[#7F60F9]" : "stroke-white"} size-6`}
             />

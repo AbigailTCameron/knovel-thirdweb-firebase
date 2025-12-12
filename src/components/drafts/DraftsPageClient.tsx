@@ -33,8 +33,6 @@ function DraftsPageClient({}) {
     const [name, setName] = useState<string>('');
     
     useEffect(() => { 
-      setBooting(true);
-
       // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, async(user) => {
         const routeUserId = params?.userId;
@@ -70,10 +68,10 @@ function DraftsPageClient({}) {
 
 
   return (
-    <main className="flex w-screen h-screen overflow-hidden">
+    <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
       <PageAnalytics pageTitle="Drafts" pagePath="/drafts" />
 
-      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+      <div className='flex w-fit md:hidden border-r-[0.5px] z-50 border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}

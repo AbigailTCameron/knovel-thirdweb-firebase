@@ -18,11 +18,10 @@ import { generatePayload, isLoggedIn, login, logout } from '@/app/actions/login'
 import { firebaseAuthClient, firebaseLogout } from '@/app/actions/firebaseauth';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
-type Props = {}
 
 const { auth } = initializeFirebaseClient();
 
-function Search({}: Props) {
+function Search({}) {
   const camp = defineChain({
     id: 123420001114,
   });
@@ -130,22 +129,22 @@ function Search({}: Props) {
   };
 
   return (
-    <main className="flex flex-col w-screen min-h-screen items-center text-white font-mono">
+    <main className="flex flex-col w-screen min-h-screen items-center text-white font-mono bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
         <div className="flex relative items-center w-full justify-center my-8">
             <Link href="/explore" className="absolute left-10 text-white">
               <Back className="size-8 stroke-white" />
             </Link>
             
             <div className="relative w-1/2 items-center">
-                <form onSubmit={handleSearch} className="flex w-full bg-[#272831] rounded-3xl p-0.5">
-                  <div className="w-full flex bg-[#272831] rounded-3xl items-center px-2">
+                <form onSubmit={handleSearch} className="flex w-full bg-[#7F60F9]/20 backdrop-blur-lg border border-[#7F60F9]/15 rounded-3xl p-0.5">
+                  <div className="w-full flex rounded-3xl items-center px-2">
                       <SearchIcon className="size-5 md:size-4 sm:hidden stroke-[#7c7a85]"/>
 
                       <input 
                         type="text"
                         value={newQuery}
                         onChange={(e) => setNewQuery(e.target.value)}
-                        className="flex justify-between py-2 bg-[#272831] px-3 w-full h-full rounded-3xl focus:outline-none" 
+                        className="flex justify-between py-2 bg-inherit px-3 w-full h-full rounded-3xl focus:outline-none" 
                         placeholder="Search books, authors and community"
                       />
 

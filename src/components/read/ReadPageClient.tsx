@@ -113,7 +113,7 @@ function ReadPageClient({}) {
   };
 
   return (
-    <div className="flex w-screen h-screen flex-col items-center">
+    <div className="flex w-screen h-screen flex-col items-center bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
       <PageAnalytics pageTitle="Read" pagePath="/read" />
 
       <div className="sticky top-0 w-full z-50">
