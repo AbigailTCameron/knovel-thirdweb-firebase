@@ -13,18 +13,19 @@ type Props = {
   title : string;
   chapterCount ?: number | null;
   bookId : string;
-  userId : string;
   setLoading: (value: boolean) => void;
-  imageFilePath : string;
   created_at: any;
   setSynopsis: (value: boolean) => void;
   setGenrePopup: (value: boolean) => void;
   setEditTitle: (value: boolean) => void;
   setPublishPopup: (value: boolean) => void;
   setConfirmDelete: (value: boolean) => void;
+  setFilename: Function;
+  setImageSrc: Function;
+  setChooseCropped: Function;
 }
 
-function EditPublishSider({imageFile, title, chapterCount, bookId, userId, setLoading, imageFilePath, created_at, setSynopsis, setGenrePopup, setEditTitle, setPublishPopup, setConfirmDelete}: Props) {
+function EditPublishSider({imageFile, title, chapterCount, bookId, setLoading, setChooseCropped, setImageSrc, setFilename, created_at, setSynopsis, setGenrePopup, setEditTitle, setPublishPopup, setConfirmDelete}: Props) {
   const router = useRouter();
 
   const [options, showOptions] = useState(false);
@@ -45,9 +46,9 @@ function EditPublishSider({imageFile, title, chapterCount, bookId, userId, setLo
         <div className="flex flex-col px-4">
             <PublishUpload 
               imageFile={imageFile}
-              userId={userId}
-              oldFilePath={imageFilePath}
-              bookId={bookId}
+              setFilename={setFilename}
+              setImageSrc={setImageSrc}
+              setChooseCropped={setChooseCropped}
             />
 
             <div onClick={() => setEditTitle(true)} className="text-white font-bold text-4xl lg:text-2xl md:text-lg tall:text-base text-center hover:cursor-pointer hover:text-gray-500">

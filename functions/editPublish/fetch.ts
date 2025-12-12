@@ -270,6 +270,24 @@ export const deleteEntireBook = async(userId: string, bookId: string, imageFileP
   }
 }
 
+export const deletePublishedChapter = async(userId: string, bookId: string, index: number) => {
+  try{
+    const bookRef = doc(db, "published", userId, "userDrafts", bookId);
+    const snap = await getDoc(bookRef);
+    if (!snap.exists()) throw new Error("Book not found");
+
+    const data = snap.data();
+    const chapters: any[] = data?.chapters ?? [];
+
+    // remove the chapter at index
+    const next = chapters.filter((_, i) => i !== index);
+    await updateDoc(bookRef, { chapters: next });
+  }catch (error) {
+   
+    console.error("Error deleting chapter:", error);
+  }
+}
+
 export async function updateCompletedBookChapter(userId: string, bookId: string, chapterIndex: number, newCompleted: boolean) {
   try{
     // Step 1: Reference the book document in Firestore
