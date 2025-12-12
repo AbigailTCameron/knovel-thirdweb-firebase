@@ -25,7 +25,7 @@ import UsernamePopup from './UsernamePopup';
 type Props = {
   userId ?: string;
   name : string;
-  setLoading : Function;
+  setLoading : (value: boolean) => void;
   username?: string;
 }
 
@@ -92,7 +92,7 @@ function TipTapCreate({userId, name, setLoading, username}: Props) {
       // optional: prefetch for snappier transition
       router.prefetch(`/draft/${draftId}`);
       // navigate to draft
-      await router.push(`/draft/${draftId}`);
+      await router.push(`/draft/${userId}/${draftId}`);
     }finally {
       setLoading(false); // ✅ always hide overlay
       setSaving(false);

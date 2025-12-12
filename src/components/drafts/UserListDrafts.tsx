@@ -8,7 +8,7 @@ import { fetchDraftInfo } from '../../../functions/drafts/fetch';
 
 type Props = {
   userId: string;
-  setLoading: Function;
+  setLoading: (value: boolean) => void;
 }
 
 function UserListDrafts({userId, setLoading}: Props) {
@@ -49,8 +49,7 @@ function UserListDrafts({userId, setLoading}: Props) {
                         <div className=" w-full text-white flex-1 py-3 lg:py-1 space-y-3 lg:space-y-1 overflow-y-scroll">
 
                           <div className='flex flex-col'>
-                            <div className="flex w-full items-center space-x-2">
-                              <p className='flex text-sm font-extralight'>Draft {index + 1}: </p>
+                            <div className="flex flex-col w-full items-center justify-center space-x-2">
                               <p className="text-2xl sm:text-xl font-bold flex-shrink-0">{draft?.title}</p>
                             </div>
                             <p className="flex text-xs font-extralight">{formatDate(draft.created_at)}</p>

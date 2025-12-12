@@ -8,7 +8,7 @@ import DeleteChapter from './DeleteChapter';
 type Props = {
   chapters: DraftChapters[];
   draftId ?: string;
-  setLoading : Function;
+  setLoading : (value: boolean) => void;
   userId: string;
   setChapters: React.Dispatch<React.SetStateAction<DraftChapters[]>>;
   setChapterCount?: React.Dispatch<React.SetStateAction<number | null>>;

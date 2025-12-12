@@ -14,10 +14,9 @@ import SettingsPopup from '@/components/explore/popup/SettingsPopup';
 import MediumHeader from '@/components/headers/MediumHeader';
 
 
-type Props = {}
 const { auth } = initializeFirebaseClient();
 
-function Edit({}: Props) {
+function Edit({}) {
   const router = useRouter();
   
   const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);

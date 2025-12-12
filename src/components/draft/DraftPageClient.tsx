@@ -150,6 +150,7 @@ function DraftPageClient({}) {
     });
 
     try{
+      if(!currentUser) return;
       await updateDraftGenre(currentUser, params?.id, g);
     }catch(e){
       setBookGenres(prev => (prev ?? []).filter(x => x !== g));
@@ -162,6 +163,7 @@ function DraftPageClient({}) {
       setBookGenres(prev => (prev ?? []).filter(x => x !== selectedGenre));
   
       try{
+        if(!currentUser) return;
         await removeDraftGenre(currentUser, params?.id, selectedGenre);
       }catch(e){
         setBookGenres(prev => {

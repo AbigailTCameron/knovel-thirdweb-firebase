@@ -27,7 +27,7 @@ type Props = {
   userId : string;
   draftId : string;
   index : number;
-  setLoading: Function
+  setLoading: (value: boolean) => void;
 }
 
 function TipTapEdit({index, userId, draftId, setLoading}: Props) {
@@ -76,7 +76,7 @@ function TipTapEdit({index, userId, draftId, setLoading}: Props) {
     localStorage.removeItem('unsavedContent');
     localStorage.removeItem('unsavedTitleContent');
     await handleEditChapter(userId, titleContent, content, index, draftId); 
-    router.push(`/draft/${draftId}`);
+    router.push(`/draft/${userId}/${draftId}`);
   }
 
   const editor = useEditor({

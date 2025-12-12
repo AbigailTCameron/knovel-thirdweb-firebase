@@ -10,7 +10,7 @@ function ArrowLeft({ className }: Props) {
       width="40px"
       height="40px"
       viewBox="0 0 24 24"
-      strokeWidth="1.4"
+      strokeWidth="2"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
