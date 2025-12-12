@@ -1,9 +1,5 @@
 import PublishPageClient from "@/components/publish/PublishPageClient";
 import type { Metadata } from "next";
-import React from 'react'
-
-
-type Props = {}
 
 export const metadata: Metadata = {
   title: {
@@ -12,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 
-function Publish({}: Props) {
+function Publish({}) {
   return <PublishPageClient />
 }
 

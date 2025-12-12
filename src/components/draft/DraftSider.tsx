@@ -18,16 +18,18 @@ type Props = {
   setLoading: (b: boolean) => void;
   imagePath: string;
   created_at: any;
-  setSynopsis: (value: boolean) => void;
-  setImageUrl: (url: string) => void;          
-  setImagePath: (p: string) => void;  
+  setSynopsis: (value: boolean) => void; 
   setEditTitle: (t: boolean) => void;     
   setGenrePopup: (value: boolean) => void;
   setPublishPopup: (value: boolean) => void;
   setConfirmDelete: any;
+  setFilename: Function;
+  setImageSrc: Function;
+  setChooseCropped: Function;
+  localPreview: any;
 }
 
-function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title, setEditTitle, chapterCount, setGenrePopup, setLoading, imagePath, created_at, setSynopsis, setPublishPopup, setConfirmDelete}: Props) {
+function DraftSider({imageUrl, userId, localPreview, setChooseCropped, setImageSrc, draftId, title, setEditTitle, chapterCount, setGenrePopup, setLoading, imagePath, created_at, setSynopsis, setPublishPopup, setConfirmDelete, setFilename}: Props) {
   const router = useRouter();
   
   const [options, showOptions] = useState(false);
@@ -52,14 +54,10 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
         <div className="flex flex-col px-4">
             <ImageUploader2 
               bookUrl={imageUrl}
-              userId={userId}
-              draftId={draftId}
-              oldFilePath={imagePath}
-              onUploadingChange={setLoading}                           // show overlay while uploading
-              onUploaded={(url, path) => {                            // update parent immediately
-                setImageUrl(url);
-                setImagePath(path);
-              }}
+              setFilename={setFilename}
+              setImageSrc={setImageSrc}
+              setChooseCropped={setChooseCropped}
+              localPreview={localPreview}
             />
 
             <div onClick={() => setEditTitle(true)} className="text-white font-bold text-4xl lg:text-2xl md:text-lg tall:text-base text-center hover:cursor-pointer hover:text-gray-500">
