@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Book } from '../../..';
-import Image from 'next/image';
 import StarRating from '../StarRating';
 import { useRouter } from 'next/navigation';
 import Document from '../icons/Document';
@@ -47,8 +46,7 @@ function PublishList({userId}: Props) {
 
             <div className=" w-full text-white flex-1 py-3 lg:py-1 space-y-3 lg:space-y-1 overflow-y-scroll">
                   <div className='flex flex-col'>
-                    <div className="flex w-full items-center space-x-2">
-                      <p className='flex text-sm font-extralight'>Published {index + 1}: </p>
+                    <div className="flex flex-col w-full items-center space-x-2">
                       <p className="text-2xl sm:text-xl font-bold flex-shrink-0">{publish?.title}</p>
                     </div>
                     <p className="flex text-xs font-extralight">{formatDate(publish.created_at)}</p>

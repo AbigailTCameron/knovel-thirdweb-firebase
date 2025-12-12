@@ -31,7 +31,7 @@ export const fetchPublishInfo = async(userId: string, bookId: string, setChapter
       setChapterCount(draftSnap.data().chapters ? draftSnap.data().chapters.length : 0); 
       setImagePath(draftSnap.data().bookPath);
       setIpfsHash(draftSnap.data().hash);
-      setBytesId(draftSnap.data().bytesId);
+      setBytesId(draftSnap.data().bytesId as `0x${string}`);
       setCreated(draftSnap.data().created_at);
   }catch (error) {
     if (error instanceof Error) {

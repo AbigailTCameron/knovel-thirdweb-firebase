@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
-import { editBookSynopsis, fetchPublishInfo } from '../../../functions/editPublish/fetch';
+import { deleteEntireBook, editBookSynopsis, editPublishTitle, fetchPublishInfo, removePublishGenre, updatePublishGenre, updateUploadEpub } from '../../../functions/editPublish/fetch';
 import Sider from '../headers/Sider';
 import Top from '../headers/Top';
 import MediumHeader from '../headers/MediumHeader';
@@ -15,12 +15,19 @@ import UserSearch from '../explore/popup/UserSearch';
 import SettingsPopup from '../explore/popup/SettingsPopup';
 import Notifications from '../community/Notifications';
 import SpinLoader from '../loading/SpinLoader';
+import GenrePopup from '../draft/GenrePopup';
+import EditPublishedTitle from './EditPublishTitle';
+import UpdatePublish from './UpdatePublish';
+import { useActiveAccount } from 'thirdweb/react';
+import ConfirmDeletePublish from './ConfirmDeletePublish';
 
 
 const { auth } = initializeFirebaseClient();
 
 function EditPublishPageClient({}) {
     const router = useRouter();
+    const account = useActiveAccount(); // This is the currently signed-in user
+    
   
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
     const params = useParams<{ id: string }>();
@@ -39,7 +46,7 @@ function EditPublishPageClient({}) {
     const [newSynopsis, setNewSynopsis] = useState<string>('');
     const [ipfsHash, setIpfsHash] = useState<string>('')
     const [authorName, setAuthorName] = useState<string>('');
-    const [bytesId, setBytesId] = useState<string>('');
+    const [bytesId, setBytesId] = useState<`0x${string}` | null>(null);
     const [publishing, setPublishing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [searchResults, setSearchResults] = useState(false);
@@ -49,7 +56,17 @@ function EditPublishPageClient({}) {
     const [username, setUsername] = useState<string>('');
     const [filePath, setFilePath] = useState<string>('');
     const [created, setCreated] = useState();
-    const [booting, setBooting] = useState<boolean>(true);    
+    const [booting, setBooting] = useState<boolean>(true); 
+    const [genre, setGenre] = useState<string>('');
+    const [genrePopup, setGenrePopup] = useState(false);
+    const [addGenre, setAddGenre] = useState<boolean>(false);
+
+    const [editTitle, setEditTitle] = useState<boolean>(false);
+    const [newTitle, setNewTitle] = useState<string>('');
+
+    const [publishPopup, setPublishPopup] = useState(false); 
+    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);  
+       
 
     useEffect(() => { 
   
@@ -90,11 +107,68 @@ function EditPublishPageClient({}) {
       }
       setSynopsis(false);
     }
+
+  const handleGenreConfirm = async() => {
+    if(genre){
+      if(!currentUser) return;
+      await updatePublishGenre(currentUser, params.id, genre.trim()); 
+      setAddGenre(false); 
+    }
+  }
+
+  const handleRemoveGenre = async(selectedGenre:string) => {
+    if(!currentUser) return;
+    await removePublishGenre(currentUser, params.id, selectedGenre);
+  }
+  
     
+  const handleConfirmTitle = async() => {
+    if(newTitle.trim() != title){
+      if(!currentUser) return;
+      await editPublishTitle(currentUser, newTitle, params.id);
+    }
+    setEditTitle(false);
+  }
+
+  const publishedCount = chapters.filter((c) => c?.published).length; 
+  const totalChapters = chapters?.length ?? 0;
+
+
+  const handlePublish = async (upto: number) => {
+    if (upto < publishedCount || upto > chapters.length) return;
+    if(!currentUser || !bytesId) return;
+
+    const selectedChapters = chapters.slice(0, upto); // prefix only
+
+    setPublishing(true);
+    
+    const synopsis = newSynopsis !== '' ? newSynopsis : oldSynopsis
+    await updateUploadEpub(title, authorName, synopsis, chapters, selectedChapters, currentUser, genres || [], imageUrl, ipfsHash, bytesId, params.id, upto, account).then(success => {
+      if(success){
+        router.push("/explore");
+      }else{
+        alert("Error trying to your draft!")
+      }
+    })
+  };
+
+  const handleConfirmDelete = async() => {
+    if(params.id){
+      setDeleting(true);
+      router.push("/explore");
+
+      if(!currentUser || !bytesId) return;
+      const success = await deleteEntireBook(currentUser, params.id, imageUrl, ipfsHash, bytesId, account);
+      if(!success){
+        console.log('could not delete book');
+      }
+    }
+  }
+
 
   return (
-    <main className="flex w-screen h-screen overflow-hidden">
-      <div className='flex w-fit md:hidden border-r-[0.5px] border-white/50'>
+    <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
+      <div className='flex w-fit md:hidden border-r-[0.5px] z-50 border-white/50'>
           <Sider 
             setLoading={setLoading}
             userId={currentUser}
@@ -122,25 +196,21 @@ function EditPublishPageClient({}) {
           </div>
 
           <div className={`flex md:flex-col w-full h-full items-center space-x-2 p-4 overflow-hidden`}>
-              <div className="flex basis-1/4 halflg:basis-2/5 md:h-fit bg-[#171717] rounded-xl w-full h-full text-white">
+              <div className="flex basis-1/4 halflg:basis-2/5 md:h-fit rounded-xl w-full h-full bg-[#7F60F9]/5 backdrop-blur-lg border border-[#7F60F9]/15 text-white">
                   <EditPublishSider 
                     imageFile={imageUrl}
                     title={title}
                     chapterCount={chapterCount}
-                    genres={genres || []}
                     bookId={params.id}
                     userId={currentUser || ''}
                     setLoading={setLoading}
-                    authorName={authorName}
-                    synopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
-                    chapters={chapters}
-                    ipfsHash={ipfsHash}
-                    bytesId={bytesId as `0x${string}`}
                     imageFilePath={imagePath}
-                    setPublishing={setPublishing}
                     created_at={created}
                     setSynopsis={setSynopsis}
-                    setDeleting={setDeleting}
+                    setGenrePopup={setGenrePopup}
+                    setEditTitle={setEditTitle}
+                    setPublishPopup={setPublishPopup}
+                    setConfirmDelete={setConfirmDelete}
                   />
               </div>
 
@@ -192,6 +262,18 @@ function EditPublishPageClient({}) {
           />
         )}
 
+
+      {publishPopup && (
+        <UpdatePublish 
+          title={title}
+          onConfirm={handlePublish}
+          onCancel={() => setPublishPopup(false)}
+          publishedCount={publishedCount}  
+          chaptersCount={totalChapters}   
+        />
+      )}
+        
+
       {settingsPopup && (
           <SettingsPopup 
               setSettingsPopup={setSettingsPopup}
@@ -205,6 +287,25 @@ function EditPublishPageClient({}) {
           />
         )}
 
+      
+        {editTitle && (
+          <EditPublishedTitle 
+            onCancel={() => setEditTitle(false)}
+            setTitle={setNewTitle}
+            onConfirm={handleConfirmTitle}
+          />
+        )}
+
+        {confirmDelete && (
+          <ConfirmDeletePublish 
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setConfirmDelete(false)}
+            bookTitle={title}
+          />
+        
+        )}
+
+
 
       {showNotifications && (
         <Notifications 
@@ -213,6 +314,15 @@ function EditPublishPageClient({}) {
         />
       )}
 
+      {genrePopup && (
+        <GenrePopup
+          genres={genres || []}
+          setGenre={setGenre}
+          onCancel={() => setGenrePopup(false)}
+          onConfirm={handleGenreConfirm}
+          handleRemoveGenre={handleRemoveGenre}
+        />
+      )}
 
       {/* ✅ Overlay with blur effect */}
       {booting || loading && (
