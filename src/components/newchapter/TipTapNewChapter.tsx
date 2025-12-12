@@ -23,7 +23,7 @@ import { handleSubmitAnotherDraftChapter } from '../../../functions/newChapter/f
 type Props = {
   userId : string;
   id : string;
-  setLoading : Function;
+  setLoading : (value: boolean) => void;
 }
 
 function TipTapNewDraft({ id, userId, setLoading}: Props) {
@@ -82,8 +82,8 @@ function TipTapNewDraft({ id, userId, setLoading}: Props) {
       localStorage.removeItem('unsavedContent');
       localStorage.removeItem('unsavedTitleContent');
 
-      router.prefetch(`/draft/${id}`);
-      await router.push(`/draft/${id}`);
+      router.prefetch(`/draft/${userId}/${id}`);
+      await router.push(`/draft/${userId}/${id}`);
     }finally {
       setLoading(false);               // ✅ always hide overlay
       setSaving(false);

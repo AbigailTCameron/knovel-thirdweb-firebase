@@ -2,7 +2,6 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react'
 import { DraftChapters } from '../../..';
 import { deleteDraftChapter, updateCompletedChapter } from '../../../functions/drafts/fetch';
-import { formatDate } from '../../../tools/formatDate';
 import DeleteChapter from './DeleteChapter';
 
 type Props = {
@@ -154,19 +153,19 @@ function DraftList({chapters, draftId, setLoading, userId, setChapters, setChapt
               
                 
                 </div>
-
-              {pendingDelete && (
-                <DeleteChapter 
-                  onConfirm={() => handleDeleteChapter(pendingDelete.index)}
-                  onCancel={() => setPendingDelete(null)}
-                  chapterTitle={pendingDelete.title}
-                />
-              )}
-
             </div>
           )
         })
       )}  
+
+      {pendingDelete && (
+        <DeleteChapter 
+          onConfirm={() => handleDeleteChapter(pendingDelete.index)}
+          onCancel={() => setPendingDelete(null)}
+          chapterTitle={pendingDelete.title}
+        />
+      )}
+
     </div>
   )
 }

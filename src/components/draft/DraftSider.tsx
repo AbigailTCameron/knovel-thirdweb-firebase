@@ -2,16 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import ImageUploader2 from './ImageUploader2';
 import TrashIcon from '../icons/TrashIcon';
-import { deleteEntireDraft, editDraftTitle, uploadEpub } from '../../../functions/drafts/fetch';
-import ConfirmDeleteDraft from './ConfirmDelete';
-import EditTitlePopup from './EditTitlePopup';
-import PublishPopup from './PublishPopup';
 import { formatDate } from '../../../tools/formatDate';
 import Calendar from '../icons/Calendar';
 import Finger from '../icons/Finger';
 import Options from '../icons/Options';
 import OptionsPopup from './OptionsPopup';
-import { useActiveAccount } from 'thirdweb/react';
 
 type Props = {
   imageUrl : string;
@@ -19,106 +14,32 @@ type Props = {
   draftId : string;
   title : string;
   chapterCount ?: number | null;
-  genres : string[];
   setGenres: React.Dispatch<React.SetStateAction<string[] | undefined>>;
   setLoading: (b: boolean) => void;
-  setDeleting : (value: boolean) => void;
-  name : string;
-  newSynopsis : string;
-  chapters : any[]
   imagePath: string;
-  setPublishing: (value: boolean) => void;
   created_at: any;
   setSynopsis: (value: boolean) => void;
   setImageUrl: (url: string) => void;          
   setImagePath: (p: string) => void;  
-  setTitle: (t: string) => void;     
+  setEditTitle: (t: boolean) => void;     
   setGenrePopup: (value: boolean) => void;
+  setPublishPopup: (value: boolean) => void;
+  setConfirmDelete: any;
 }
 
-function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title, setTitle, chapterCount, genres, setGenrePopup, setLoading, name, newSynopsis, chapters, imagePath, setPublishing, setDeleting, created_at, setSynopsis}: Props) {
+function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title, setEditTitle, chapterCount, setGenrePopup, setLoading, imagePath, created_at, setSynopsis, setPublishPopup, setConfirmDelete}: Props) {
   const router = useRouter();
-  const account = useActiveAccount();
   
-  const [editTitle, setEditTitle] = useState<boolean>(false);
-  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState(title);          // 👈 init with current title
-  const [publishPopup, setPublishPopup] = useState(false); 
   const [options, showOptions] = useState(false);
-
-  useEffect(() => { setNewTitle(title); }, [title]);        // 👈 keep in sync
 
   const handleDelete = () => {
     setConfirmDelete(true);
-  }
-
-  const handleConfirm = async() => {
-    if (!draftId) return;
-
-    try{
-      setDeleting(true);                   // show overlay on parent
-      const success = await deleteEntireDraft(userId, draftId, imagePath);
-
-      if (success) {
-        // ✅ navigate AFTER delete completes
-        router.replace('/explore');
-      } else {
-        alert('Could not delete draft.');
-        setDeleting(false);
-      }
-    }catch(e){
-      console.error(e);
-      alert('An error occurred deleting the draft.');
-      setDeleting(false);
-    }
-  }
-
-  const handleConfirmTitle = async() => {
-    const next = newTitle.trim();
-    if (!next || next === title) {                   
-      setEditTitle(false);
-      return;
-    }
-
-    const prev = title;
-    setTitle(next);                                       
-    setLoading(true); 
-
-    try{
-      await editDraftTitle(userId, draftId, next);
-    }catch(e){
-      setTitle(prev);                                    
-      console.error(e);
-      alert('Failed to update title');
-    }finally {
-      setLoading(false);
-      setEditTitle(false);
-    }
-
   }
 
   const handleNewChapter = () => {
     setLoading(true); 
     router.push(`/newChapter/${draftId}`)
   }
-
-  const handlePublish = async (upto: number) => {
-    if (!imagePath) {
-      alert('Book cover file is missing. Please upload a book cover.');
-      setPublishPopup(false);
-      return;
-    }
-
-    const selectedChapters = chapters.slice(0, Math.max(0, Math.min(upto, chapters.length)));
-    setPublishing(true);
-    const ok = await uploadEpub(userId, genres, chapters, selectedChapters, title, name, newSynopsis, imagePath, draftId, imageUrl, selectedChapters.length, account);
-
-    if (ok) {
-      router.push('/explore');
-    } else {
-      alert('Error trying to publish your draft!');
-    }
-  };
 
   useEffect(() => {
     if(userId){
@@ -196,41 +117,7 @@ function DraftSider({imageUrl, userId, setImageUrl, setImagePath, draftId, title
             setSynopsis={setSynopsis}
             setGenrePopup={setGenrePopup}
           />
-        )}
-
-        {confirmDelete && (
-          <ConfirmDeleteDraft 
-            onConfirm={handleConfirm}
-            onCancel={() => setConfirmDelete(false)}
-            bookTitle={title}
-          />
-        )}
-
-        {editTitle && (
-          <EditTitlePopup 
-            value={newTitle}
-            setValue={setNewTitle} 
-            onCancel={() => {
-              setNewTitle(title);               // reset to current on cancel
-              setEditTitle(false);
-            }} 
-            onConfirm={handleConfirmTitle}
-            
-          />
         )} 
-
-        {publishPopup && (
-          <PublishPopup 
-            chaptersCount={chapters.length}
-            defaultUpto={chapters.length}    
-            title={title}
-            onConfirm={handlePublish}
-            onCancel={() => setPublishPopup(false)}
-          />
-        )}
-
-    
-   
     </div>
   )
 }

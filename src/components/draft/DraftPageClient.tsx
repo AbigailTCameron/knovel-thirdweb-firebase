@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import initializeFirebaseClient from '@/lib/initFirebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserProfile } from '../../../functions/explore/fetch';
-import { editDraftSynopsis, fetchChapterInfo, removeDraftGenre, updateDraftGenre } from '../../../functions/drafts/fetch';
+import { deleteEntireDraft, editDraftSynopsis, editDraftTitle, fetchChapterInfo, removeDraftGenre, updateDraftGenre, uploadEpub } from '../../../functions/drafts/fetch';
 import Sider from '../headers/Sider';
 import Top from '../headers/Top';
 import MediumHeader from '../headers/MediumHeader';
@@ -17,11 +17,17 @@ import SpinLoader from '../loading/SpinLoader';
 import DraftList from './DraftList';
 import NewSynopsis from './NewSynopsis';
 import GenrePopup from './GenrePopup';
+import EditTitlePopup from './EditTitlePopup';
+import PublishPopup from './PublishPopup';
+import { useActiveAccount } from 'thirdweb/react';
+import ConfirmDeleteDraft from './ConfirmDelete';
 
 const { auth } = initializeFirebaseClient();
 
 function DraftPageClient({}) {
     const router = useRouter();
+    const account = useActiveAccount();
+    
     const params = useParams<{ userId: string, id: string }>();
   
     const [currentUser, setCurrentUser] = useState(auth?.currentUser?.uid);
@@ -50,9 +56,17 @@ function DraftPageClient({}) {
     const [booting, setBooting] = useState<boolean>(true);  
     const [genre, setGenre] = useState<string>('');
     const [genrePopup, setGenrePopup] = useState(false);
-    
-      
+    const [newTitle, setNewTitle] = useState(title);         
+    const [editTitle, setEditTitle] = useState<boolean>(false);
+    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
+    const [publishPopup, setPublishPopup] = useState(false); 
+    
+
+    useEffect(() => { setNewTitle(title); }, [title]);      
+    
+    
+    
     useEffect(() => { 
       setBooting(true);
 
@@ -174,7 +188,73 @@ function DraftPageClient({}) {
         alert('Failed to remove genre');
       }
     }
+
+    const handleConfirmTitle = async() => {
+      const next = newTitle.trim();
+      if (!next || next === title) {                   
+        setEditTitle(false);
+        return;
+      }
   
+      const prev = title;
+      setTitle(next);                                       
+      setLoading(true); 
+  
+      try{
+        if(!currentUser) return;
+        await editDraftTitle(currentUser, params?.id, next);
+      }catch(e){
+        setTitle(prev);                                    
+        console.error(e);
+        alert('Failed to update title');
+      }finally {
+        setLoading(false);
+        setEditTitle(false);
+      }
+  
+    }
+
+  const handlePublish = async (upto: number) => {
+    if (!imagePath) {
+      alert('Book cover file is missing. Please upload a book cover.');
+      setPublishPopup(false);
+      return;
+    }
+
+    const selectedChapters = chapters.slice(0, Math.max(0, Math.min(upto, chapters.length)));
+    setPublishing(true);
+    if(!currentUser) return;
+    const ok = await uploadEpub(currentUser, genres || [], chapters, selectedChapters, title, name, newSynopsis, imagePath, params?.id, imageUrl, selectedChapters.length, account);
+
+    if (ok) {
+      router.push('/explore');
+    } else {
+      alert('Error trying to publish your draft!');
+    }
+  };
+
+  const handleConfirmDelete = async() => {
+    if (!params.id) return;
+
+    try{
+      setDeleting(true);   
+      if(!currentUser) return;         
+      const success = await deleteEntireDraft(currentUser, params.id, imagePath);
+
+      if (success) {
+        // ✅ navigate AFTER delete completes
+        router.replace('/explore');
+      } else {
+        alert('Could not delete draft.');
+        setDeleting(false);
+      }
+    }catch(e){
+      console.error(e);
+      alert('An error occurred deleting the draft.');
+      setDeleting(false);
+    }
+  }
+
 
   return (
     <main className="flex w-screen h-screen overflow-hidden bg-gradient-to-br from-[#7F60F9]/20 from-15% via-[#7F60F9]/10 via-20% to-[#000000] to-60%">
@@ -213,21 +293,17 @@ function DraftPageClient({}) {
                   imageUrl={imageUrl}
                   title={title}
                   userId={currentUser || ''}
-                  genres={genres || []}
                   setGenres={setBookGenres}  
                   setLoading={setLoading}
                   setImageUrl={setImageUrl}          
                   setImagePath={setImagePath} 
-                  name={authorName}
-                  newSynopsis={newSynopsis !== '' ? newSynopsis : oldSynopsis}
-                  chapters={chapters}
                   imagePath={imagePath}
-                  setPublishing={setPublishing}
-                  setDeleting={setDeleting}
                   created_at={created}
                   setSynopsis={setSynopsis}
-                  setTitle={setTitle} 
-                  setGenrePopup={setGenrePopup}           
+                  setEditTitle={setEditTitle} 
+                  setGenrePopup={setGenrePopup}   
+                  setPublishPopup={setPublishPopup}    
+                  setConfirmDelete={setConfirmDelete}    
                 />
               </div>
 
@@ -263,6 +339,20 @@ function DraftPageClient({}) {
                 
               </div>
 
+
+              {editTitle && (
+                <EditTitlePopup 
+                  value={newTitle}
+                  setValue={setNewTitle} 
+                  onCancel={() => {
+                    setNewTitle(title);               // reset to current on cancel
+                    setEditTitle(false);
+                  }} 
+                  onConfirm={handleConfirmTitle}
+                  
+                />
+              )} 
+
               {synopsis && (
                 <NewSynopsis 
                   value={newSynopsis === '' ? oldSynopsis : newSynopsis}
@@ -275,7 +365,7 @@ function DraftPageClient({}) {
               {genrePopup && (
                 <GenrePopup 
                   onCancel={() => setGenrePopup(false)}
-                  genres={genres}
+                  genres={genres || []}
                   setGenre={setGenre}
                   handleRemoveGenre={handleRemoveGenre}
                   onConfirm={handleGenreConfirm}
@@ -311,6 +401,25 @@ function DraftPageClient({}) {
           userId={currentUser}
         />
       )} 
+
+      {publishPopup && (
+          <PublishPopup 
+            chaptersCount={chapters.length}
+            defaultUpto={chapters.length}    
+            title={title}
+            onConfirm={handlePublish}
+            onCancel={() => setPublishPopup(false)}
+          />
+      )}
+
+      {confirmDelete && (
+        <ConfirmDeleteDraft 
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmDelete(false)}
+          bookTitle={title}
+        />
+      )}   
+      
 
       {/* One unified overlay */}
       {(booting || loading || publishing || deleting) && (
