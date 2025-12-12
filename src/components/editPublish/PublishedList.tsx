@@ -1,16 +1,22 @@
 import React, { useState } from 'react'
 import { DraftChapters } from '../../..';
 import { useRouter } from 'next/navigation';
-import { updateCompletedBookChapter } from '../../../functions/editPublish/fetch';
+import { deletePublishedChapter, updateCompletedBookChapter } from '../../../functions/editPublish/fetch';
+import DeleteChapter from '../draft/DeleteChapter';
 
 type Props = {
   chapters: DraftChapters[];
   bookId : string; 
   userId: string;
+  setLoading: Function;
+  setChapters: React.Dispatch<React.SetStateAction<DraftChapters[]>>;
+  setChapterCount?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-function PublishedList({chapters, bookId, userId}: Props) {
+function PublishedList({chapters, bookId, userId, setLoading, setChapters, setChapterCount}: Props) {
   const router = useRouter();
+  const [pendingDelete, setPendingDelete] = useState<null | { index: number; title: string }>(null);
+  
   const [completionStates, setCompletionStates] = useState<boolean[]>(
     chapters.map((chapter) => chapter.completed) // Initialize with the completed status of each chapter
   );
@@ -34,6 +40,34 @@ function PublishedList({chapters, bookId, userId}: Props) {
       router.push(`/editChapter/${bookId}/${index}`);
     }
   }
+
+  const handleDeleteChapter = async (index: number) => {
+      if (!bookId || !userId) return;
+  
+      setLoading(true);
+  
+      // keep a snapshot for rollback
+      const prevChapters = chapters;
+  
+      // update parent chapters immediately
+      setChapters((prev) => prev.filter((_, i) => i !== index));
+      setCompletionStates((prev) => prev.filter((_, i) => i !== index));
+      setChapterCount?.((prev) => (prev == null ? prev : Math.max(0, prev - 1)));
+  
+      try {
+        await deletePublishedChapter(userId, bookId, index);
+      } catch (e) {
+        // rollback on error
+        setChapters(prevChapters);
+        setCompletionStates(prevChapters.map((c) => Boolean(c.completed)));
+        setChapterCount?.((prev) => (prev == null ? prev : prev + 1));
+        console.error(e);
+        alert('Failed to delete chapter');
+      } finally {
+        setLoading(false);
+        setPendingDelete(null); // close popup
+      }
+    };
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 h-fit w-full py-4">
@@ -64,7 +98,7 @@ function PublishedList({chapters, bookId, userId}: Props) {
                 )}
                 
                 {!chapter?.published && (
-                  <div className="flex justify-between text-slate-500 space-x-4 text-sm items-center">
+                  <div className="flex justify-between text-slate-500 w-full space-x-4 text-sm items-center">
                       <div className="flex items-center space-x-2">
                           <p>Incomplete</p>
                           <div onClick={(event) => toggleComplete(index, event)} className={`${completionStates[index] ? 'bg-green-500 justify-end' : 'bg-white'} flex items-center border-1 border-white rounded-xl w-[60px] h-[22px]`}>
@@ -75,7 +109,7 @@ function PublishedList({chapters, bookId, userId}: Props) {
 
                       <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { 
                         e.stopPropagation();
-                        // setPendingDelete({ index, title: chapter.title });
+                        setPendingDelete({ index, title: chapter.title });
                       }} 
                       className={`hover:text-red-600 hover:underline`}>
                           <p>delete</p>
@@ -90,6 +124,14 @@ function PublishedList({chapters, bookId, userId}: Props) {
           </div>
         ))
       )}  
+
+      {pendingDelete && (
+        <DeleteChapter 
+          onConfirm={() => handleDeleteChapter(pendingDelete.index)}
+          onCancel={() => setPendingDelete(null)}
+          chapterTitle={pendingDelete.title}
+        />
+      )}
     </div>
   )
 }

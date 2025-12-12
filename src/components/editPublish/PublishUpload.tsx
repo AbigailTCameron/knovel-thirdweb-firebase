@@ -1,24 +1,15 @@
 import React, { useRef, useState } from 'react'
-import Cropper from 'react-easy-crop';
-import { Area, getCroppedImg } from '../../../tools/cropImage';
-import { reuploadBookImage } from '../../../functions/editPublish/fetch';
 
 type Props = {
   imageFile ?: string;
-  oldFilePath: string;
-  userId?: string;
-  bookId: string;
+  setFilename: Function;
+  setImageSrc: Function;
+  setChooseCropped: Function;
 }
 
-function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
+function PublishUpload({imageFile, setFilename, setImageSrc, setChooseCropped}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageSrc, setImageSrc] = useState<string>('');
-  const [chooseCropped, setChooseCropped] = useState<boolean>(false); 
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [filename, setFilename] = useState(''); 
 
 
   function readFile(file: File) {
@@ -35,7 +26,6 @@ function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
       setFilename(file?.name);
     }
 
-
     if (file && file.type.startsWith('image/')) {
       const imageDataUrl = await readFile(file)
 
@@ -46,35 +36,6 @@ function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
     }
   };
 
-  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }
-
-  const urlToFile = async (croppedImage: string) => {
-    const response = await fetch(croppedImage);
-    const blob = await response.blob();
-    
-    // Create a new File object
-    const file = new File([blob], "croppedImage.jpg", { type: blob.type });
-    
-    return file;
-  };
-
-  const handleCropConfirm = async () => {
-    if (croppedAreaPixels && imageSrc) {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels); 
-
-      setChooseCropped(false); 
-
-      urlToFile(croppedImage).then((file) => { 
-        if(userId){
-          reuploadBookImage(filename, file, userId, oldFilePath, bookId); 
-        }
-        
-      })
-
-    }
-  };
 
   return (
     <div className="flex flex-col self-center my-4 md:my-2 w-[250px] h-[375px] lg:h-fit">
@@ -102,33 +63,6 @@ function PublishUpload({imageFile, oldFilePath, userId, bookId}: Props) {
           )}
         
       </div>
-
-      {chooseCropped && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50 text-base">
-              <div className="flex flex-col w-1/3 h-3/4 bg-black/60 text-white rounded-xl shadow-lg p-6">
-                  <div className="relative w-full h-full">    
-                    <Cropper 
-                      image={imageSrc}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={1/1.6} // 1:1.5 aspect ratio
-                      onCropChange={setCrop}
-                      onZoomChange={setZoom}
-                      onCropComplete={onCropComplete}
-                    />
-                  </div>
-                  <div className="flex justify-center w-full space-x-2">
-                      <button
-                        onClick={handleCropConfirm}
-                        className="px-2 py-3 w-5/12 text-white font-semibold bg-zinc-800 rounded-xl"
-                      >
-                        Crop
-                      </button>
-                    
-                  </div>
-              </div>
-          </div>
-      )} 
     
     </div>
   )
