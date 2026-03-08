@@ -1,118 +1,165 @@
 import initializeFirebaseClient from "@/lib/initFirebase";
-import { arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {
+  arrayUnion,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { pinata } from "../../utils/config";
 import { client } from "@/lib/client";
-import { eth_getTransactionReceipt, getContract, getContractEvents, getRpcClient, prepareContractCall, prepareEvent, sendTransaction, toUnits } from "thirdweb";
+import {
+  eth_getTransactionReceipt,
+  getContract,
+  getContractEvents,
+  getRpcClient,
+  prepareContractCall,
+  prepareEvent,
+  sendTransaction,
+  toUnits,
+} from "thirdweb";
 import { smartWallet } from "thirdweb/wallets";
 //import { personalAccount } from "@/lib/client";
 import { defineChain } from "thirdweb/chains";
-import {generateKeywords} from "../helper-utils";
+import { generateKeywords } from "../helper-utils";
 import { notFound } from "next/navigation";
-
 
 const { db } = initializeFirebaseClient();
 
 export const fetchDraftInfo = async (userId: string, setDrafts: Function) => {
   try {
-      // Step 1: Reference the drafts collection for the user
-      const draftsCollection = collection(db, "drafts", userId, "userDrafts");
+    // Step 1: Reference the drafts collection for the user
+    const draftsCollection = collection(db, "drafts", userId, "userDrafts");
 
-      // Step 2: Fetch all drafts for the user
-      const draftQuery = query(draftsCollection); 
-      const draftSnapshot = await getDocs(draftQuery);
+    // Step 2: Fetch all drafts for the user
+    const draftQuery = query(draftsCollection);
+    const draftSnapshot = await getDocs(draftQuery);
 
-      // Step 3: Map over the results to format the draft data
-      const drafts = draftSnapshot.docs.map((doc) => ({
-        draftId: doc.id,
-        ...doc.data(),
-      }));
+    // Step 3: Map over the results to format the draft data
+    const drafts = draftSnapshot.docs.map((doc) => ({
+      draftId: doc.id,
+      ...doc.data(),
+    }));
 
-      // Step 4: Update state with fetched drafts
-     setDrafts(drafts);
-  }catch(error){
+    // Step 4: Update state with fetched drafts
+    setDrafts(drafts);
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching drafts:", error.message);
     } else {
       console.error("Error fetching drafts:", String(error));
     }
   }
-}
+};
 
-
-export const reuploadBookImageToSupabase = async (filename: string, file: File, userId: string, oldFilePath: string, draftId: string) => {
+export const reuploadBookImageToSupabase = async (
+  filename: string,
+  file: File,
+  userId: string,
+  oldFilePath: string,
+  draftId: string,
+) => {
   try {
-      const storageRef = getStorage();
-      const filePath = `books/${userId}/${filename}`;
+    const storageRef = getStorage();
+    const filePath = `books/${userId}/${filename}`;
 
-      // Step 1: Delete the existing file if it exists
-      if(oldFilePath){
-        const oldFileRef = ref(storageRef, oldFilePath);
-        await deleteObject(oldFileRef);
-      }
+    // Step 1: Delete the existing file if it exists
+    if (oldFilePath) {
+      const oldFileRef = ref(storageRef, oldFilePath);
+      await deleteObject(oldFileRef);
+    }
 
-      // Upload the file to Firebase Storage
-      const fileRef = ref(storageRef, filePath);
-      await uploadBytes(fileRef, file);
+    // Upload the file to Firebase Storage
+    const fileRef = ref(storageRef, filePath);
+    await uploadBytes(fileRef, file);
 
-      // Step 2: Get the file's download URL
-      const downloadURL = await getDownloadURL(fileRef);
+    // Step 2: Get the file's download URL
+    const downloadURL = await getDownloadURL(fileRef);
 
-      // Step 3: Update the user's Firestore profile with the new draft URL
-      const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
-      await updateDoc(draftRef, { book_image: downloadURL, bookPath: filePath });
+    // Step 3: Update the user's Firestore profile with the new draft URL
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
+    await updateDoc(draftRef, { book_image: downloadURL, bookPath: filePath });
 
-      console.log("Draft image successfully reuploaded.");
-      return { downloadURL, filePath };
-
-  }catch (error) {
+    console.log("Draft image successfully reuploaded.");
+    return { downloadURL, filePath };
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error uploading profile image:", error.message);
     } else {
       console.error("Error uploading profile image:", String(error));
     }
   }
-}
+};
 
-export const fetchChapterInfo = async(userId: string, draftId: string, setChapterCount:Function, setChapters: Function, setImageUrl: Function, setTitle: Function, setBookGenres: Function, setOldSynopsis: Function, setAuthorName: Function, setImagePath: Function, setCreated: Function) => {
-  try{
-      // Reference to the specific draft document in the Firestore "drafts" collection
-      const draftRef = doc(db, 'drafts', userId, 'userDrafts', draftId);
+export const fetchChapterInfo = async (
+  userId: string,
+  draftId: string,
+  setChapterCount: Function,
+  setChapters: Function,
+  setImageUrl: Function,
+  setTitle: Function,
+  setBookGenres: Function,
+  setOldSynopsis: Function,
+  setAuthorName: Function,
+  setImagePath: Function,
+  setCreated: Function,
+) => {
+  try {
+    // Reference to the specific draft document in the Firestore "drafts" collection
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
 
-      // Fetch the document
-      const draftSnap = await getDoc(draftRef);
-      if (!draftSnap.exists()) {
-        // If the document does not exist, redirect to the error page
-        notFound();
-      }
+    // Fetch the document
+    const draftSnap = await getDoc(draftRef);
+    if (!draftSnap.exists()) {
+      // If the document does not exist, redirect to the error page
+      notFound();
+    }
 
-      setChapters(draftSnap.data().draft_chapters);
-      setTitle(draftSnap.data().title);
-      setBookGenres(draftSnap.data()?.genres);
-      setOldSynopsis(draftSnap.data().synopsis);
-      setImageUrl(draftSnap.data().book_image); 
-      setAuthorName(draftSnap.data().author);
-      setChapterCount(draftSnap.data().draft_chapters ? draftSnap.data().draft_chapters.length : 0); 
-      setImagePath(draftSnap.data().bookPath);
-      setCreated(draftSnap.data().created_at);
-
-  }catch (error) {
+    setChapters(draftSnap.data().draft_chapters);
+    setTitle(draftSnap.data().title);
+    setBookGenres(draftSnap.data()?.genres);
+    setOldSynopsis(draftSnap.data().synopsis);
+    setImageUrl(draftSnap.data().book_image);
+    setAuthorName(draftSnap.data().author);
+    setChapterCount(
+      draftSnap.data().draft_chapters
+        ? draftSnap.data().draft_chapters.length
+        : 0,
+    );
+    setImagePath(draftSnap.data().bookPath);
+    setCreated(draftSnap.data().created_at);
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching chapter info:", error.message);
     } else {
       console.error("Error fetching chapter info:", String(error));
     }
   }
-}
+};
 
-export const updateDraftGenre = async(userId: string, draftId: string, genre: string) => {
-  try{
+export const updateDraftGenre = async (
+  userId: string,
+  draftId: string,
+  genre: string,
+) => {
+  try {
     // Step 1: Reference the specific draft document
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
 
     // Step 2: Fetch the draft document
     const draftSnap = await getDoc(draftRef);
-
 
     if (!draftSnap.exists()) {
       console.error("Draft not found.");
@@ -122,7 +169,6 @@ export const updateDraftGenre = async(userId: string, draftId: string, genre: st
     // Step 3: Get the current genres array
     const draftData = draftSnap.data();
     const currentGenres = draftData?.genres || [];
-
 
     // Step 4: Check if the genre already exists
     if (currentGenres.includes(genre)) {
@@ -136,41 +182,46 @@ export const updateDraftGenre = async(userId: string, draftId: string, genre: st
     });
 
     console.log("Genre successfully added.");
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error updating draft genres:", error.message);
     } else {
       console.error("Error updating draft genres:", String(error));
     }
   }
-}
+};
 
-export const removeDraftGenre = async (userId: string, draftId: string, genre: string) => {
+export const removeDraftGenre = async (
+  userId: string,
+  draftId: string,
+  genre: string,
+) => {
   try {
-     // Step 1: Reference the specific draft document
-     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
+    // Step 1: Reference the specific draft document
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
 
-     // Step 2: Fetch the draft document
-     const draftSnap = await getDoc(draftRef);
- 
-     if (!draftSnap.exists()) {
-       console.error("Draft not found.");
-       return;
-     }
- 
-     // Step 3: Get the current genres array
-     const draftData = draftSnap.data();
-     const currentGenres = draftData?.genres || [];
- 
-     // Step 4: Check if the genre exists in the array
-     if (!currentGenres.includes(genre)) {
-       console.log("Genre does not exist in the draft.");
-       return;
-     }
+    // Step 2: Fetch the draft document
+    const draftSnap = await getDoc(draftRef);
+
+    if (!draftSnap.exists()) {
+      console.error("Draft not found.");
+      return;
+    }
+
+    // Step 3: Get the current genres array
+    const draftData = draftSnap.data();
+    const currentGenres = draftData?.genres || [];
+
+    // Step 4: Check if the genre exists in the array
+    if (!currentGenres.includes(genre)) {
+      console.log("Genre does not exist in the draft.");
+      return;
+    }
 
     // Step 5: Remove the genre from the array
-    const updatedGenres = currentGenres.filter((item: string) => item !== genre);
+    const updatedGenres = currentGenres.filter(
+      (item: string) => item !== genre,
+    );
 
     // Step 6: Update the genres array in Firestore
     await updateDoc(draftRef, {
@@ -178,17 +229,20 @@ export const removeDraftGenre = async (userId: string, draftId: string, genre: s
     });
 
     console.log("Genre successfully removed.");
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error removing draft genres:", error.message);
     } else {
       console.error("Error removing draft genres:", String(error));
     }
   }
-}
+};
 
-export const editDraftTitle = async (userId: string, draftId: string, title:string) => {
+export const editDraftTitle = async (
+  userId: string,
+  draftId: string,
+  title: string,
+) => {
   try {
     // Step 1: Reference the specific draft document
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
@@ -207,19 +261,21 @@ export const editDraftTitle = async (userId: string, draftId: string, title:stri
     });
 
     return;
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error editing title:", error.message);
     } else {
       console.error("Error editing title:", String(error));
     }
   }
-}
+};
 
-
-export const deleteEntireDraft = async(userId: string, draftId: string, imageFilePath: string) => {
-  try{
+export const deleteEntireDraft = async (
+  userId: string,
+  draftId: string,
+  imageFilePath: string,
+) => {
+  try {
     // Step 1: Reference the draft document and delete it
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
     await deleteDoc(draftRef);
@@ -248,8 +304,7 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
       await deleteObject(imageRef);
     }
     return true;
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error deleting draft:", error.message);
       return false;
@@ -258,10 +313,14 @@ export const deleteEntireDraft = async(userId: string, draftId: string, imageFil
       return false;
     }
   }
-}
+};
 
-export const deleteDraftChapter = async(userId: string, draftId: string, index: number) => {
-  try{
+export const deleteDraftChapter = async (
+  userId: string,
+  draftId: string,
+  index: number,
+) => {
+  try {
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
     const snap = await getDoc(draftRef);
     if (!snap.exists()) throw new Error("Draft not found");
@@ -272,14 +331,17 @@ export const deleteDraftChapter = async(userId: string, draftId: string, index: 
     // remove the chapter at index
     const next = chapters.filter((_, i) => i !== index);
     await updateDoc(draftRef, { draft_chapters: next });
-  }catch (error) {
-   
+  } catch (error) {
     console.error("Error deleting chapter:", error);
   }
-}
+};
 
-export const deleteDraft = async(userId: string, draftId: string, imageFilePath: string) => {
-  try{
+export const deleteDraft = async (
+  userId: string,
+  draftId: string,
+  imageFilePath: string,
+) => {
+  try {
     // Step 1: Reference the draft document and delete it
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
     await deleteDoc(draftRef);
@@ -302,8 +364,7 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
     });
 
     return true;
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error deleting drafr:", error.message);
       return false;
@@ -312,18 +373,48 @@ export const deleteDraft = async(userId: string, draftId: string, imageFilePath:
       return false;
     }
   }
-}
+};
 
-
-export const uploadEpub = async(userId: string, genres: string[], chapters: any[], publishedChapters: any[], title: string, author: string, synopsis: string, bookCoverPath: string, draftId: string, imageUrl: string, publishedCount: number, account: any) => {
-  try{
-    const epubFile = await createEpubFile(publishedChapters, title, author, synopsis, imageUrl); 
+export const uploadEpub = async (
+  userId: string,
+  genres: string[],
+  chapters: any[],
+  publishedChapters: any[],
+  title: string,
+  author: string,
+  synopsis: string,
+  bookCoverPath: string,
+  draftId: string,
+  imageUrl: string,
+  publishedCount: number,
+  account: any,
+) => {
+  try {
+    const epubFile = await createEpubFile(
+      publishedChapters,
+      title,
+      author,
+      synopsis,
+      imageUrl,
+    );
     const response = await pinata.upload.file(epubFile);
-    await publishtoSmartContract(title, author, response.IpfsHash, userId, synopsis, genres, draftId, chapters, bookCoverPath, imageUrl, publishedCount, account);
+    await publishtoSmartContract(
+      title,
+      author,
+      response.IpfsHash,
+      userId,
+      synopsis,
+      genres,
+      draftId,
+      chapters,
+      bookCoverPath,
+      imageUrl,
+      publishedCount,
+      account,
+    );
 
     return true;
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error publishing draft:", error.message);
       return false;
@@ -332,9 +423,15 @@ export const uploadEpub = async(userId: string, genres: string[], chapters: any[
       return false;
     }
   }
-}
+};
 
-export const createEpubFile = async(chapters: any[], title: string, author_name: string, book_synopsis: string, imageUrl:string) => {
+export const createEpubFile = async (
+  chapters: any[],
+  title: string,
+  author_name: string,
+  book_synopsis: string,
+  imageUrl: string,
+) => {
   const chapterContents = chapters.map((chapter) => ({
     title: chapter.title,
     content: chapter.content,
@@ -342,31 +439,31 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
 
   // Create EPUB options
   const options = {
-    title: title, 
+    title: title,
     author: author_name,
     publisher: "Knovel Protocol",
-    content: chapterContents, 
+    content: chapterContents,
     cover: imageUrl,
     description: book_synopsis,
-    language: "en", 
+    language: "en",
     css: `
       body { font-family: Baskerville, monospace; font-size: 16px; }
       h1 { color: #333; }
-    `, 
+    `,
   };
-    // Make a POST request to the API to generate the EPUB
+  // Make a POST request to the API to generate the EPUB
   try {
-    const response = await fetch('/api/generateEpub', {
-      method: 'POST',
+    const response = await fetch("/api/generateEpub", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ options }),
     });
 
     // Check if the response is successful
     if (!response.ok) {
-      throw new Error('Failed to generate EPUB file.');
+      throw new Error("Failed to generate EPUB file.");
     }
 
     const data = await response.json();
@@ -376,34 +473,39 @@ export const createEpubFile = async(chapters: any[], title: string, author_name:
       // Handle the base64 string - e.g., create a Blob from it
       const base64Epub = data.base64Epub;
 
-      if (typeof base64Epub !== 'string' || !base64Epub.match(/^[A-Za-z0-9+/=]*$/)) {
+      if (
+        typeof base64Epub !== "string" ||
+        !base64Epub.match(/^[A-Za-z0-9+/=]*$/)
+      ) {
         throw new Error("Invalid base64 string.");
       }
 
       // Convert base64 to a Blob and then a File object
-      const epubBlob = new Blob([Uint8Array.from(atob(base64Epub), (c) => c.charCodeAt(0))], {
-        type: "application/epub+zip",
-      });
+      const epubBlob = new Blob(
+        [Uint8Array.from(atob(base64Epub), (c) => c.charCodeAt(0))],
+        {
+          type: "application/epub+zip",
+        },
+      );
 
       const epubFile = new File([epubBlob], `${title}.epub`, {
-        type: 'application/epub+zip',
+        type: "application/epub+zip",
       });
 
       return epubFile;
     } else {
-      throw new Error('No base64Epub returned from the server.');
+      throw new Error("No base64Epub returned from the server.");
     }
   } catch (error) {
-    console.error('Error creating EPUB:', error);
-    throw new Error('Error creating EPUB file.');
+    console.error("Error creating EPUB:", error);
+    throw new Error("Error creating EPUB file.");
   }
+};
 
-}
-
-const smartContractConfig = async(personalAccount: any) => {
+const smartContractConfig = async (personalAccount: any) => {
   // Configure the smart wallet
   const wallet = smartWallet({
-    chain: defineChain(123420001114),
+    chain: defineChain(43113),
     sponsorGas: true,
   });
 
@@ -416,21 +518,34 @@ const smartContractConfig = async(personalAccount: any) => {
   // connect to your contract
   const contract = getContract({
     client,
-    chain: defineChain(123420001114),
-    address: "0x0016404CCCf31605294dD86c1c39e65B4D882c82",
+    chain: defineChain(43113),
+    address: "0x1AAD889B2bF25926fC76e79250674F33AEe5E5bC",
   });
 
-  return {contract, smartAccount}
-}
+  return { contract, smartAccount };
+};
 
-export async function publishtoSmartContract(title: string, author: string, ipfsHash: string, userId: string, synopsis: string, genres: string[], draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number, account: any) {
-  try{
-    const {contract, smartAccount} = await smartContractConfig(account); 
+export async function publishtoSmartContract(
+  title: string,
+  author: string,
+  ipfsHash: string,
+  userId: string,
+  synopsis: string,
+  genres: string[],
+  draftId: string,
+  chapters: any[],
+  imageFilePath: string,
+  bookUrl: string,
+  publishedCount: number,
+  account: any,
+) {
+  try {
+    const { contract, smartAccount } = await smartContractConfig(account);
 
     const transaction = await prepareContractCall({
       contract,
       method:
-      "function publishBook(string _title, string _author, string _ipfsHash, uint256 _price)",
+        "function publishBook(string _title, string _author, string _ipfsHash, uint256 _price)",
       params: [title, author, ipfsHash, toUnits("0", 18)],
     });
 
@@ -439,18 +554,14 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
       account: smartAccount,
     });
 
-
-    const rpcRequest = getRpcClient({ 
-      client, 
-      chain: defineChain(123420001114)
+    const rpcRequest = getRpcClient({
+      client,
+      chain: defineChain(43113),
     });
 
-    const transactionReceipt = await eth_getTransactionReceipt(
-      rpcRequest,
-      {
-        hash: transactionHash,
-      },
-    );
+    const transactionReceipt = await eth_getTransactionReceipt(rpcRequest, {
+      hash: transactionHash,
+    });
 
     const preparedEvent = prepareEvent({
       signature:
@@ -460,27 +571,42 @@ export async function publishtoSmartContract(title: string, author: string, ipfs
     const events = await getContractEvents({
       contract,
       events: [preparedEvent],
-      blockHash: transactionReceipt.blockHash
+      blockHash: transactionReceipt.blockHash,
     });
-    
 
     let bookId = events[0].args.bookId;
-  
 
     if (!bookId) {
       throw new Error("BookRegistered event not found in transaction logs.");
     }
 
-    await pushToBooks(userId, author, title, synopsis, genres, ipfsHash, transactionHash, bookId, draftId, chapters, imageFilePath, bookUrl, publishedCount);
-    
-  }catch(err){
+    await pushToBooks(
+      userId,
+      author,
+      title,
+      synopsis,
+      genres,
+      ipfsHash,
+      transactionHash,
+      bookId,
+      draftId,
+      chapters,
+      imageFilePath,
+      bookUrl,
+      publishedCount,
+    );
+  } catch (err) {
     console.error("Error trying to call public registry smart contract", err);
   }
 }
 
-export async function uploadBookImageToFirebase(file: File | null, userId: string, filename: string) {
+export async function uploadBookImageToFirebase(
+  file: File | null,
+  userId: string,
+  filename: string,
+) {
   try {
-    if(file){
+    if (file) {
       const storage = getStorage();
       const filePath = `drafts/${userId}/${filename}`;
 
@@ -491,103 +617,122 @@ export async function uploadBookImageToFirebase(file: File | null, userId: strin
       // Get the download URL
       const downloadURL = await getDownloadURL(storageRef);
       return { downloadURL, filePath };
-    }else {
+    } else {
       return {};
     }
-  
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error("Error uploading image:", error);
     return {};
   }
 }
 
-export async function pushToBooks(userId: string, name: string, title: string, synopsis: string, genres: string[], cid: string, txhash:string, bookId: string, draftId: string, chapters: any[], imageFilePath: string, bookUrl: string, publishedCount: number){
-  try{
-      // Step 1: Generate a Firestore auto ID
-      const booksCollection = collection(db, "books");
-      const bookRef = doc(booksCollection); // Generate a unique draft ID
-      const book_id = bookRef.id;
+export async function pushToBooks(
+  userId: string,
+  name: string,
+  title: string,
+  synopsis: string,
+  genres: string[],
+  cid: string,
+  txhash: string,
+  bookId: string,
+  draftId: string,
+  chapters: any[],
+  imageFilePath: string,
+  bookUrl: string,
+  publishedCount: number,
+) {
+  try {
+    // Step 1: Generate a Firestore auto ID
+    const booksCollection = collection(db, "books");
+    const bookRef = doc(booksCollection); // Generate a unique draft ID
+    const book_id = bookRef.id;
 
-      // Step 1: Create books data
-      const draftData = {
-        authorId: userId,
-        author: name,
-        title,
-        book_image: bookUrl || '',
-        bookPath: imageFilePath || '',
-        bytesId: bookId,
-        created_at: serverTimestamp(),
-        synopsis,
-        genres,
-        rating: 0,
-        txhash: txhash,
-        hash: cid,
-        search_keywords: generateKeywords(title, name),
-        verified: false,
-        views: 0,
-        price: 0,
-        currency: "ETH",
-        likes_total: 0,
-        finishes_total: 0,
-        views_30d: 0,
-        likes_30d: 0,
-        comments_30d: 0,
-        finishes_30d: 0
-      };
+    // Step 1: Create books data
+    const draftData = {
+      authorId: userId,
+      author: name,
+      title,
+      book_image: bookUrl || "",
+      bookPath: imageFilePath || "",
+      bytesId: bookId,
+      created_at: serverTimestamp(),
+      synopsis,
+      genres,
+      rating: 0,
+      txhash: txhash,
+      hash: cid,
+      search_keywords: generateKeywords(title, name),
+      verified: false,
+      views: 0,
+      price: 0,
+      currency: "ETH",
+      likes_total: 0,
+      finishes_total: 0,
+      views_30d: 0,
+      likes_30d: 0,
+      comments_30d: 0,
+      finishes_30d: 0,
+    };
 
-      // Step 2: Save draft data to Firestore
-      await setDoc(bookRef, draftData);
+    // Step 2: Save draft data to Firestore
+    await setDoc(bookRef, draftData);
 
-      // Step 3: Update the user's profile with the draft ID
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      
-      if (!userSnap.exists()) {
-        throw new Error('User profile not found.');
-        return;
-      }
-  
-      await updateDoc(userRef, {
-        published: arrayUnion(book_id), // Add the new draft ID to the user's drafts array
-      });
+    // Step 3: Update the user's profile with the draft ID
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
 
+    if (!userSnap.exists()) {
+      throw new Error("User profile not found.");
+      return;
+    }
 
-      // Map over the chapters and add `published: "true"` to each chapter object
-      const updatedChapters = chapters.map((chapter, i) => ({
-        ...chapter,
-        published: i < publishedCount ? true : Boolean(chapter.published) // keep prior truthy if you support re-publish
-      }));
+    await updateDoc(userRef, {
+      published: arrayUnion(book_id), // Add the new draft ID to the user's drafts array
+    });
 
+    // Map over the chapters and add `published: "true"` to each chapter object
+    const updatedChapters = chapters.map((chapter, i) => ({
+      ...chapter,
+      published: i < publishedCount ? true : Boolean(chapter.published), // keep prior truthy if you support re-publish
+    }));
 
-      // Step 2: Generate a Firestore auto ID
-      const publishedCollection = collection(db, "published", userId, "userDrafts");
-      const publishedDocRef = doc(publishedCollection, book_id); // Use book_id as the document ID
+    // Step 2: Generate a Firestore auto ID
+    const publishedCollection = collection(
+      db,
+      "published",
+      userId,
+      "userDrafts",
+    );
+    const publishedDocRef = doc(publishedCollection, book_id); // Use book_id as the document ID
 
-      await setDoc(publishedDocRef, {
-        book_id,
-        title: title,
-        chapters: updatedChapters,
-        created_at: serverTimestamp(),
-        synopsis: synopsis,
-        genres: genres,
-        book_image: bookUrl || '',
-        bookPath: imageFilePath || '',
-        hash: cid,
-        bytesId: bookId
-      });
-      
+    await setDoc(publishedDocRef, {
+      book_id,
+      title: title,
+      chapters: updatedChapters,
+      created_at: serverTimestamp(),
+      synopsis: synopsis,
+      genres: genres,
+      book_image: bookUrl || "",
+      bookPath: imageFilePath || "",
+      hash: cid,
+      bytesId: bookId,
+    });
 
-      await deleteDraft(userId, draftId, imageFilePath);
-      
-      return true;
+    await deleteDraft(userId, draftId, imageFilePath);
 
-  }catch(error){
+    return true;
+  } catch (error) {
     console.error("Error pushing drafts to publish books tables", error);
   }
 }
 
-export const updateCompletedChapter = async(userId: string, draftId: string, chapterIndex: number, newCompleted: boolean) => {
-  try{
+export const updateCompletedChapter = async (
+  userId: string,
+  draftId: string,
+  chapterIndex: number,
+  newCompleted: boolean,
+) => {
+  try {
     // Step 1: Reference the draft document
     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
 
@@ -622,31 +767,31 @@ export const updateCompletedChapter = async(userId: string, draftId: string, cha
     await updateDoc(draftRef, { draft_chapters: draftChapters });
 
     console.log("Chapter completion status updated successfully");
-  }catch(error){
+  } catch (error) {
     console.error("Error updating chapters:", error);
   }
-}
+};
 
+export const editDraftSynopsis = async (
+  userId: string,
+  draftId: string,
+  synopsis: string,
+) => {
+  try {
+    // Step 1: Reference the draft document
+    const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
 
-export const editDraftSynopsis = async(userId: string, draftId: string, synopsis: string) => {
-  try{
+    // Step 2: Fetch the draft data
+    const draftSnap = await getDoc(draftRef);
 
-     // Step 1: Reference the draft document
-     const draftRef = doc(db, "drafts", userId, "userDrafts", draftId);
-
-     // Step 2: Fetch the draft data
-     const draftSnap = await getDoc(draftRef);
- 
-     if (!draftSnap.exists()) {
-       console.error("Draft not found");
-       return;
-     }
+    if (!draftSnap.exists()) {
+      console.error("Draft not found");
+      return;
+    }
 
     // Step 4: Update the draft document with the modified chapters
     await updateDoc(draftRef, { synopsis: synopsis });
-
-
-  }catch(err){
-    console.error("Error encountered", err); 
+  } catch (err) {
+    console.error("Error encountered", err);
   }
-}
+};
