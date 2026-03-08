@@ -390,7 +390,7 @@ export const mintNft = async (
     return { success: true };
   } catch (err) {
     console.error(err);
-    if (err.message && err.message.includes("DropClaimExceedLimit")) {
+    if (err instanceof Error && err.message.includes("DropClaimExceedLimit")) {
       setClaimed(true);
       return { success: false, error: "You have already claimed this NFT." };
     }
