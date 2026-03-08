@@ -1,10 +1,9 @@
 import initializeFirebaseServer from "../lib/initFirebaseAdmin";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 const { db } = initializeFirebaseServer();
-
 
 // ABI must include migrateBook (onlyOwner) *or* publishBookFor (onlyAuthorized)
 import PublishRegistryV1Abi from "./abi/PublishRegistryV1.json";
@@ -14,20 +13,21 @@ const PROXY_ADDRESS = "0x0016404CCCf31605294dD86c1c39e65B4D882c82";
 const RPC_URL = process.env.RPC_URL!;
 const PK = process.env.PRIVATE_KEY!;
 const OLD_ADDRESS = "0x...OLD_CONTRACT"; // optional: set your legacy addr
-const BATCH_DELAY_MS = 250;              // gentle pacing
-const DRY_RUN = false;                   // set true to test without sending tx
-
-
+const BATCH_DELAY_MS = 250; // gentle pacing
+const DRY_RUN = false; // set true to test without sending tx
 
 // ---- ethers provider & signer ----
 const provider = new ethers.JsonRpcProvider(RPC_URL);
 const signer = new ethers.Wallet(PK, provider);
-const contract = new ethers.Contract(PROXY_ADDRESS, PublishRegistryV1Abi.abi, signer);
+const contract = new ethers.Contract(
+  PROXY_ADDRESS,
+  PublishRegistryV1Abi.abi,
+  signer,
+);
 
-const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 async function main() {
-
   console.log("Migrator:", await signer.getAddress());
   console.log("Using proxy:", PROXY_ADDRESS);
 
@@ -43,8 +43,8 @@ async function main() {
   let skipped = 0;
   let failed = 0;
 
-  for(const docSnap of snap.docs){
-    const book = docSnap.data(); 
+  for (const docSnap of snap.docs) {
+    const book = docSnap.data();
     const docId = docSnap.id;
 
     // 1) already migrated?
@@ -56,7 +56,9 @@ async function main() {
 
     // 2) required fields
     if (!book.title || !book.author || !book.authorId || !book.hash) {
-      console.warn(`[SKIP][${docId}] missing fields (title/author/authorId/hash)`);
+      console.warn(
+        `[SKIP][${docId}] missing fields (title/author/authorId/hash)`,
+      );
       skipped++;
       continue;
     }
@@ -67,11 +69,10 @@ async function main() {
     if (!authorAddr.startsWith("0x") || authorAddr.length !== 42) {
       const fallbackAddr = await signer.getAddress();
       console.warn(
-        `[WARN][${docId}] authorId is not a valid EVM address (${authorAddr}); using signer address ${fallbackAddr}`
+        `[WARN][${docId}] authorId is not a valid EVM address (${authorAddr}); using signer address ${fallbackAddr}`,
       );
       authorAddr = fallbackAddr;
     }
-
 
     // 4) normalize price
     let priceWei: bigint = 0n;
@@ -93,13 +94,13 @@ async function main() {
 
     console.log(`→ Migrating ${docId}: "${book.title}" → author=${authorAddr}`);
 
-
-    if(DRY_RUN){
-      console.log(`[DRY RUN] would call migrateBook(${book.title}, ${book.author}, ${authorAddr}, ${book.hash}, ${priceWei}, ${legacyBookId})`);
+    if (DRY_RUN) {
+      console.log(
+        `[DRY RUN] would call migrateBook(${book.title}, ${book.author}, ${authorAddr}, ${book.hash}, ${priceWei}, ${legacyBookId})`,
+      );
       continue;
     }
-    
-    
+
     try {
       const tx = await contract.migrateBook(
         book.title,
@@ -107,15 +108,13 @@ async function main() {
         authorAddr, // address
         book.hash,
         priceWei,
-        legacyBookId
+        legacyBookId,
       );
       const receipt = await tx.wait();
 
       let newBookId: string | null = null;
       let legacyEmitted: string | null = null;
 
-
-   
       // Print all parsed event names for debugging
       for (const log of receipt.logs) {
         try {
@@ -127,7 +126,9 @@ async function main() {
             // both positional (0,1) and named access work in ethers v6
             legacyEmitted = parsed.args[0];
             newBookId = parsed.args[1]; // ✅ THIS IS THE VALUE YOU WANT
-            console.log(`🆕 BookMigrated → legacy=${legacyEmitted}, new=${newBookId}`);
+            console.log(
+              `🆕 BookMigrated → legacy=${legacyEmitted}, new=${newBookId}`,
+            );
             break; // ✅ stop searching once found
           }
         } catch (err) {
@@ -138,7 +139,7 @@ async function main() {
       if (!newBookId) {
         // ❗️couldn't find event — stop the loop
         console.error(
-          `   ❌ BookMigrated event not found for doc ${docId}. Stopping migration here.`
+          `   ❌ BookMigrated event not found for doc ${docId}. Stopping migration here.`,
         );
         failed++;
         break; // <---- this breaks out of the for(...) loop
@@ -146,16 +147,15 @@ async function main() {
 
       await docSnap.ref.update({
         bytesId: newBookId,
-        txhash: receipt.hash ?? receipt.transactionHash,
-        migrated: true
-      })
+        txHash: receipt.hash ?? receipt.transactionHash,
+        migrated: true,
+      });
 
       console.log(
-        `   ✅ migrated ${docId} legacy=${legacyEmitted} → new=${newBookId} tx=${receipt.transactionHash}`
+        `   ✅ migrated ${docId} legacy=${legacyEmitted} → new=${newBookId} tx=${receipt.transactionHash}`,
       );
       migrated++;
-
-    }catch (err: any) {
+    } catch (err) {
       console.error(`   ❌ failed ${docId}:`, err?.message || err);
       failed++;
     }
@@ -163,9 +163,10 @@ async function main() {
     await sleep(BATCH_DELAY_MS);
   }
 
-  console.log(`\nDone. migrated=${migrated}, skipped=${skipped}, failed=${failed}`);
+  console.log(
+    `\nDone. migrated=${migrated}, skipped=${skipped}, failed=${failed}`,
+  );
   process.exit(0);
-
 }
 
 main().catch((e) => {
