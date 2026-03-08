@@ -11,7 +11,7 @@ import {
   query,
   startAfter,
   updateDoc,
-  where
+  where,
 } from "firebase/firestore";
 import { Account, smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
@@ -20,62 +20,66 @@ import { Notification } from "../..";
 import { getContract, sendTransaction } from "thirdweb";
 import { balanceOf, claimTo } from "thirdweb/extensions/erc1155";
 import { useActiveAccount } from "thirdweb/react";
-import {genres as ALL_GENRES} from "../../bookGenres";
+import { genres as ALL_GENRES } from "../../bookGenres";
 
 const { db } = initializeFirebaseClient();
 
-export const getUserProfile = async (userId: string, setProfileUrl: Function) => {
+export const getUserProfile = async (
+  userId: string,
+  setProfileUrl: Function,
+) => {
+  // Fetch user document from Firestore
+  const userRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userRef);
 
-    // Fetch user document from Firestore
-    const userRef = doc(db, "users", userId);
-    const userDoc = await getDoc(userRef);
-
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      setProfileUrl(userData.profilePicture || null);
-      return userData;
-    } else {
-      console.log("User document not found.");
-      return null;
-    }
-}
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    setProfileUrl(userData.profilePicture || null);
+    return userData;
+  } else {
+    console.log("User document not found.");
+    return null;
+  }
+};
 
 export const fetchBooks = async (setBooks: Function) => {
   try {
-      const booksCollection = collection(db, "books");
-
+    const booksCollection = collection(db, "books");
 
     const booksQuery = query(
       booksCollection,
       orderBy("trendingScore", "desc"),
-      limit(20)
+      limit(20),
     );
 
-      const querySnapshot = await getDocs(booksQuery);
+    const querySnapshot = await getDocs(booksQuery);
 
-      // Map data to usable format
-      const books = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      // Set books and last document
-      setBooks(books); // Append new books
-  }catch (error) {
+    // Map data to usable format
+    const books = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    // Set books and last document
+    setBooks(books); // Append new books
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
     } else {
       console.error("Error fetching books:", String(error));
     }
   }
-
-}
+};
 
 export const fetchTopRated = async (setBooks: Function) => {
-  try{
+  try {
     const booksCollection = collection(db, "books");
 
     // Create the query
-    const booksQuery = query(booksCollection, orderBy("ratingWeighted", "desc"), limit(20));
+    const booksQuery = query(
+      booksCollection,
+      orderBy("ratingWeighted", "desc"),
+      limit(20),
+    );
 
     const querySnapshot = await getDocs(booksQuery);
 
@@ -87,17 +91,22 @@ export const fetchTopRated = async (setBooks: Function) => {
 
     // Set books and last document
     setBooks(books); // Append new books
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
     } else {
       console.error("Error fetching books:", String(error));
     }
   }
-}
+};
 
-export const computeAffinity = async (currentUser: string, setGenreAffinity: Function, genreOptions: string[], likedIds: Set<string>, finishedIds: Set<string>) => {
+export const computeAffinity = async (
+  currentUser: string,
+  setGenreAffinity: Function,
+  genreOptions: string[],
+  likedIds: Set<string>,
+  finishedIds: Set<string>,
+) => {
   if (!currentUser) {
     setGenreAffinity({});
     return;
@@ -127,42 +136,43 @@ export const computeAffinity = async (currentUser: string, setGenreAffinity: Fun
   }
 
   const BATCH_SIZE = 10; // Firestore "in" queries limited to 10 IDs
-  for(let i = 0; i < bookIds.length; i+= BATCH_SIZE) {
+  for (let i = 0; i < bookIds.length; i += BATCH_SIZE) {
     const batchIds = bookIds.slice(i, i + BATCH_SIZE);
     const booksRef = collection(db, "books");
     const q = query(booksRef, where("__name__", "in", batchIds));
     const snap = await getDocs(q);
 
     snap.forEach((docSnap) => {
-        const data = docSnap.data() as any;
-        const bookGenres: string[] = Array.isArray(data.genres) ? data.genres : [];
-        const id = docSnap.id;
+      const data = docSnap.data() as any;
+      const bookGenres: string[] = Array.isArray(data.genres)
+        ? data.genres
+        : [];
+      const id = docSnap.id;
 
-        const liked = likedIds.has(id);
-        const finished = finishedIds.has(id);
-        const increment = (liked ? 1 : 0) + (finished ? 1 : 0);
+      const liked = likedIds.has(id);
+      const finished = finishedIds.has(id);
+      const increment = (liked ? 1 : 0) + (finished ? 1 : 0);
 
-        if (increment === 0) return;
+      if (increment === 0) return;
 
-        for (const g of bookGenres) {
-          if (affinity[g] === undefined) affinity[g] = 0;
-          affinity[g] += increment;
-        }
+      for (const g of bookGenres) {
+        if (affinity[g] === undefined) affinity[g] = 0;
+        affinity[g] += increment;
+      }
     });
   }
   setGenreAffinity(affinity);
+};
 
-}
-
-export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
+export const fetchBooksByGenre = async (genre: string, setBooks: Function) => {
   try {
     const booksCollection = collection(db, "books");
 
     const booksQuery = query(
-      booksCollection, 
-      where("genres", "array-contains", genre), 
+      booksCollection,
+      where("genres", "array-contains", genre),
       orderBy("trendingScore", "desc"),
-      limit(30)
+      limit(30),
     );
 
     const querySnapshot = await getDocs(booksQuery);
@@ -173,28 +183,31 @@ export const fetchBooksByGenre = async(genre: string, setBooks: Function) => {
       ...doc.data(),
     }));
     setBooks(books);
-
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
     } else {
       console.error("Error fetching books:", String(error));
     }
   }
-}
+};
 
-export const fetchSearchResults = async(queryText: string, setResults: Function) => {
+export const fetchSearchResults = async (
+  queryText: string,
+  setResults: Function,
+) => {
   try {
     const booksCollection = collection(db, "books");
 
     // Create a query for matching titles (case-sensitive)
     const booksQuery = query(
-        booksCollection, or(
-            where("search_keywords", "array-contains", queryText.toLowerCase()),
-            where("genres", "array-contains", queryText.toLowerCase()),
-        )
+      booksCollection,
+      or(
+        where("search_keywords", "array-contains", queryText.toLowerCase()),
+        where("genres", "array-contains", queryText.toLowerCase()),
+      ),
     );
-  
+
     const querySnapshot = await getDocs(booksQuery);
 
     const results = querySnapshot.docs.map((doc) => ({
@@ -203,25 +216,28 @@ export const fetchSearchResults = async(queryText: string, setResults: Function)
     }));
 
     setResults(results);
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
     } else {
       console.error("Error fetching books:", String(error));
     }
   }
-}
+};
 
-export const fetchThemeResults = async(themes: string[], setResults: Function) => {
+export const fetchThemeResults = async (
+  themes: string[],
+  setResults: Function,
+) => {
   try {
     const booksCollection = collection(db, "books");
 
     // Create a query for matching titles (case-sensitive)
     const booksQuery = query(
-        booksCollection, 
-            where("genres", "array-contains-any", themes),
+      booksCollection,
+      where("genres", "array-contains-any", themes),
     );
-  
+
     const querySnapshot = await getDocs(booksQuery);
 
     const results = querySnapshot.docs.map((doc) => ({
@@ -230,26 +246,27 @@ export const fetchThemeResults = async(themes: string[], setResults: Function) =
     }));
 
     setResults(results);
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching books:", error.message);
     } else {
       console.error("Error fetching books:", String(error));
     }
   }
-}
+};
 
-
-
-export const fetchNotifications = async (userId: string, setNotifications: Function) => {
+export const fetchNotifications = async (
+  userId: string,
+  setNotifications: Function,
+) => {
   try {
     const notificationsRef = collection(db, "notifications");
     const q = query(
       notificationsRef,
       where("recipientId", "==", userId),
-      orderBy("createdAt", "desc")
-    );    
-    
+      orderBy("createdAt", "desc"),
+    );
+
     const querySnapshot = await getDocs(q);
 
     const notifs = await Promise.all(
@@ -281,12 +298,13 @@ export const fetchNotifications = async (userId: string, setNotifications: Funct
         return {
           id: docSnapshot.id,
           ...notifData,
-          commenterProfile, 
-          bookImage
+          commenterProfile,
+          bookImage,
         };
-      }))
+      }),
+    );
 
-      setNotifications(notifs);
+    setNotifications(notifs);
   } catch (err) {
     console.error("Error fetching notifications:", err);
     return [];
@@ -298,9 +316,9 @@ export const markNotificationAsRead = async (notificationId: string) => {
     const notificationRef = doc(db, "notifications", notificationId);
 
     const docSnapshot = await getDoc(notificationRef);
-    
+
     if (!docSnapshot.exists()) {
-      console.error('Notification does not exist');
+      console.error("Notification does not exist");
       return;
     }
 
@@ -314,21 +332,18 @@ export const markNotificationAsRead = async (notificationId: string) => {
 
 export const deleteNotif = async (commentId: string) => {
   try {
-        // Step 1: Delete the comment document
-        const notificationRef = doc(db, "notifications", commentId);
-        await deleteDoc(notificationRef);
-    
-        return { success: true };
+    // Step 1: Delete the comment document
+    const notificationRef = doc(db, "notifications", commentId);
+    await deleteDoc(notificationRef);
 
+    return { success: true };
   } catch (err) {
     console.error("Error deleting notification:", err);
     return { success: false };
-
   }
-}
+};
 
-
-const smartContractConfig = async(account: Account) => {
+const smartContractConfig = async (account: Account) => {
   // Configure the smart wallet
   const wallet = smartWallet({
     chain: defineChain(123420001114),
@@ -348,41 +363,48 @@ const smartContractConfig = async(account: Account) => {
     address: "0x9c327f77070124C072eC3f2456DD42838fECDE33",
   });
 
-  return {contract, smartAccount}
-}
+  return { contract, smartAccount };
+};
 
-export const mintNft = async (userId: string, setClaimed: Function, account: Account) => {
-
+export const mintNft = async (
+  userId: string,
+  setClaimed: Function,
+  account: Account,
+) => {
   try {
-      const {contract, smartAccount} = await smartContractConfig(account); 
+    const { contract, smartAccount } = await smartContractConfig(account);
 
-      const transaction = claimTo({
-        contract: contract,
-        to: userId,
-        tokenId: BigInt(0),
-        quantity: BigInt(1),
-      });
+    const transaction = claimTo({
+      contract: contract,
+      to: userId,
+      tokenId: BigInt(0),
+      quantity: BigInt(1),
+    });
 
-      const { transactionHash } = await sendTransaction({
-        transaction,
-        account: smartAccount,
-      });
-      //console.log(`Transaction successful with hash: ${transactionHash}`);
+    const { transactionHash } = await sendTransaction({
+      transaction,
+      account: smartAccount,
+    });
+    //console.log(`Transaction successful with hash: ${transactionHash}`);
 
-      return { success: true };
-  }catch(err: any){
+    return { success: true };
+  } catch (err) {
     console.error(err);
-    if (err.message && err.message.includes('DropClaimExceedLimit')) {
+    if (err instanceof Error && err.message.includes("DropClaimExceedLimit")) {
       setClaimed(true);
-      return { success: false, error: 'You have already claimed this NFT.' };
+      return { success: false, error: "You have already claimed this NFT." };
     }
-    return { success: false, error: 'An unexpected error occurred during minting.' };
+    return {
+      success: false,
+      error: "An unexpected error occurred during minting.",
+    };
   }
+};
 
-}
-
-
-export const fetchUserNftBalance = async (userId: string, setUserBalance: Function) => {
+export const fetchUserNftBalance = async (
+  userId: string,
+  setUserBalance: Function,
+) => {
   if (userId) {
     try {
       // connect to your contract

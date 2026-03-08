@@ -190,7 +190,7 @@ const smartContractConfig = async(personalAccount: any) => {
 
   // Configure the smart wallet
   const wallet = smartWallet({
-    chain: defineChain(123420001114),
+    chain: defineChain(43113),
     sponsorGas: true,
   });
 
@@ -203,8 +203,8 @@ const smartContractConfig = async(personalAccount: any) => {
   // connect to your contract
   const contract = getContract({
     client,
-    chain: defineChain(123420001114),
-    address: "0x0016404CCCf31605294dD86c1c39e65B4D882c82",
+    chain: defineChain(43113),
+    address: "0x1AAD889B2bF25926fC76e79250674F33AEe5E5bC",
   });
 
   return {contract, smartAccount}
