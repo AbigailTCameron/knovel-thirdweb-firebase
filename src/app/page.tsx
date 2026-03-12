@@ -18,10 +18,7 @@ export default function Home() {
       <LandingHeader />
       <HeroSection />
       <WhoWeAre />
-
-      <div className="w-screen h-full sm:mt-20 lgtall:mt-36">
-        <Connect />
-      </div>
+      <Connect />
 
       <div className="relative w-screen h-screen lg:h-full mt-60 sm:mt-40 mb-40 iphonese:mb-10">
         <div className="absolute inset-0 bg-tech-bg bg-contain bg-no-repeat bg-center opacity-80 filter z-0"></div>
