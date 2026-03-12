@@ -191,7 +191,7 @@ export function WhoWeAre() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-background py-24 lg:py-32"
+      className="relative overflow-hidden bg-[#030308] py-24 lg:py-32"
     >
       {/* Purple glow divider */}
       <div
@@ -232,7 +232,7 @@ export function WhoWeAre() {
             visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <p className="text-white block text-balance font-mono text-8xl lg:text-6xl font-black text-left uppercase">
+          <p className="text-white block text-balance text-bold text-8xl lg:text-6xl font-black text-left uppercase">
             DISCOVERY IS{" "}
             <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
               SOCIAL
