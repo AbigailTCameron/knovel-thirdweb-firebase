@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 :root {
+  --background: oklch(0.10 0.02 285);
   --foreground-rgb: 16, 16, 20;
   --background-start-rgb: 16, 16, 20;
   --background-end-rgb: 0, 0, 0;
+  --muted-foreground: oklch(0.60 0.02 285);
 }
 
 @media (prefers-color-scheme: dark) {

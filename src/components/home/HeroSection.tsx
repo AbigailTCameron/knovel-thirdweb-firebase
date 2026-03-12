@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 
 function SpaceParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -156,6 +157,7 @@ function SpaceParticles() {
 function HeroSection({}) {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [time, setTime] = useState("");
 
   const handleMouseMove = (e: MouseEvent) => {
     setOffsetX((e.clientX / window.innerWidth) * 250 - 50);
@@ -169,38 +171,102 @@ function HeroSection({}) {
     };
   }, []);
 
+  useEffect(() => {
+    const formatTime = () =>
+      new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+    const timeout = window.setTimeout(() => {
+      setTime(formatTime());
+    }, 0);
+
+    const interval = window.setInterval(() => {
+      setTime(formatTime());
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearInterval(interval);
+    };
+  }, []);
+
   return (
-    <div className="relative flex flex-col w-full h-full items-center justify-center text-white p-20 halfxl:px-18 xs:px-4 halfxl:py-10">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#030308]">
       <SpaceParticles />
 
+      {/* Layered radial glows */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Main purple orb */}
         <div
-          className="absolute left-1/2 top-[20%] -translate-x-1/2"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
-            width: 1000,
-            height: 600,
+            width: "900px",
+            height: "900px",
             background:
-              "radial-gradient(ellipse, hsla(280,70%,45%,0.12) 0%, hsla(270,60%,35%,0.04) 40%, transparent 70%)",
+              "radial-gradient(circle, hsla(275, 80%, 55%, 0.18) 0%, hsla(290, 70%, 45%, 0.06) 40%, transparent 70%)",
+            animation: "pulse-glow 4s ease-in-out infinite",
           }}
         />
+        {/* Fuchsia accent */}
         <div
-          className="absolute left-[15%] top-[60%]"
+          className="absolute right-[15%] top-[20%]"
           style={{
-            width: 500,
-            height: 500,
+            width: "500px",
+            height: "500px",
             background:
-              "radial-gradient(ellipse, hsla(260,80%,50%,0.06) 0%, transparent 70%)",
+              "radial-gradient(circle, hsla(310, 80%, 60%, 0.10) 0%, transparent 60%)",
+            animation: "drift-1 8s ease-in-out infinite",
           }}
         />
+        {/* Blue accent */}
         <div
-          className="absolute right-[10%] top-[30%]"
+          className="absolute bottom-[15%] left-[10%]"
           style={{
-            width: 400,
-            height: 400,
+            width: "450px",
+            height: "450px",
             background:
-              "radial-gradient(ellipse, hsla(300,70%,50%,0.05) 0%, transparent 70%)",
+              "radial-gradient(circle, hsla(240, 80%, 60%, 0.08) 0%, transparent 60%)",
+            animation: "drift-2 10s ease-in-out infinite",
           }}
         />
+        {/* Top gradient vignette */}
+        <div
+          className="absolute inset-x-0 top-0 h-40"
+          style={{
+            background:
+              "linear-gradient(to bottom, hsla(275, 50%, 8%, 1), transparent)",
+          }}
+        />
+        {/* Bottom gradient vignette */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-40"
+          style={{
+            background:
+              "linear-gradient(to top, hsla(275, 50%, 8%, 1), transparent)",
+          }}
+        />
+      </div>
+
+      {/* Time widget - Avax style, top-left floating */}
+      <div
+        className={`absolute left-8 top-28 z-20 lg:hidden flex-col items-start gap-1 flex transition-all duration-1000 delay-[800ms] translate-x-0 opacity-100" : "-translate-x-8 opacity-0"
+        }`}
+      >
+        <span className="font-mono text-3xl font-light tracking-wider text-[#f5f5f5]/80">
+          {time}
+        </span>
+        <span className="text-xs text-[#7f7f8c]">
+          {new Date().toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </span>
       </div>
 
       <div
@@ -212,13 +278,13 @@ function HeroSection({}) {
       ></div>
 
       <div
-        className="relative z-10 flex flex-col space-y-16 largetall:space-y-8 xs:space-y-4 items-center transition-transform duration-400 ease-out"
+        className="relative z-10 flex flex-col space-y-16 px-6 largetall:space-y-8 xs:space-y-4 items-center transition-transform duration-400 ease-out"
         style={{
           transform: `translate(${offsetX / 10}px, ${offsetY / 10}px)`,
         }}
       >
         <h1
-          className={`max-w-5xl text-9xl text-center font-black leading-[1.08] tracking-tight text-[#f5f5f5] transition-all duration-700 delay-150 sm:text-6xl md:text-7xl translate-y-0 opacity-100"`}
+          className={`max-w-5xl text-9xl text-center font-black leading-[1.08] tracking-tight text-[#f5f5f5] transition-all duration-700 delay-150 sm:text-6xl md:text-7xl translate-y-0 opacity-100`}
         >
           <span className="block text-balance">Discover books</span>
           <span className="block text-balance">
@@ -276,6 +342,16 @@ function HeroSection({}) {
             </span>
           </a>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div
+        className={`absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-all duration-700 delay-[700ms] translate-y-0 opacity-100`}
+      >
+        <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-[#7f7f8c]">
+          Scroll through
+        </span>
+        <ChevronDown className="h-4 w-4 animate-bounce text-purple-400/70" />
       </div>
     </div>
   );
