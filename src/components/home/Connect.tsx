@@ -47,8 +47,8 @@ const steps = [
     title: "Monetize and own your growth",
     desc:
       "As your audience grows, new opportunities to earn emerge. Knovel supports direct creator monetization through collector editions, exclusive content, and community-driven support while leveraging decentralized infrastructure to strengthen long-term ownership and audience portability.",
-    bg: "#d24336",
-    visualBg: "#c4352a",
+    bg: "#592dc6",
+    visualBg: "#490db0",
     textColor: "#fff",
     top: 320,
     zIndex: 4,
@@ -61,7 +61,7 @@ function Connect({}) {
     <div className="relative bg-[#030308] px-24 md:px-10">
       {/* Header */}
       <div className="flex items-baseline gap-6 pt-10 pb-10">
-        <h2 className="text-white font-black text-9xl lg:text-6xl line-height-1">
+        <h2 className="text-white font-black text-8xl lg:text-6xl line-height-1">
           How Knovel
           <br />
           Works.
@@ -72,7 +72,7 @@ function Connect({}) {
       <div className="relative pb-6">
         {steps.map((step) => (
           <div
-            className={`flex md:flex-col sticky h-[85vh] overflow-hidden rounded-2xl`}
+            className={`flex md:flex-col sticky h-[70vh] overflow-hidden rounded-2xl`}
             key={step.num}
             style={{
               top: step.top,
