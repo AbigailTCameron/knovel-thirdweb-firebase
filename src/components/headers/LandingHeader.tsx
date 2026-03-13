@@ -39,7 +39,9 @@ function LandingHeader({}) {
           {mobileOpen ? (
             <X className="h-6 w-6" />
           ) : (
-            <Menu className="h-8 w-8" />
+            <div className="bg-purple-600 rounded-2xl p-4">
+              <Menu className="h-8 w-8" />
+            </div>
           )}
         </button>
       </div>
