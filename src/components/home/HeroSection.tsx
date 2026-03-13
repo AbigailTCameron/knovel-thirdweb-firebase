@@ -293,7 +293,7 @@ function HeroSection({}) {
               className="inline-block bg-clip-text text-transparent"
               style={{
                 backgroundImage:
-                  "linear-gradient(135deg, #a855f7, #c084fc, #d946ef, #a855f7)",
+                  "linear-gradient(135deg, #7F60F9, #c084fc, #d946ef, #58437d)",
                 backgroundSize: "300% 300%",
                 animation: "gradShift 5s ease infinite",
               }}
@@ -304,7 +304,7 @@ function HeroSection({}) {
         </h1>
 
         <p
-          className={`mt-6 font-mono font-semibold max-w-2xl text-xl leading-relaxed text-center text-[#7f7f8c] transition-all duration-700 delay-300 sm:text-xl translate-y-0 opacity-100`}
+          className={`mt-6 font-semibold max-w-2xl text-xl leading-relaxed text-center text-[#7f7f8c] transition-all duration-700 delay-300 sm:text-xl translate-y-0 opacity-100`}
         >
           Knovel is a social publishing platform where writers publish, readers
           discover, and communities grow around stories.

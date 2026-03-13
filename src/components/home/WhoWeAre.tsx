@@ -228,23 +228,23 @@ export function WhoWeAre() {
       <div className="relative z-10">
         {/* Section header */}
         <div
-          className={`mx-auto mb-14 text-center px-6 transition-all duration-700 lg:px-8 ${
+          className={`mx-auto mb-14 text-center px-24 md:px-10 transition-all duration-700 lg:px-8 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <p className="text-white block text-balance text-bold text-8xl lg:text-6xl font-black text-left uppercase">
-            DISCOVERY IS{" "}
-            <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+          <p className="text-white block text-balance text-bold text-8xl lg:text-6xl font-black text-left">
+            Discovery is{" "}
+            <span className="bg-gradient-to-r from-[#7F60F9] to-[#c084fc] bg-clip-text text-transparent">
               SOCIAL
             </span>
           </p>
-          <h2 className="mt-4 font-mono sm:text-3xl text-left font-bold tracking-tight text-[#f5f5f5] lg:text-4xl text-5xl text-balance">
+          <h2 className="mt-4 sm:text-3xl text-left font-bold tracking-tight text-[#f5f5f5] lg:text-4xl text-5xl text-balance">
             See what readers are{" "}
-            <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#7F60F9] to-[#c084fc] bg-clip-text text-transparent">
               loving right now.
             </span>
           </h2>
-          <p className="mt-4 sm:text-base font-mono leading-relaxed text-[#7f7f8c] text-lg">
+          <p className="mt-4 sm:text-base leading-relaxed text-[#7f7f8c] text-lg">
             Real recommendations from real people. Discover your next favorite
             book through the community.
           </p>
@@ -283,12 +283,37 @@ export function WhoWeAre() {
             visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <div
-            onClick={() => router.push("/explore")}
-            className="flex items-center rounded-xl group gap-2 hover:cursor-pointer bg-purple-600 px-8 py-4 text-base font-medium text-white hover:bg-purple-500 shadow-lg shadow-purple-600/20"
-          >
-            Explore All Stories
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <div className="mt-8 relative z-10">
+            <a
+              href="/explore"
+              className="group inline-flex items-center gap-3 rounded-full border border-[#27272a] bg-[#141414] px-5 py-2.5 text-sm font-medium text-[#fafafa] hover:bg-[#1a1a2e] transition-colors"
+            >
+              Explore All Stories
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#fafafa] text-[#0a0a0a] transition-transform group-hover:translate-x-0.5">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3.33337 8H12.6667"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.66671 4L12.6667 8L8.66671 12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </a>
           </div>
         </div>
       </div>

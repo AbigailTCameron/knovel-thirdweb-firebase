@@ -8,6 +8,7 @@ import ComingSoon from "@/components/home/ComingSoon";
 import Footer from "@/components/footers/Footer";
 import PageAnalytics from "@/components/analytics/PageAnalytics";
 import { WhoWeAre } from "@/components/home/WhoWeAre";
+import WhyKnovel from "@/components/home/WhyKnovel";
 
 export default function Home() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function Home() {
       <HeroSection />
       <WhoWeAre />
       <Connect />
+      {/* <WhyKnovel /> */}
 
       <div className="relative w-screen h-screen lg:h-full mt-60 sm:mt-40 mb-40 iphonese:mb-10">
         <div className="absolute inset-0 bg-tech-bg bg-contain bg-no-repeat bg-center opacity-80 filter z-0"></div>
